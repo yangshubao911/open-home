@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+    <!--Spring配置文件的路径,可使用通配符,多个路径用逗号分隔 -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:spring-context.xml</param-value>
+    </context-param>
+    <!--Character Encoding filter(字符集拦截转换) -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!--Spring的ApplicationContext 载入 -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!--
+    <servlet>
+        <servlet-name>weibo_jump</servlet-name>
+        <jsp-file>/weibo/jump.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>weibo_jump</servlet-name>
+        <url-pattern>/weibo/jump</url-pattern>
+    </servlet-mapping>
+    -->
+
+    <!-- 定义Jersey的拦截器 -->
+    <servlet>
+        <servlet-name>JerseyServlet</servlet-name>
+        <servlet-class>
+            me.weimi.api.swarm.servlet.MatrixServlet
+        </servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.feature.Redirect</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!--
+      <init-param>
+          <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+          <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+      </init-param>
+     -->
+        <init-param>
+            <param-name>me.weimi.api.swarm.servlet.MatrixServlet.forwards</param-name>
+            <param-value>/graph/wb_friends/ids=/contact/wb_friends/ids</param-value>
+        </init-param>
+        <!--  <init-param>
+             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+             <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+         </init-param> -->
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JerseyServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+
+</web-app>

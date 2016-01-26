@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>open-home</artifactId>
+        <groupId>com.shihui.openpf</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>open-home-deploy</artifactId>
+    <packaging>war</packaging>
+    <name>${project.artifactId}</name>
+    <dependencies>
+        <dependency>
+            <groupId>com.shihui.openpf</groupId>
+            <artifactId>open-home-resource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>deploy</finalName>
+
+        <resources>
+            <resource>
+                <directory>../open-home-properties/src/main/resources/${properties.dir}</directory>
+            </resource>
+            <resource>
+                <directory>../open-home-properties/src/main/resources/${properties.dir}_base</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.2.12.v20150709</version>
+                <configuration>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>org.eclipse.jetty.server.Request.maxFormContentSize</name>
+                            <value>-1</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                    <stopKey>foo</stopKey>
+                    <stopPort>9991</stopPort>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

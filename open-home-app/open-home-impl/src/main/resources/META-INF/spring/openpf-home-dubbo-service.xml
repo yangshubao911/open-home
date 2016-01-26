@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <bean id="homeServProviderServiceImpl"  class="com.shihui.openpf.home.dubbo.impl.HomeServProviderServiceImpl" />
+    <dubbo:service interface="com.shihui.openpf.home.dubbo.api.HomeServProviderService" ref="homeServProviderServiceImpl" />
+    
+    <!-- 商品接口 -->
+    <bean id="goodsManageImpl"  class="com.shihui.openpf.home.dubbo.impl.GoodsManageImpl" />
+    <dubbo:service interface="com.shihui.openpf.home.dubbo.api.GoodsManage" ref="goodsManageImpl" />
+    
+    <!-- 商品分类接口 -->
+    <bean id="categoryManageImpl"  class="com.shihui.openpf.home.dubbo.impl.CategoryManageImpl" />
+    <dubbo:service interface="com.shihui.openpf.home.dubbo.api.CategoryManage" ref="categoryManageImpl" />
+</beans>

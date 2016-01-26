@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    
+    <bean id="mysql_open_home_master" parent="baseDataSourceConfig">
+        <property name="jdbcUrl">
+            <value>jdbc:mysql://${mysql.shihui.open_home.serverport}/${mysql.shihui.open_home.database}?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;connectTimeout=2000</value>
+        </property>
+        <property name="username">
+            <value>${mysql.shihui.open_home.user}</value>
+        </property>
+        <property name="password">
+            <value>${mysql.shihui.open_home.password}</value>
+        </property>
+    </bean>
+    <bean id="mysql_open_home_slave" parent="baseDataSourceConfig">
+        <property name="jdbcUrl">
+            <value>jdbc:mysql://${mysql.shihui.open_home.serverport.slave}/${mysql.shihui.open_home.database}?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;connectTimeout=2000</value>
+        </property>
+        <property name="username">
+            <value>${mysql.shihui.open_home.user}</value>
+        </property>
+        <property name="password">
+            <value>${mysql.shihui.open_home.password}</value>
+        </property>
+    </bean>
+
+    <bean id="mysql_open_home" class="me.weimi.api.commons.db.jdbc.JdbcTemplate">
+        <property name="dataSource" ref="mysql_open_home_master"/>
+        <property name="dataSourceSlaves">
+            <list>
+                <ref bean="mysql_open_home_slave"/>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>
