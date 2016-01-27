@@ -3,6 +3,8 @@ package com.shihui.openpf.home.dao;
 import com.shihui.openpf.home.model.MerchantGoods;
 import org.springframework.stereotype.Repository;
 
+import com.shihui.openpf.home.model.MerchantGoods;
+
 /**
  * Created by zhoutc on 2016/1/27.
  */
