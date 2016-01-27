@@ -17,6 +17,16 @@
             <groupId>com.shihui.openpf</groupId>
             <artifactId>open-home-resource</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>logback-classic</artifactId>
+            		<groupId>ch.qos.logback</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>logback-core</artifactId>
+            		<groupId>ch.qos.logback</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

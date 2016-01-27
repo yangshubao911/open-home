@@ -29,6 +29,10 @@ public class Goods implements Serializable {
 	@JSONField(name="city_id")
 	@Column(name="city_id")
 	private Integer cityId;
+	
+	@JSONField(name = "city_name")
+	@Column(name="city_name")
+	private String cityName;
 
 	@JSONField(name="create_time", format="yyyy-MM-dd HH:mm:ss")
 	@Column(name="create_time")
@@ -93,6 +97,14 @@ public class Goods implements Serializable {
 
 	public void setCityId(Integer cityId) {
 		this.cityId = cityId;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
 	}
 
 	public Date getCreateTime() {
