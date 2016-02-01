@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 订单列表
      */
     @Override
-    public List<Order> queryOrder(Order order , int page , int size) {
+    public List<Order> queryOrderList(Order order , int page , int size) {
         return orderDao.queryOrder(order,page,size);
     }
 
@@ -100,5 +100,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public int countQueryOrder(Order order) {
         return orderDao.countQueryOrder(order);
+    }
+
+    /**
+     * 根据条件分页查询订单
+     * @param orderId    订单Id
+     * @return 订单列表
+     */
+    @Override
+    public Order queryOrder(long orderId) {
+        return orderDao.queryOrder(orderId);
     }
 }

@@ -71,4 +71,19 @@ public class OrderDao extends AbstractDao<Order> {
         }
         return -1;
     }
+
+    /**
+     * 根据订单ID查询订单
+     * @param orderId    订单Id
+     * @return 订单详情
+     */
+    public Order queryOrder(long orderId){
+        String sql = "select * from order where order_id = " + orderId;
+        try {
+            return super.queryForObject(sql,Order.class);
+        }catch (Exception e){
+
+        }
+        return  null;
+    }
 }

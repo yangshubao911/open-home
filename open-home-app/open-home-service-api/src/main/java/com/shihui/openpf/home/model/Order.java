@@ -70,6 +70,9 @@ public class Order implements Serializable {
 	@Column(name="remark")
 	private String remark;
 
+	@Column(name="phone")
+	private String phone;
+
 	public Order() {
 	}
 
@@ -215,5 +218,13 @@ public class Order implements Serializable {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 }
