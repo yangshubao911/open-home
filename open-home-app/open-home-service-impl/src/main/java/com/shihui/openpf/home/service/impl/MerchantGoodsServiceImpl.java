@@ -1,8 +1,10 @@
 package com.shihui.openpf.home.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.dao.MerchantGoodsDao;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.service.api.MerchantGoodsService;
+import com.shihui.openpf.home.util.SimpleResponse;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,8 +36,12 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
      * @return 更新结果
      */
     @Override
-    public boolean updateMerchantGoods(MerchantGoods merchantGoods) {
-        return merchantGoodsDao.update(merchantGoods)>0;
+    public String updateMerchantGoods(MerchantGoods merchantGoods) {
+        if(merchantGoodsDao.update(merchantGoods)>0){
+            return JSON.toJSONString(new SimpleResponse(0, "更新成功"));
+        }else {
+            return JSON.toJSONString(new SimpleResponse(1, "更新失败"));
+        }
     }
 
     /**

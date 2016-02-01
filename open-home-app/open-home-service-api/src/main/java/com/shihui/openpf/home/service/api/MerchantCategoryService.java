@@ -21,6 +21,6 @@ public interface MerchantCategoryService {
      * @param merchantCategory 更新商户业务分类信息
      * @return 更新结果
      */
-    public boolean updateCategory(MerchantCategory merchantCategory);
+    public String updateCategory(MerchantCategory merchantCategory);
 
 }

@@ -21,7 +21,7 @@ public interface MerchantGoodsService {
      * @param merchantGoods 商户业务商品绑定信息
      * @return 更新结果
      */
-    public boolean updateMerchantGoods(MerchantGoods merchantGoods);
+    public String updateMerchantGoods(MerchantGoods merchantGoods);
 
     /**
      * 创建商户业务商品绑定信息

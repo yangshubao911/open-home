@@ -1,8 +1,10 @@
 package com.shihui.openpf.home.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.dao.MerchantCategoryDao;
 import com.shihui.openpf.home.model.MerchantCategory;
 import com.shihui.openpf.home.service.api.MerchantCategoryService;
+import com.shihui.openpf.home.util.SimpleResponse;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,7 +36,11 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
      * @return 更新结果
      */
     @Override
-    public boolean updateCategory(MerchantCategory merchantCategory) {
-       return merchantCategoryDao.update(merchantCategory)>0;
+    public String updateCategory(MerchantCategory merchantCategory) {
+       if(merchantCategoryDao.update(merchantCategory)>0){
+           return JSON.toJSONString(new SimpleResponse(0, "更新成功"));
+       }else {
+           return JSON.toJSONString(new SimpleResponse(1, "更新失败"));
+       }
     }
 }
