@@ -33,7 +33,9 @@ public class MerchantCategoryResource {
             @Context RequestContext rc,
             @ParamDesc(desc = "商户业务关联ID", isRequired = true) @QueryParam("m_s_id") int m_s_id
     ){
-        return JSON.toJSONString(merchantCategoryService.queryCategoryList(m_s_id));
+        MerchantCategory merchantCategory = new MerchantCategory();
+        merchantCategory.setM_s_c_id(m_s_id);
+        return JSON.toJSONString(merchantCategoryService.queryCategoryList(merchantCategory));
     }
 
 

@@ -21,13 +21,12 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
 
     /**
      * 查询商户业务绑定分类
-     * @param m_s_c_id 业务绑定商户ID
+     * @param merchantCategory 业务绑定商户信息
      * @return 分类信息
      */
     @Override
-    public List<MerchantCategory> queryCategoryList(int m_s_c_id) {
-        String sql = "select * from merchant_category where m_s_g_id = ?";
-        return merchantCategoryDao.queryForList(sql,m_s_c_id);
+    public List<MerchantCategory> queryCategoryList(MerchantCategory merchantCategory) {
+        return merchantCategoryDao.findByCondition(merchantCategory);
     }
 
     /**

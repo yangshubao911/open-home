@@ -11,10 +11,10 @@ public interface MerchantGoodsService {
 
     /**
      * 查询商户业务商品信息
-     * @param m_s_g_id 业务绑定商户分类ID
+     * @param merchantGoods 商户商品信息
      * @return 商户商品关联信息
      */
-    public List<MerchantGoods> queryMerchantGoodsList(int m_s_g_id);
+    public List<MerchantGoods> queryMerchantGoodsList(MerchantGoods merchantGoods);
 
     /**
      * 更新商户业务商品绑定信息

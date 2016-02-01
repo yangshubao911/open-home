@@ -11,10 +11,10 @@ public interface MerchantCategoryService {
 
     /**
      * 查询商户业务绑定分类
-     * @param m_s_c_id 业务绑定商户ID
+     * @param merchantCategory 业务绑定商户信息
      * @return 分类信息
      */
-    public List<MerchantCategory> queryCategoryList(int m_s_c_id);
+    public List<MerchantCategory> queryCategoryList(MerchantCategory merchantCategory);
 
     /**
      * 更新商户业务分类

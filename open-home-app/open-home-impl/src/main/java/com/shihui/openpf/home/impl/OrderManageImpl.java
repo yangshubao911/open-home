@@ -37,6 +37,8 @@ public class OrderManageImpl implements OrderManage {
     GoodsService goodsService;
 
 
+
+
     /**
      * 客户端创建订单
      *
@@ -88,6 +90,7 @@ public class OrderManageImpl implements OrderManage {
                     setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 
             order_json.put("merchantId", order.getMerchantId());
+
             //order_json.put("merchantName", );
             //order_json.put("settlement", merchantGoods.getPrice());
             DateTime dateTime = new DateTime(order.getCreateTime());

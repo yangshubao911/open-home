@@ -21,13 +21,12 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 
     /**
      * 查询商户业务商品信息
-     * @param m_s_g_id 业务绑定商户分类ID
+     * @param merchantGoods 商户商品信息
      * @return 商户商品关联信息
      */
     @Override
-    public List<MerchantGoods> queryMerchantGoodsList(int m_s_g_id){
-        String sql = "select * from merchant_goods where m_s_g_id = ?";
-        return merchantGoodsDao.queryForList(sql,m_s_g_id);
+    public List<MerchantGoods> queryMerchantGoodsList(MerchantGoods merchantGoods){
+          return merchantGoodsDao.findByCondition(merchantGoods);
     }
 
     /**
