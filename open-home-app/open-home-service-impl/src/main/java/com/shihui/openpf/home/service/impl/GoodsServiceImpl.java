@@ -3,32 +3,36 @@
  */
 package com.shihui.openpf.home.service.impl;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
+import com.shihui.openpf.common.dubbo.api.ServiceManage;
+import com.shihui.openpf.common.model.Service;
 import com.shihui.openpf.home.dao.GoodsDao;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.service.api.GoodsService;
 import com.shihui.openpf.home.util.SimpleResponse;
 import com.shihui.openpf.home.util.SnapShotUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author zhouqisheng
  *
  * @version 1.0 Created at: 2016年1月20日 上午11:15:56
  */
-@Service
+@org.springframework.stereotype.Service
 public class GoodsServiceImpl implements GoodsService {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	@Resource
 	private GoodsDao goodsDao;
+	@Resource
+	private ServiceManage serviceManage;
 
 	/* (non-Javadoc)
 	 * @see com.shihui.openpf.home.api.GoodsService#create(com.shihui.openpf.home.model.Goods)
@@ -50,6 +54,14 @@ public class GoodsServiceImpl implements GoodsService {
 		long id = this.goodsDao.insert(goods);
 		//创建商品快照
 		goods.setGoodsId(id);
+		//获得业务对应商户ID，快照需要此字段
+		
+		Service service = this.serviceManage.findById(goods.getServiceId());
+		if(service == null){
+			return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
+		}
+		
+		goods.setServiceMerchantCode(service.getServiceMerchantCode());
 		
 		String result = SnapShotUtil.sendSnapShot(goods);
 		if(result == null || result.isEmpty()){
@@ -73,7 +85,28 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Override
 	public String update(Goods goods) {
-		String result = SnapShotUtil.sendSnapShot(goods);
+		//设置更新时间
+		goods.setUpdateTime(new Date());
+		
+		Goods oldGoods = this.goodsDao.findById(goods.getGoodsId());
+		//仅复制需要更新的属性
+		if(goods.getGoodsDesc() != null)
+			oldGoods.setGoodsDesc(goods.getGoodsDesc());
+		if(goods.getGoodsStatus() != null)
+			oldGoods.setGoodsStatus(goods.getGoodsStatus());
+		if(goods.getGoodsName() != null)
+			oldGoods.setGoodsName(goods.getGoodsName());
+		if(goods.getImgUrl() != null)
+			oldGoods.setImgUrl(goods.getImgUrl());
+		if(goods.getShOffSet() != null)
+			oldGoods.setShOffSet(goods.getShOffSet());
+		if(goods.getPrice() != null)
+			oldGoods.setPrice(goods.getPrice());
+		
+		oldGoods.setUpdateTime(goods.getUpdateTime());
+		
+		
+		String result = SnapShotUtil.sendSnapShot(oldGoods);
 		if(result == null || result.isEmpty()){
 			log.warn("【更新】调用创建商品快照接口失败，商品id={}", goods.getGoodsId());
 			return JSON.toJSONString(new SimpleResponse(1,"创建商品快照失败"));
@@ -86,8 +119,14 @@ public class GoodsServiceImpl implements GoodsService {
         }
         int version = jo.getIntValue("version_id");
         goods.setGoodsVersion(version);
-		goods.setUpdateTime(new Date());
-		return JSON.toJSONString(new SimpleResponse(0, "更新商品信息成功"));
+		
+		if(this.goodsDao.update(goods) > 0){
+			return JSON.toJSONString(new SimpleResponse(0, "更新商品信息成功"));
+		}else{
+			return JSON.toJSONString(new SimpleResponse(1, "更新商品信息失败"));
+		}
+		
+		
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package com.shihui.openpf.home.util;
 
-
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.Goods;
 import me.weimi.api.commons.config.ConfigLoader;
@@ -18,117 +17,110 @@ import java.util.Map;
  */
 public class SnapShotUtil {
 
-    /**
-     * ApacheHttpClient
-     */
-    private static final ApacheHttpClient APACHE_HTTP_CLIENT = new ApacheHttpClient(10000,10000);
+	/**
+	 * ApacheHttpClient
+	 */
+	private static final ApacheHttpClient APACHE_HTTP_CLIENT = new ApacheHttpClient(10000, 10000);
 
-    private static String APPID = "";
-    private static String SALT = "WghLt8";
-    private static String APPSN = "ad20ff9381d5c08a02d9f2583f456b80";
-    private static String SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com/kuaizhao/create";
+	private static String APPID = "";
+	private static String SALT = "WghLt8";
+	private static String APPSN = "ad20ff9381d5c08a02d9f2583f456b80";
+	private static String SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com/kuaizhao/create";
 
-    private static Map<Long, Integer> errorMap = new HashMap<Long, Integer>();
-    private static long MERCHANTID;
+	static {
+		if (DefaultConfigLoader.getInstance().getEnv().equals(ConfigLoader.Env.prod)) {
+			APPID = "8";
+			SALT = "NYFaqL";
+			APPSN = "67d501d249c739939c841a1eb94a235e";
+			SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com//index.php/kuaizhao/create";
+		} else {
+			APPID = "8";
+			SALT = "MvaXyd";
+			APPSN = "d1b1134ee2acbf2943ab864c18f311a0";
+			SNAPSHOT_URL = "http://test.snapshots.17shihui.com/index.php/kuaizhao/create";
+		}
+	}
 
-    static {
-        if (DefaultConfigLoader.getInstance().getEnv().equals(ConfigLoader.Env.prod)) {
-            APPID = "8";
-            SALT = "NYFaqL";
-            APPSN = "67d501d249c739939c841a1eb94a235e";
-            SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com//index.php/kuaizhao/create";
-        } else {
-            APPID = "8";
-            SALT = "MvaXyd";
-            APPSN = "d1b1134ee2acbf2943ab864c18f311a0";
-            SNAPSHOT_URL = "http://test.snapshots.17shihui.com/index.php/kuaizhao/create";
-        }
-    }
+	/**
+	 * 创建商品快照
+	 * 
+	 * @param goods
+	 * @return
+	 */
+	public static String sendSnapShot(Goods goods) {
+		try {
 
+			Map<String, Object> goods_info = new HashMap<String, Object>();
+			goods_info.put("goods_id", goods.getGoodsId());
+			goods_info.put("goods_name", goods.getGoodsName());
+			goods_info.put("goods_img_multi", goods.getImgUrl());
+			goods_info.put("merchant_id", goods.getServiceMerchantCode());
+			goods_info.put("goods_type", 2);
+			goods_info.put("goods_desc", goods.getGoodsDesc());
+			goods_info.put("market_price", goods.getPrice());
+			goods_info.put("shihui_price", goods.getPrice());
+			goods_info.put("goods_lable", goods.getServiceId());
+			goods_info.put("status", goods.getGoodsStatus());
+			goods_info.put("created_by", "openpf");
+			goods_info.put("create_time", goods.getCreateTime());
+			goods_info.put("settle_price", goods.getPrice());
+			goods_info.put("settle_method", 1);// 未结算
 
-    /**
-     * 创建商品快照
-     * @param goods
-     * @return
-     */
-    public static String sendSnapShot(Goods goods) {
-        try {
+			Map<String, Object> action_info = new HashMap<String, Object>();
+			action_info.put("auction_id", goods.getGoodsId());
+			action_info.put("auction_name", goods.getGoodsName());
+			action_info.put("auction_desc", goods.getGoodsName());
+			action_info.put("goods_id", goods.getGoodsId());
+			action_info.put("merchant_id", goods.getServiceMerchantCode());
+			action_info.put("receive_mode", 6);// 上门服务
 
-            Map<String, Object> goods_info = new HashMap<String, Object>();
-            goods_info.put("goods_id",goods.getGoodsId());
-            goods_info.put("goods_name",goods.getGoodsName());
-            goods_info.put("goods_img_multi",goods.getImgUrl());
-            //TODO 从业务类型接口获得供应商
-//           goods_info.put("merchant_id",);
-            goods_info.put("goods_type",2);
-            goods_info.put("goods_desc",goods.getGoodsDesc());
-            goods_info.put("market_price",goods.getPrice());
-            goods_info.put("shihui_price",goods.getPrice());
-            goods_info.put("goods_lable", goods.getServiceId());
-            goods_info.put("status",goods.getGoodsStatus());
-            goods_info.put("created_by","openpf");
-            goods_info.put("create_time",goods.getCreateTime());
-            goods_info.put("settle_price",goods.getPrice());
-            goods_info.put("settle_method",1);//未结算
+			Map<String, Object> content = new HashMap<String, Object>();
+			content.put("goods_info", goods_info);
+			content.put("action_info", action_info);
 
-            Map<String, Object> action_info = new HashMap<String, Object>();
-            action_info.put("auction_id", goods.getGoodsId());
-            action_info.put("auction_name", goods.getGoodsName());
-            action_info.put("auction_desc",  goods.getGoodsName());
-            action_info.put("goods_id",  goods.getGoodsId());
-          //TODO 从业务类型接口获得供应商
-//            action_info.put("merchant_id", );
-            action_info.put("receive_mode", 6);//上门服务
-            
-            Map<String, Object> content = new HashMap<String, Object>();
-            content.put("goods_info", goods_info);
-            content.put("action_info", action_info);
-            
-            long timestamp = System.currentTimeMillis() / 1000;
-            String value = md5String(String.valueOf(timestamp)) + SALT + md5String(APPSN);
-            String md5value = md5String(String.valueOf(value));
+			long timestamp = System.currentTimeMillis() / 1000;
+			String value = md5String(String.valueOf(timestamp)) + SALT + md5String(APPSN);
+			String md5value = md5String(String.valueOf(value));
 
-            Map<String, Object> param = new HashMap<String, Object>();
-            param.put("id", goods.getGoodsId());
-            param.put("type", APPID);
-            param.put("content", JSON.toJSONString(content));
-            param.put("code", md5value);
-            param.put("timestamp", timestamp);
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("id", goods.getGoodsId());
+			param.put("type", APPID);
+			param.put("content", JSON.toJSONString(content));
+			param.put("code", md5value);
+			param.put("timestamp", timestamp);
 
-            ApiHttpClient.RequestBuilder requestBuilder =
-                    APACHE_HTTP_CLIENT.buildPost(SNAPSHOT_URL).withParam(param)
-                            .withHeader("Content-Type", "application/x-www-form-urlencoded");
-            return requestBuilder.execute();
+			ApiHttpClient.RequestBuilder requestBuilder = APACHE_HTTP_CLIENT.buildPost(SNAPSHOT_URL).withParam(param)
+			        .withHeader("Content-Type", "application/x-www-form-urlencoded");
+			return requestBuilder.execute();
 
-        } catch (Exception e) {
-            ApiLogger.error("call snapshot error", e);
-        }
-        return null;
-    }
+		} catch (Exception e) {
+			ApiLogger.error("call snapshot error", e);
+		}
+		return null;
+	}
 
-    public static String md5String(String input) {
-        char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                'a', 'b', 'c', 'd', 'e', 'f'};
-        try {
-            byte[] strTemp = input.getBytes();
-            //使用MD5创建MessageDigest对象
-            MessageDigest mdTemp = MessageDigest.getInstance("MD5");
-            mdTemp.update(strTemp);
-            byte[] md = mdTemp.digest();
-            int j = md.length;
-            char str[] = new char[j * 2];
-            int k = 0;
-            for (int i = 0; i < j; i++) {
-                byte b = md[i];
-                //System.out.println((int)b);
-                //将没个数(int)b进行双字节加密
-                str[k++] = hexDigits[b >> 4 & 0xf];
-                str[k++] = hexDigits[b & 0xf];
-            }
-            return new String(str);
-        } catch (Exception e) {
-            return null;
-        }
+	public static String md5String(String input) {
+		char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+		try {
+			byte[] strTemp = input.getBytes();
+			// 使用MD5创建MessageDigest对象
+			MessageDigest mdTemp = MessageDigest.getInstance("MD5");
+			mdTemp.update(strTemp);
+			byte[] md = mdTemp.digest();
+			int j = md.length;
+			char str[] = new char[j * 2];
+			int k = 0;
+			for (int i = 0; i < j; i++) {
+				byte b = md[i];
+				// System.out.println((int)b);
+				// 将没个数(int)b进行双字节加密
+				str[k++] = hexDigits[b >> 4 & 0xf];
+				str[k++] = hexDigits[b & 0xf];
+			}
+			return new String(str);
+		} catch (Exception e) {
+			return null;
+		}
 
-    }
+	}
 }

@@ -3,30 +3,36 @@
  */
 package com.shihui.openpf.home.dao;
 
-import me.weimi.api.commons.db.jdbc.JdbcTemplate;
-import org.springframework.beans.BeanUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-import javax.annotation.Resource;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
+import me.weimi.api.commons.db.jdbc.JdbcTemplate;
+
 
 /**
  * 基于jpa注解简单实现几个常用方法，没有集成orm，被迫如此
@@ -36,19 +42,20 @@ import java.util.Map;
  * @version 1.0 Created at: 2015年12月14日 上午11:13:05
  */
 public abstract class AbstractDao<T> {
-	@Resource(name = "mysql_open_home")
+	@Resource(name = "open_common_jdbctemplate")
 	protected JdbcTemplate jdbcTemplate;
 
 	/** 具体操作的实体类对象 */
-	private Class<T> entityClass;
+	protected Class<T> entityClass;
 
-	private String tableName;
+	protected String tableName;
 
-	private Map<String, String> fieldNameMap;
+	protected Map<String, String> fieldNameMap;
 
-	private Map<String, String> idsFieldNameMap;
+	protected Map<String, String> idsFieldNameMap;
 
-	private RowMapper<T> rowMapper;
+	protected RowMapper<T> rowMapper;
+	
 
 	/**
 	 * 构造方法，获取运行时的具体实体对象
@@ -291,6 +298,8 @@ public abstract class AbstractDao<T> {
 
 			sql.delete(sql.length() - 5, sql.length());
 			return this.jdbcTemplate.update(sql.toString(), valus.toArray());
+		} catch (RuntimeException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -300,9 +309,87 @@ public abstract class AbstractDao<T> {
 	 * 查询所有记录
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<T> findAll(){
 		return this.jdbcTemplate.query("select * from " + tableName, rowMapper);
+	}
+	
+	/**
+	 * 更具bean中Id注解字段查询
+	 * @param t
+	 * @return
+	 */
+	public T findById(T t){
+		StringBuilder sql = new StringBuilder("select * from `");
+		sql.append(this.tableName).append("` where 1=1");
+		
+		Field[] fields = t.getClass().getDeclaredFields();
+		ArrayList<Object> valus = new ArrayList<Object>();
+		
+		try {
+			for (Field field : fields) {
+				String fieldName = this.idsFieldNameMap.get(field.getName());
+				if (fieldName == null) {
+					continue;
+				}
+				field.setAccessible(true);
+				Object value = field.get(t);
+				if (value != null) {
+					sql.append(" and `").append(fieldName).append("`=?");
+					valus.add(value);
+				}
+			}
+
+			List<T> result =  this.jdbcTemplate.query(sql.toString(), valus.toArray(), rowMapper);
+			if(result != null){
+				if( result.size() > 1)
+					throw new RuntimeException("the result is not unique,plase check the condition!");
+				if(result.size() == 1)
+					return result.get(0);
+			}
+			return null;
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * 将bean实例非空字段转为查询条件查询
+	 * 结果有多条时会抛异常
+	 * @param t
+	 * @return
+	 */
+	public List<T> findByCondition(T t){
+		StringBuilder sql = new StringBuilder("select * from `");
+		sql.append(this.tableName).append("` where 1=1");
+		
+		Field[] fields = t.getClass().getDeclaredFields();
+		ArrayList<Object> valus = new ArrayList<Object>();
+		
+		try {
+			for (Field field : fields) {
+				String fieldName = this.fieldNameMap.get(field.getName());
+				if(fieldName == null){
+					fieldName = this.idsFieldNameMap.get(field.getName());
+				}
+				if (fieldName == null) {
+					continue;
+				}
+				field.setAccessible(true);
+				Object value = field.get(t);
+				if (value != null) {
+					sql.append(" and `").append(fieldName).append("`=?");
+					valus.add(value);
+				}
+			}
+
+			return this.jdbcTemplate.query(sql.toString(), valus.toArray(), rowMapper);
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -311,7 +398,6 @@ public abstract class AbstractDao<T> {
 	 * @param args
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<T> queryForList(String sql, Object... args){
 		return this.jdbcTemplate.query(sql, args, rowMapper);
 	}
@@ -322,13 +408,29 @@ public abstract class AbstractDao<T> {
 	 * @param args
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public T queryForObject(String sql, Object... args){
-		List<T> result = this.jdbcTemplate.query(sql, args, rowMapper);
-		if(result.size() > 0){
-			return result.get(0);
-		}
-		return null;
+		T result = (T) this.jdbcTemplate.queryForObject(sql, args, rowMapper);
+		return result;
+	}
+	
+	/**
+	 * 统计查询
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public int queryCount(String sql, Object... args){
+		int count  = (int) this.jdbcTemplate.query(sql, args, new ResultSetExtractor<Integer>(){
+
+			@Override
+			public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+				if(rs.next())
+					return rs.getInt(1);
+				return 0;
+			}
+			
+		});
+		return count;
 	}
 
 }

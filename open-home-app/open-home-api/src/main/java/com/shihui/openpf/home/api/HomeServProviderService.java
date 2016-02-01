@@ -4,8 +4,7 @@
 package com.shihui.openpf.home.api;
 
 import com.shihui.openpf.home.model.HomeResponse;
-
-import java.util.Map;
+import com.shihui.openpf.home.model.OrderInfo;
 
 /**
  * @author zhouqisheng
@@ -32,7 +31,7 @@ public interface HomeServProviderService {
 	 * @param orderInfo 订单信息
 	 * @return
 	 */
-	public HomeResponse createOrder(String key, int serviceType, Map<String, Object> orderInfo);
+	public HomeResponse createOrder(String key, int serviceType, OrderInfo orderInfo);
 	
 	/**
 	 * 取消订单接口

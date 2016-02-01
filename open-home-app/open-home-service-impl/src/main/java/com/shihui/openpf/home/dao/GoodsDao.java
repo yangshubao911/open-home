@@ -13,5 +13,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class GoodsDao extends AbstractDao<Goods> {
+	
+	public Goods findById(Long id){
+		String sql = "select * from " + this.tableName + " where goods_id=?";
+		return this.queryForObject(sql, id);
+	}
 
 }

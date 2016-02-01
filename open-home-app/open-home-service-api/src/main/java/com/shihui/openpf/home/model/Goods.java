@@ -1,12 +1,14 @@
 package com.shihui.openpf.home.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.io.Serializable;
-import java.util.Date;
+import javax.persistence.Transient;
+
+import com.alibaba.fastjson.annotation.JSONField;
 
 
 /**
@@ -71,6 +73,9 @@ public class Goods implements Serializable {
 	@JSONField(name="update_time", format="yyyy-MM-dd HH:mm:ss")
 	@Column(name="update_time")
 	private Date updateTime;
+	
+	@Transient
+	private Integer serviceMerchantCode;//业务对应商户ID
 
 	public Goods() {
 	}
@@ -185,6 +190,14 @@ public class Goods implements Serializable {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Integer getServiceMerchantCode() {
+		return serviceMerchantCode;
+	}
+
+	public void setServiceMerchantCode(Integer serviceMerchantCode) {
+		this.serviceMerchantCode = serviceMerchantCode;
 	}
 
 }

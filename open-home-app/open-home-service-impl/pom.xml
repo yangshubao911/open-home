@@ -18,6 +18,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.shihui.openpf</groupId>
+            <artifactId>open-common-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.shihui.api</groupId>
             <artifactId>frame-parent</artifactId>
         </dependency>

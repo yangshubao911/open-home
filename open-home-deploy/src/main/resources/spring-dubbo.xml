@@ -23,6 +23,7 @@
     <dubbo:reference id="paymentDubbo" interface=" com.shihui.api.payment.dubbo.PaymentDubbo"  timeout="10000" check="false"/>
 
     <dubbo:reference id="queryOrderDubbo" interface=" com.shihui.api.oms.sale.dubbo.QueryOrderDubbo" check="false"/>
-
+    
+    <dubbo:reference id="ServiceManage" interface=" com.shihui.openpf.common.dubbo.api.ServiceManage" check="false"/>
 
 </beans>
