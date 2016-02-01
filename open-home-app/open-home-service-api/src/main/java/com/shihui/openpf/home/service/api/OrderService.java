@@ -45,7 +45,7 @@ public interface OrderService {
 	 * @param order
 	 * @return 订单列表
 	 */
-	List<Order> queryOrder(Order order, int page, int size);
+	List<Order> queryOrderList(Order order, int page, int size);
 
 	/**
 	 * 查询订单总数
@@ -53,6 +53,13 @@ public interface OrderService {
 	 * @return 订单数
 	 */
 	int countQueryOrder(Order order);
+
+	/**
+	 * 根据条件分页查询订单
+	 * @param orderId    订单Id
+	 * @return 订单列表
+	 */
+	Order queryOrder(long orderId);
 	
 
 }
