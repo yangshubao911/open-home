@@ -20,7 +20,6 @@ import org.joda.time.DateTime;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,16 +58,16 @@ public class OrderManageImpl implements OrderManage {
      * @return 返回结果
      */
     @Override
-    public String queryOrderList(RequestContext rc, Order queryOrder, int page, int size) {
+    public String queryOrderList(RequestContext rc,Order queryOrder,Long startTime , Long endTime , int page, int size) {
         JSONObject result = new JSONObject();
         JSONArray orders_json = new JSONArray();
       //  Order queryOrder = JSON.parseObject(json, Order.class);
-        int total = orderService.countQueryOrder(queryOrder);
+        int total = orderService.countQueryOrder(queryOrder,startTime,endTime);
         result.put("total", total);
         result.put("page", page);
         result.put("size", size);
         if (total <= 0) return result.toJSONString();
-        List<Order> orderList = orderService.queryOrderList(queryOrder, page, size);
+        List<Order> orderList = orderService.queryOrderList(queryOrder,startTime,endTime, page, size);
 
         List<Integer> merchants = new ArrayList<>();
         for (Order order : orderList) {

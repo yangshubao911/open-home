@@ -88,8 +88,8 @@ public class OrderServiceImpl implements OrderService {
      * @return 订单列表
      */
     @Override
-    public List<Order> queryOrderList(Order order , int page , int size) {
-        return orderDao.queryOrder(order,page,size);
+    public List<Order> queryOrderList(Order order , Long startTime , Long endTime, int page , int size) {
+        return orderDao.queryOrder(order , startTime , endTime , page , size);
     }
 
     /**
@@ -98,8 +98,8 @@ public class OrderServiceImpl implements OrderService {
      * @return 订单数
      */
     @Override
-    public int countQueryOrder(Order order) {
-        return orderDao.countQueryOrder(order);
+    public int countQueryOrder(Order order,Long startTime , Long endTime) {
+        return orderDao.countQueryOrder(order,startTime,endTime);
     }
 
     /**
