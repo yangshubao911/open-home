@@ -70,16 +70,16 @@ public class OrderManageImpl implements OrderManage {
      * @return 返回结果
      */
     @Override
-    public String queryOrderList(RequestContext rc,Order queryOrder,Long startTime , Long endTime , int page, int size) {
+    public String queryOrderList(RequestContext rc, Order queryOrder, Long startTime, Long endTime, int page, int size) {
         JSONObject result = new JSONObject();
         JSONArray orders_json = new JSONArray();
-      //  Order queryOrder = JSON.parseObject(json, Order.class);
+        //  Order queryOrder = JSON.parseObject(json, Order.class);
         int total = orderService.countQueryOrder(queryOrder, startTime, endTime);
         result.put("total", total);
         result.put("page", page);
         result.put("size", size);
         if (total <= 0) return result.toJSONString();
-        List<Order> orderList = orderService.queryOrderList(queryOrder,startTime,endTime, page, size);
+        List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime, page, size);
 
         List<Integer> merchants = new ArrayList<>();
         for (Order order : orderList) {
@@ -174,17 +174,17 @@ public class OrderManageImpl implements OrderManage {
     public String cancelOrder(long orderId, OrderCancelType orderCancelType) {
         Order order = orderService.queryOrder(orderId);
         OrderDetailVo orderDetailVo = orderDubboService.queryOrderDetail(orderId);
-        if(order == null || orderDetailVo == null)
-            return buildResponse(1,"未找到订单");
+        if (order == null || orderDetailVo == null)
+            return buildResponse(1, "未找到订单");
 
-        if(order.getOrderStatus()== OrderStatusEnum.OrderBackClose.getValue()||
-                order.getOrderStatus()== OrderStatusEnum.OrderCloseByMerchant.getValue()||
-                order.getOrderStatus()== OrderStatusEnum.OrderCloseByManual.getValue()||
-                order.getOrderStatus()== OrderStatusEnum.OrderCloseOfOutTime.getValue()||
-                order.getOrderStatus()== OrderStatusEnum.OrderHadRefund.getValue()||
-                order.getOrderStatus()== OrderStatusEnum.OrderMrchantClose.getValue()||
-                order.getOrderStatus()== OrderStatusEnum.OrderRefunding.getValue()){
-            return buildResponse(1,"订单已经取消");
+        if (order.getOrderStatus() == OrderStatusEnum.OrderBackClose.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderCloseByMerchant.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderCloseByManual.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderCloseOfOutTime.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderHadRefund.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderMrchantClose.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderRefunding.getValue()) {
+            return buildResponse(1, "订单已经取消");
         }
 
         Contact contact = contactService.queryByOrderId(orderId);
@@ -193,113 +193,127 @@ public class OrderManageImpl implements OrderManage {
         DateTime now = new DateTime();
 
 
-        if(serviceStartTime.getMillis() - 2*60*60*1000 <= now.getMillis()){
-            if(orderCancelType.getValue() != OrderCancelType.REFUND_PARTIAL.getValue())
-            return buildResponse(2,"订单取消超时");
+        if (serviceStartTime.getMillis() - 2 * 60 * 60 * 1000 <= now.getMillis()) {
+            if (orderCancelType.getValue() != OrderCancelType.REFUND_PARTIAL.getValue())
+                return buildResponse(2, "订单取消超时");
         }
 
         String result = null;
 
-        switch (orderCancelType){
-            case NON_PAYMENT_CONSUMER:break;
-            case PAYMENT_CONSUMER:break;
-            case PAYMENT_MERCHANT:break;
-            case PAYMENT_OUT_TIME:break;
-            case MERCHANT_OUT_TIME:break;
-            case SYS_INTERVERNE:break;
-            case REFUND_PARTIAL:break;
+        switch (orderCancelType) {
+            case NON_PAYMENT_CONSUMER:
+                result = NonPaymentCancel(order, orderDetailVo);
+                break;
+            case PAYMENT_CONSUMER:
+                result = PaymentCancel(order, orderDetailVo);
+                break;
+            case PAYMENT_MERCHANT:
+                result = MerchantCancel(order, orderDetailVo);
+                break;
+            case PAYMENT_OUT_TIME:
+                result = OutOfTimeCancel(order, orderDetailVo);
+                break;
+            case MERCHANT_OUT_TIME:
+                result = MerchantOutOfTimeCancel(order, orderDetailVo);
+                break;
+            case SYS_INTERVERNE:
+                result = PhpCloseCancel(order, orderDetailVo);
+                break;
+            case REFUND_PARTIAL:
+                result = RefundPartial(order, orderDetailVo);
+                break;
         }
 
 
         return result;
     }
 
-    private String NonPaymentCancel(Order order , OrderDetailVo orderDetailVo){
+    private String NonPaymentCancel(Order order, OrderDetailVo orderDetailVo) {
 
-        if(order.getOrderStatus()!= OrderStatusEnum.OrderUnpaid.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderUnpaid.getValue()){
-            return buildResponse(1,"订单状态不为"+OrderStatusEnum.OrderUnpaid.getName());
+        if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnpaid.getValue()) {
+            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
 
         //1.取消第三方订单
 
         //2.调用dubbo接口取消未支付订单
-        if(orderDubboService.cancelOrderByUser(order.getUserId(),order.getOrderId())){
-            return buildResponse(0,"取消订单成功");
-        }else {
-            return buildResponse(1,"取消订单失败");
+        if (orderDubboService.cancelOrderByUser(order.getUserId(), order.getOrderId())) {
+            return buildResponse(0, "取消订单成功");
+        } else {
+            return buildResponse(1, "取消订单失败");
         }
     }
 
-    private String PaymentCancel(Order order , OrderDetailVo orderDetailVo){
+    private String PaymentCancel(Order order, OrderDetailVo orderDetailVo) {
 
-        if(order.getOrderStatus()!= OrderStatusEnum.OrderDistribute.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderDistribute.getValue()){
-            return buildResponse(1,"订单状态不为"+OrderStatusEnum.OrderDistribute.getName());
+        if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderDistribute.getValue()) {
+            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderDistribute.getName());
         }
 
         //1.取消第三方订单
 
         //2.调用dubbo接口取消未支付订单
-        if(orderDubboService.userRefund(order.getUserId(), order.getOrderId())){
-            return buildResponse(0,"取消订单成功");
-        }else {
-            return buildResponse(1,"取消订单失败");
+        if (orderDubboService.userRefund(order.getUserId(), order.getOrderId())) {
+            return buildResponse(0, "取消订单成功");
+        } else {
+            return buildResponse(1, "取消订单失败");
         }
     }
 
-    private String MerchantCancel(Order order , OrderDetailVo orderDetailVo){
-        if(order.getOrderStatus()!= OrderStatusEnum.OrderUnConfirm.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderUnConfirm.getValue()){
-            return buildResponse(1,"订单状态不为"+OrderStatusEnum.OrderUnConfirm.getName());
+    private String MerchantCancel(Order order, OrderDetailVo orderDetailVo) {
+        if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
+            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
 
         long merchantCode = 0l;
         //2.调用dubbo接口取消未支付订单
-        if(orderDubboService.merchantCancel(order.getOrderId(), merchantCode, order.getUserId())){
-            return buildResponse(0,"取消订单成功");
-        }else {
-            return buildResponse(1,"取消订单失败");
+        if (orderDubboService.merchantCancel(order.getOrderId(), merchantCode, order.getUserId())) {
+            return buildResponse(0, "取消订单成功");
+        } else {
+            return buildResponse(1, "取消订单失败");
         }
     }
 
-    private String OutOfTimeCancel(Order order , OrderDetailVo orderDetailVo){
-        if(order.getOrderStatus()!= OrderStatusEnum.OrderUnpaid.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderUnpaid.getValue()){
-            return buildResponse(1,"订单状态不为"+OrderStatusEnum.OrderUnpaid.getName());
-        }
-        //1.取消第三方订单
-
-        //2.更新订单表
-        return buildResponse(0,"取消订单成功");
-    }
-
-    private String MerchantOutOfTimeCancel(Order order , OrderDetailVo orderDetailVo){
-        if(order.getOrderStatus()!= OrderStatusEnum.OrderUnConfirm.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderUnConfirm.getValue()){
-            return buildResponse(1,"订单状态不为"+OrderStatusEnum.OrderUnConfirm.getName());
+    private String OutOfTimeCancel(Order order, OrderDetailVo orderDetailVo) {
+        if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnpaid.getValue()) {
+            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
         //1.取消第三方订单
 
         //2.更新订单表
-        return buildResponse(0,"取消订单成功");
+        return buildResponse(0, "取消订单成功");
     }
 
-    private String PhpCloseCancel(Order order , OrderDetailVo orderDetailVo){
+    private String MerchantOutOfTimeCancel(Order order, OrderDetailVo orderDetailVo) {
+        if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
+            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
+        }
+        //1.取消第三方订单
+
+        //2.更新订单表
+        return buildResponse(0, "取消订单成功");
+    }
+
+    private String PhpCloseCancel(Order order, OrderDetailVo orderDetailVo) {
 
         //1.取消第三方订单
 
         //2.更新订单表
-        return buildResponse(0,"取消订单成功");
+        return buildResponse(0, "取消订单成功");
     }
 
-    private String RefundPartial(Order order , OrderDetailVo orderDetailVo){
-        if(order.getOrderStatus()!= OrderStatusEnum.OrderDistribute.getValue()||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderDistribute.getValue() ||
-                order.getOrderStatus()!= OrderStatusEnum.OrderUnConfirm.getValue()||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus())!= OrderStatusEnum.OrderUnConfirm.getValue()){
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName()+"或" + OrderStatusEnum.OrderDistribute.getName());
+    private String RefundPartial(Order order, OrderDetailVo orderDetailVo) {
+        if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderDistribute.getValue() ||
+                order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
+                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
+            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName() + "或" + OrderStatusEnum.OrderDistribute.getName());
         }
 
         //1.取消第三方订单
@@ -308,25 +322,18 @@ public class OrderManageImpl implements OrderManage {
         long refundMoney_l = 0l;
         long settlementMoney_l = 0l;
         //2.调用部分退款接口
-        if(orderDubboService.partialRefund(order.getOrderId(), order.getUserId(), refundMoney_l,
+        if (orderDubboService.partialRefund(order.getOrderId(), order.getUserId(), refundMoney_l,
                 settlementMoney_l, SettleMethodEnum.UnSettle, merchantCode, "上门服务OPS部分退款",
-                "{}", 111112, UserTypeEnum.ShihuiApp, "homeservice@17shihui.com")){
-            return buildResponse(0,"取消订单成功");
-        }else {
-            return buildResponse(1,"取消订单失败");
+                "{}", 111112, UserTypeEnum.ShihuiApp, "homeservice@17shihui.com")) {
+            return buildResponse(0, "取消订单成功");
+        } else {
+            return buildResponse(1, "取消订单失败");
         }
     }
 
-    public String buildResponse(int status,String msg){
-        return JSONObject.toJSONString(new SimpleResult(status,msg));
+    public String buildResponse(int status, String msg) {
+        return JSONObject.toJSONString(new SimpleResult(status, msg));
     }
-
-
-
-
-
-
-
 
 
 }
