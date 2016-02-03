@@ -11,6 +11,8 @@ import com.shihui.api.oms.sale.model.OrderPaymentMapping;
 import com.shihui.api.oms.sale.model.SimpleResult;
 import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
 import com.shihui.api.payment.model.Payment;
+import com.shihui.openpf.common.dubbo.api.MerchantManage;
+import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.ContactService;
@@ -47,6 +49,7 @@ public class OrderManageImpl implements OrderManage {
     ContactService contactService;
 
     @Resource
+    MerchantManage merchantManage;
 
 
     /**
@@ -268,8 +271,8 @@ public class OrderManageImpl implements OrderManage {
             return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
-
-        long merchantCode = 0l;
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        long merchantCode = merchant.getMerchantCode();
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.merchantCancel(order.getOrderId(), merchantCode, order.getUserId())) {
             return buildResponse(0, "取消订单成功");
@@ -317,8 +320,9 @@ public class OrderManageImpl implements OrderManage {
         }
 
         //1.取消第三方订单
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
 
-        long merchantCode = 0l;
+        long merchantCode = merchant.getMerchantCode();
         long refundMoney_l = 0l;
         long settlementMoney_l = 0l;
         //2.调用部分退款接口
