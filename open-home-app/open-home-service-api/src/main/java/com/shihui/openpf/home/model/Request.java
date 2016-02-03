@@ -15,13 +15,13 @@ public class Request implements Serializable {
 
     @Id
     @Column(name="request_id")
-    private long requestId;
+    private String requestId;
 
     @Column(name="order_id")
-    private long orderId;
+    private Long orderId;
 
     @Column(name="merchant_id")
-    private Date merchantId;
+    private Integer merchantId;
 
     @Column(name="create_time")
     private Date createTime;
@@ -35,28 +35,27 @@ public class Request implements Serializable {
     @Column(name="service_id")
     private Integer serviceId;
 
-
-    public long getRequestId() {
+    public String getRequestId() {
         return requestId;
     }
 
-    public void setRequestId(long requestId) {
+    public void setRequestId(String requestId) {
         this.requestId = requestId;
     }
 
-    public long getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(long orderId) {
+    public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
 
-    public Date getMerchantId() {
+    public Integer getMerchantId() {
         return merchantId;
     }
 
-    public void setMerchantId(Date merchantId) {
+    public void setMerchantId(Integer merchantId) {
         this.merchantId = merchantId;
     }
 

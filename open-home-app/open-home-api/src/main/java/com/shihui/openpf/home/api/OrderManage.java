@@ -1,5 +1,6 @@
 package com.shihui.openpf.home.api;
 
+import com.shihui.openpf.home.model.OrderCancelType;
 import me.weimi.api.commons.context.RequestContext;
 import com.shihui.openpf.home.model.Order;
 
@@ -31,4 +32,12 @@ public interface OrderManage {
      * @return 返回订单详情
      */
     public String queryOrder(long orderId);
+
+    /**
+     * 取消订单
+     *
+     * @param orderId 订单ID
+     * @return 返回订单详情
+     */
+    public String cancelOrder(long orderId , OrderCancelType orderCancelType);
 }
