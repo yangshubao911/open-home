@@ -150,7 +150,7 @@ public abstract class AbstractDao<T> {
 				if (value != null) {
 					sql.append("`").append(fieldName).append("`,");
 					valueStr.append("?,");
-					valus.add(value);
+						valus.add(value);
 				}
 			}
 

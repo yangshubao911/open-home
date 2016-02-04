@@ -45,14 +45,14 @@ public interface OrderService {
 	 * @param order
 	 * @return 订单列表
 	 */
-	List<Order> queryOrderList(Order order, int page, int size);
+	List<Order> queryOrderList(Order order, Long startTime , Long endTime, int page, int size);
 
 	/**
 	 * 查询订单总数
 	 * @param order
 	 * @return 订单数
 	 */
-	int countQueryOrder(Order order);
+	int countQueryOrder(Order order, Long startTime , Long endTime);
 
 	/**
 	 * 根据条件分页查询订单

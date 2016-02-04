@@ -16,7 +16,8 @@ public enum OrderCancelType {
 	PAYMENT_MERCHANT(22, "商户取消已支付订单"),
 	PAYMENT_OUT_TIME(31, "支付超时-实惠"),
 	MERCHANT_OUT_TIME(32, "商户确认超时"),
-	SYS_INTERVERNE(41, "客服干预");
+	SYS_INTERVERNE(41, "客服干预"),
+	REFUND_PARTIAL (51, "部分退款");
 
 	private int value;
 	private String comment;

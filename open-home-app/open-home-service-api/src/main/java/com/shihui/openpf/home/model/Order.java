@@ -62,7 +62,7 @@ public class Order implements Serializable {
 	private Date updateTime;
 
 	@Column(name="user_id")
-	private int userId;
+	private long userId;
 
 	@Column(name="service_id")
 	private int service_id;
@@ -196,11 +196,11 @@ public class Order implements Serializable {
 		this.updateTime = updateTime;
 	}
 
-	public int getUserId() {
-		return this.userId;
+	public long getUserId() {
+		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 

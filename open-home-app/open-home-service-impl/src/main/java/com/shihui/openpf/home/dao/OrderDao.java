@@ -1,12 +1,14 @@
 package com.shihui.openpf.home.dao;
 
 import com.shihui.openpf.home.model.Order;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ import java.util.List;
 @Repository
 public class OrderDao extends AbstractDao<Order> {
 
-    public List<Order> queryOrder(Order order , int page , int size) {
+    public List<Order> queryOrder(Order order , Long startTime, Long endTime, int page , int size) {
         StringBuilder sql = new StringBuilder("select * from home_order where 1 = 1 ");
         Field[] fields = Order.class.getDeclaredFields();
         try {
@@ -37,6 +39,15 @@ public class OrderDao extends AbstractDao<Order> {
                 valus.add(value);
 
             }
+            if(startTime!=null) {
+                sql.append("and create_time >= ? ");
+                valus.add(new Date(startTime));
+            }
+            if(endTime!=null) {
+                sql.append("and create_time <= ? ");
+                valus.add(new Date(endTime));
+            }
+
             sql.append("limit ").append(page*size).append(",").append(size);
             return super.queryForList(sql.toString(), valus.toArray(), Order.class);
         } catch (Exception e) {
@@ -44,7 +55,7 @@ public class OrderDao extends AbstractDao<Order> {
         return null;
     }
 
-    public int countQueryOrder(Order order) {
+    public int countQueryOrder(Order order, Long startTime, Long endTime) {
         StringBuilder sql = new StringBuilder("select * from home_order where 1 = 1 ");
         Field[] fields = Order.class.getDeclaredFields();
         try {
@@ -65,7 +76,15 @@ public class OrderDao extends AbstractDao<Order> {
                 sql.append("and ").append(fieldName).append(" = ? ");
                 valus.add(value);
             }
-            return jdbcTemplate.queryForInt(sql.toString());
+            if(startTime!=null) {
+                sql.append("and create_time >= ? ");
+                valus.add(new Date(startTime));
+            }
+            if(endTime!=null) {
+                sql.append("and create_time <= ? ");
+                valus.add(new Date(endTime));
+            }
+            return jdbcTemplate.queryForInt(sql.toString(),valus.toArray());
         } catch (Exception e) {
 
         }
