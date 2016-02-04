@@ -42,6 +42,7 @@ public class OrderResource {
                              @ParamDesc(desc = "城市id", isRequired = true) @QueryParam("city_id") int cityId) {
 
         //return orderManage.queryOrderList(rc,);
+    	return null;
 
     }
 

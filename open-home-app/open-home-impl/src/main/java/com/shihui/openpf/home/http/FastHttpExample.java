@@ -28,11 +28,11 @@ public class FastHttpExample {
                     .build();
             rs.add(FastHttpUtils.executeReturnStringHandler(client, get));
         }
-        System.out.println("takes -- " + (System.currentTimeMillis() - s1));
+       
         for (int i = 0; i < rs.size(); i++) {
             System.out.println(rs.get(i).get());
         }
-
+        System.out.println("takes -- " + (System.currentTimeMillis() - s1));
         /**
          * example code FastHttpPost 2
          */

@@ -80,7 +80,7 @@ public final class FastHttpUtils {
 		try {
 			executeHttpGetReturnString(client, httpGet, FastHttpUtils.FASTHTTP_DEFAULT_ENCODE, callbackHandler, false);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return callbackHandler;// 异步回调得到结果
 	}
@@ -169,7 +169,7 @@ public final class FastHttpUtils {
 			executeHttpPostReturnString(client, httpPost, null, FastHttpUtils.FASTHTTP_DEFAULT_ENCODE, callbackHandler,
 					false);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return callbackHandler.get();
 	}
@@ -188,7 +188,7 @@ public final class FastHttpUtils {
 			executeHttpPostReturnString(client, httpPost, null, FastHttpUtils.FASTHTTP_DEFAULT_ENCODE, callbackHandler,
 					false);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return callbackHandler;
 	}
@@ -207,7 +207,7 @@ public final class FastHttpUtils {
 			executeHttpPostReturnString(client, httpPost, params, FastHttpUtils.FASTHTTP_DEFAULT_ENCODE,
 					callbackHandler, false);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return callbackHandler;
 	}
@@ -228,7 +228,7 @@ public final class FastHttpUtils {
 			executeHttpPostReturnString(client, httpPost, params, FastHttpUtils.FASTHTTP_DEFAULT_ENCODE,
 					callbackHandler, false);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return callbackHandler.get();
 	}
@@ -402,7 +402,7 @@ public final class FastHttpUtils {
 		try {
 			client.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -5,6 +5,8 @@ package com.shihui.openpf.home.model;
 
 import java.io.Serializable;
 
+import com.shihui.openpf.common.model.Merchant;
+
 /**
  * @author zhouqisheng
  *
@@ -13,10 +15,19 @@ import java.io.Serializable;
 public class HomeResponse implements Serializable {
 
 	private static final long serialVersionUID = 2801145761444410744L;
-
+    
+	private Merchant merchant;
 	private int code;// 查询结果
 	private String msg;// 结果描述
 	private String result;// 查询内容
+
+	public Merchant getMerchant() {
+		return merchant;
+	}
+
+	public void setMerchant(Merchant merchant) {
+		this.merchant = merchant;
+	}
 
 	public int getCode() {
 		return code;
