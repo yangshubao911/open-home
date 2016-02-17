@@ -15,14 +15,14 @@ import com.shihui.openpf.home.model.OrderInfo;
 public interface HomeServProviderService {
 	
 	/**
-	 * 获取服务商针对某个地域提供服务时间
 	 * @param serviceType 上门服务业务类型
+	 * @param goodsId 商品id
 	 * @param gid 小区id 
 	 * @param longitude 高德坐标经度
 	 * @param latitude 高德坐标纬度
 	 * @return
 	 */
-	public HomeResponse getServiceAvailableTime(int serviceType, int gid, String longitude, String latitude);
+	public HomeResponse getServiceAvailableTime(int serviceType, int goodsId, int gid, String longitude, String latitude);
 	
 	/**
 	 * 创建订单

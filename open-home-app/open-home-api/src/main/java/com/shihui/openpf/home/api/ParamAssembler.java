@@ -19,6 +19,12 @@ import com.shihui.openpf.home.model.OrderInfo;
 public interface ParamAssembler {
 	
 	/**
+	 * 获得适配器名称，一对参数组转器与结果解析器返回值必须相同
+	 * @return
+	 */
+	public String getAdapterName();
+	
+	/**
 	 * 获取服务商针对某个地域提供服务时间
 	 * @param merchant 商户标识，开放平台为商户分配
 	 * @param serviceType 上门服务业务类型
@@ -27,7 +33,7 @@ public interface ParamAssembler {
 	 * @param latitude 高德坐标纬度
 	 * @return
 	 */
-	Map<String, Object> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId, String longitude, String latitude);
+	Map<String, String> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId, String longitude, String latitude);
 	
 	/**
 	 * 创建订单
@@ -36,7 +42,7 @@ public interface ParamAssembler {
 	 * @param orderInfo 订单信息
 	 * @return
 	 */
-	Map<String, Object> createOrderParam(Merchant merchant, int serviceType, OrderInfo orderInfo);
+	Map<String, String> createOrderParam(Merchant merchant, int serviceType, OrderInfo orderInfo);
 	
 	/**
 	 * 取消订单接口
@@ -45,7 +51,7 @@ public interface ParamAssembler {
 	 * @param orderId 订单ID
 	 * @return
 	 */
-	Map<String, Object> cancelOrderParam(Merchant merchant, int serviceType, String orderId);
+	Map<String, String> cancelOrderParam(Merchant merchant, int serviceType, String orderId);
 	
 	/**
 	 * 订单支付成功通知
@@ -54,7 +60,7 @@ public interface ParamAssembler {
 	 * @param orderId 订单ID
 	 * @return
 	 */
-	Map<String, Object> payNoticeParam(Merchant merchant, int serviceType, String orderId);
+	Map<String, String> payNoticeParam(Merchant merchant, int serviceType, String orderId);
 	
 	/**
 	 * 评价订单接口
@@ -65,7 +71,7 @@ public interface ParamAssembler {
 	 * @param comments 评价内容
 	 * @return
 	 */
-	Map<String, Object> evaluateOrderParam(Merchant merchant, int serviceType, String orderId, int score, String comments);
+	Map<String, String> evaluateOrderParam(Merchant merchant, int serviceType, String orderId, int score, String comments);
 
 
 }

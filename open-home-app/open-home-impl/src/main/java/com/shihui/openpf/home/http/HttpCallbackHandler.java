@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpRequestBase;
  * 回调处理基础功能类
  *
  * @author SongJian
+ * @param <T>
  *
  * @param 返回结果类型
  */

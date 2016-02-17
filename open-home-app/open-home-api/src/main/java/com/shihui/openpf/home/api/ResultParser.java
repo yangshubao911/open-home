@@ -16,6 +16,12 @@ import com.shihui.openpf.home.model.HomeResponse;
 public interface ResultParser {
 	
 	/**
+	 * 获得适配器名称，一对参数组转器与结果解析器返回值必须相同
+	 * @return
+	 */
+	public String getAdapterName();
+	
+	/**
 	 * 获取服务商针对某个地域提供服务时间
 	 * @param key 商户标识，开放平台为商户分配
 	 * @param serviceType 上门服务业务类型
