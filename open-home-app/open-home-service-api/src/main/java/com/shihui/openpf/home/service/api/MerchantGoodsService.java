@@ -28,7 +28,7 @@ public interface MerchantGoodsService {
      * @param merchantGoods 商户业务商品绑定信息
      * @return 创建结果
      */
-    public boolean createMerchantGoods(MerchantGoods merchantGoods);
+    public String createMerchantGoods(MerchantGoods merchantGoods);
 
 
 

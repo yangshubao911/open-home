@@ -49,7 +49,11 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
      * @return 创建结果
      */
     @Override
-    public boolean createMerchantGoods(MerchantGoods merchantGoods) {
-        return merchantGoodsDao.insert(merchantGoods)>0;
+    public String createMerchantGoods(MerchantGoods merchantGoods) {
+        if(merchantGoodsDao.insert(merchantGoods)>0){
+            return JSON.toJSONString(new SimpleResponse(0, "创建成功"));
+        }else {
+            return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
+        }
     }
 }
