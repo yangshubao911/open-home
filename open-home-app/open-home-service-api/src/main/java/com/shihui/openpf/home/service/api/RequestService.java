@@ -28,4 +28,10 @@ public interface RequestService {
      */
     public Request queryById(Request request);
 
+    /**
+     * 更新第三方订单状态
+     * @param orderId 订单Id
+     * @return 更新结果
+     */
+    public Request queryOrderRequest(long orderId);
 }

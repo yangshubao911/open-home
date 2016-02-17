@@ -13,18 +13,18 @@ import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
 import com.shihui.api.payment.model.Payment;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.model.Merchant;
+import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.*;
-import com.shihui.openpf.home.service.api.ContactService;
-import com.shihui.openpf.home.service.api.GoodsService;
-import com.shihui.openpf.home.service.api.OrderDubboService;
-import com.shihui.openpf.home.service.api.OrderService;
+import com.shihui.openpf.home.service.api.*;
 import com.shihui.openpf.home.util.SimpleResponse;
 import me.weimi.api.commons.context.RequestContext;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -51,7 +51,13 @@ public class OrderManageImpl implements OrderManage {
     @Resource
     MerchantManage merchantManage;
 
+    @Resource
+    HomeServProviderService homeServProviderService;
 
+    @Resource
+    RequestService requestService;
+
+    private Logger log = LoggerFactory.getLogger(getClass());
     /**
      * 客户端创建订单
      *
@@ -175,6 +181,7 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String cancelOrder(long orderId, OrderCancelType orderCancelType) {
+        if(orderCancelType==null) return buildResponse(1, "取消订单类型错误");
         Order order = orderService.queryOrder(orderId);
         OrderDetailVo orderDetailVo = orderDubboService.queryOrderDetail(orderId);
         if (order == null || orderDetailVo == null)
@@ -239,7 +246,10 @@ public class OrderManageImpl implements OrderManage {
         }
 
         //1.取消第三方订单
-
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.cancelOrderByUser(order.getUserId(), order.getOrderId())) {
             return buildResponse(0, "取消订单成功");
@@ -256,7 +266,10 @@ public class OrderManageImpl implements OrderManage {
         }
 
         //1.取消第三方订单
-
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.userRefund(order.getUserId(), order.getOrderId())) {
             return buildResponse(0, "取消订单成功");
@@ -272,6 +285,9 @@ public class OrderManageImpl implements OrderManage {
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         long merchantCode = merchant.getMerchantCode();
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.merchantCancel(order.getOrderId(), merchantCode, order.getUserId())) {
@@ -287,7 +303,10 @@ public class OrderManageImpl implements OrderManage {
             return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
         //1.取消第三方订单
-
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         //2.更新订单表
         return buildResponse(0, "取消订单成功");
     }
@@ -298,7 +317,10 @@ public class OrderManageImpl implements OrderManage {
             return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
-
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         //2.更新订单表
         return buildResponse(0, "取消订单成功");
     }
@@ -306,7 +328,10 @@ public class OrderManageImpl implements OrderManage {
     private String PhpCloseCancel(Order order, OrderDetailVo orderDetailVo) {
 
         //1.取消第三方订单
-
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         //2.更新订单表
         return buildResponse(0, "取消订单成功");
     }
@@ -321,7 +346,9 @@ public class OrderManageImpl implements OrderManage {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-
+        if(!cancelThirdPartOrder(order,merchant)){
+            return buildResponse(1, "取消第三方订单失败");
+        }
         long merchantCode = merchant.getMerchantCode();
         long refundMoney_l = 0l;
         long settlementMoney_l = 0l;
@@ -332,6 +359,31 @@ public class OrderManageImpl implements OrderManage {
             return buildResponse(0, "取消订单成功");
         } else {
             return buildResponse(1, "取消订单失败");
+        }
+    }
+
+    public boolean cancelThirdPartOrder(Order order, Merchant merchant) {
+
+        Request request = requestService.queryOrderRequest(order.getOrderId());
+        if (request == null) {
+            log.info("cancelThirdPartOrder--orderId = {} not found request!!!", order.getOrderId());
+            return false;
+        }
+        HomeResponse homeResponse = homeServProviderService.cancelOrder(merchant, order.getService_id(), request.getRequestId());
+        log.info("cancelThirdPartOrder--orderId = {} cancel request code = {} and msg = {}!!!",
+                order.getOrderId(), homeResponse.getCode(), homeResponse.getMsg());
+
+        if (homeResponse.getCode() == 0) {
+            Request new_request = new Request();
+            request.setRequestId(request.getRequestId());
+            request.setRequestStatus(-1);
+            if(requestService.updateStatus(request)) {
+                return true;
+            }else {
+                return false;
+            }
+        }else {
+            return false;
         }
     }
 

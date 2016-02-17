@@ -70,4 +70,10 @@ public class RequestServiceImpl implements RequestService {
     public Request queryById(Request request) {
         return requestDao.findById(request);
     }
+
+    @Override
+    public Request queryOrderRequest(long orderId) {
+        String sql = "select　* from request where order_id = ? and request_status != -1";
+        return requestDao.queryForObject(sql,new Object[]{orderId});
+    }
 }

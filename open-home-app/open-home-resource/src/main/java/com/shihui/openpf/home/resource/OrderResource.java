@@ -5,6 +5,7 @@ package com.shihui.openpf.home.resource;
 
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Order;
+import com.shihui.openpf.home.model.OrderCancelType;
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
@@ -69,5 +70,24 @@ public class OrderResource {
     ) {
         return orderManage.queryOrder(orderId);
     }
+
+    @GET
+    @Path("/cancel")
+    @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    public String cancel(
+            @Context RequestContext rc,
+            @ParamDesc(isRequired = true, desc = "订单ID") @QueryParam("orderId") long orderId,
+            @ParamDesc(isRequired = true, desc = "取消订单类型") @QueryParam("cancelType") String cancelType
+    ) {
+        OrderCancelType orderCancelType = null;
+        try {
+            orderCancelType = OrderCancelType.valueOf("REFUND_PARTIAL");
+        } catch (Exception e) {
+
+        }
+        return orderManage.cancelOrder(orderId, orderCancelType);
+
+    }
+
 
 }
