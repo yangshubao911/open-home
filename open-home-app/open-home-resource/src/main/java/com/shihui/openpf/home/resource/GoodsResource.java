@@ -46,7 +46,7 @@ public class GoodsResource {
 	        @ParamDesc(desc = "城市名称", isRequired = true) @FormParam("city_name") String city_name,
 	        @ParamDesc(desc = "商品描述", isRequired = true) @FormParam("goods_desc") String goods_desc,
 	        @ParamDesc(desc = "商品名称", isRequired = true) @FormParam("goods_name") String goods_name,
-	        @ParamDesc(desc = "商品图片", isRequired = true) @FormParam("img_url") String img_url,
+	        @ParamDesc(desc = "商品图片", isRequired = true) @FormParam("image_id") String image_id,
 	        @ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = true) @FormParam("sh_off_set") String sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = true) @FormParam("price") String price) {
@@ -56,7 +56,7 @@ public class GoodsResource {
 		goods.setCityName(city_name);
 		goods.setGoodsDesc(goods_desc);
 		goods.setGoodsName(goods_name);
-		goods.setImgUrl(img_url);
+		goods.setImgUrl(image_id);
 		goods.setServiceId(service_id);
 		goods.setShOffSet(sh_off_set);
 		goods.setPrice(price);
@@ -72,14 +72,14 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品描述", isRequired = false) @FormParam("goods_desc") String goods_desc,
 	        @ParamDesc(desc = "商品状态", isRequired = false) @FormParam("goods_status") Integer goods_status,
 	        @ParamDesc(desc = "商品名称", isRequired = false) @FormParam("goods_name") String goods_name,
-	        @ParamDesc(desc = "商品图片", isRequired = false) @FormParam("img_url") String img_url,
+	        @ParamDesc(desc = "商品图片", isRequired = false) @FormParam("image_id") String image_id,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = false) @FormParam("sh_off_set") String sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = false) @FormParam("price") String price) {
 		Goods goods = new Goods();
 		goods.setGoodsId(goods_id);
 		goods.setGoodsDesc(goods_desc);
 		goods.setGoodsName(goods_name);
-		goods.setImgUrl(img_url);
+		goods.setImgUrl(image_id);
 		goods.setShOffSet(sh_off_set);
 		goods.setPrice(price);
 		goods.setGoodsStatus(goods_status);

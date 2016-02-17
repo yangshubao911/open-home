@@ -15,14 +15,11 @@ public class MerchantCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @JSONField(name="m_s_c_id")
-    @Column(name="m_s_c_id")
-    private Integer m_s_c_id;
-
     @JSONField(name="merchant_id")
     @Column(name="merchant_id")
     private Integer merchantId;
 
+    @Id
     @JSONField(name="category_id")
     @Column(name="category_id")
     private Integer categoryId;
@@ -31,21 +28,12 @@ public class MerchantCategory implements Serializable {
     @Column(name="m_s_c_status")
     private Integer m_s_c_status;
 
+    @Id
     @JSONField(name="service_id")
     @Column(name="service_id")
     private Integer serviceId;
 
-    @JSONField(name="m_s_id")
-    @Column(name="m_s_id")
-    private Integer m_s_id;
 
-    public Integer getM_s_c_id() {
-        return m_s_c_id;
-    }
-
-    public void setM_s_c_id(Integer m_s_c_id) {
-        this.m_s_c_id = m_s_c_id;
-    }
 
     public Integer getMerchantId() {
         return merchantId;
@@ -80,12 +68,4 @@ public class MerchantCategory implements Serializable {
     }
 
 
-
-    public Integer getM_s_id() {
-        return m_s_id;
-    }
-
-    public void setM_s_id(Integer m_s_id) {
-        this.m_s_id = m_s_id;
-    }
 }

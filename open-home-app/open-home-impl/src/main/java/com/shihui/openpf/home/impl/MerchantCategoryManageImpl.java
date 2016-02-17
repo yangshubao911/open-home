@@ -8,8 +8,8 @@ import com.shihui.openpf.home.api.MerchantCategoryManage;
 public class MerchantCategoryManageImpl implements MerchantCategoryManage {
 
 
-
-
-
-
+    @Override
+    public boolean createCategory() {
+        return false;
+    }
 }

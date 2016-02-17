@@ -23,4 +23,12 @@ public interface MerchantCategoryService {
      */
     public String updateCategory(MerchantCategory merchantCategory);
 
+    /**
+     * 创建商户业务分类
+     * @param merchantCategory 创建商户业务分类信息
+     * @return 创建结果
+     */
+    public String create(MerchantCategory merchantCategory);
+
+
 }

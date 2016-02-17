@@ -31,10 +31,11 @@ public class MerchantCategoryResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String list(
             @Context RequestContext rc,
-            @ParamDesc(desc = "商户业务关联ID", isRequired = true) @QueryParam("m_s_id") int m_s_id
+            @ParamDesc(desc = "业务id", isRequired = true) @QueryParam("service_id") int service_id,
+            @ParamDesc(desc = "商户id", isRequired = true) @QueryParam("merchant_id") int merchant_id
     ){
         MerchantCategory merchantCategory = new MerchantCategory();
-        merchantCategory.setM_s_c_id(m_s_id);
+        merchantCategory.setMerchantId(merchant_id);
         return JSON.toJSONString(merchantCategoryService.queryCategoryList(merchantCategory));
     }
 
@@ -45,11 +46,38 @@ public class MerchantCategoryResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String update(
             @Context RequestContext rc,
-            @ParamDesc(desc = "服务类型状态", isRequired = false) @FormParam("status") Integer status
+            @ParamDesc(desc = "服务类型状态", isRequired = true) @FormParam("status") Integer status,
+            @ParamDesc(desc = "商户id", isRequired = true) @FormParam("merchant_id") Integer merchant_id,
+            @ParamDesc(desc = "业务id", isRequired = true) @FormParam("service_id") Integer service_id,
+            @ParamDesc(desc = "商品分类id", isRequired = true) @FormParam("category_id") Integer category_id
+
     ){
        MerchantCategory merchantCategory = new MerchantCategory();
+        merchantCategory.setMerchantId(merchant_id);
+        merchantCategory.setServiceId(service_id);
+        merchantCategory.setCategoryId(category_id);
         merchantCategory.setM_s_c_status(status);
         return merchantCategoryService.updateCategory(merchantCategory);
+    }
+
+    @Path("/create")
+    @POST
+    @BaseInfo(desc = "更新商品分类", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String create(
+            @Context RequestContext rc,
+            @ParamDesc(desc = "服务类型状态", isRequired = true) @FormParam("status") Integer status,
+            @ParamDesc(desc = "商户id", isRequired = true) @FormParam("merchant_id") Integer merchant_id,
+            @ParamDesc(desc = "业务id", isRequired = true) @FormParam("service_id") Integer service_id,
+            @ParamDesc(desc = "商品分类id", isRequired = true) @FormParam("category_id") Integer category_id
+
+    ){
+        MerchantCategory merchantCategory = new MerchantCategory();
+        merchantCategory.setMerchantId(merchant_id);
+        merchantCategory.setServiceId(service_id);
+        merchantCategory.setCategoryId(category_id);
+        merchantCategory.setM_s_c_status(status);
+        return merchantCategoryService.create(merchantCategory);
     }
 
 }
