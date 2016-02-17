@@ -377,7 +377,7 @@ public class OrderManageImpl implements OrderManage {
             Request new_request = new Request();
             request.setRequestId(request.getRequestId());
             request.setRequestStatus(-1);
-            if(requestService.updateStatus(request)) {
+            if(requestService.updateStatus(new_request)) {
                 return true;
             }else {
                 return false;
