@@ -111,4 +111,22 @@ public class OrderServiceImpl implements OrderService {
     public Order queryOrder(long orderId) {
         return orderDao.queryOrder(orderId);
     }
+
+    /**
+     * 查询异常订单总数
+     * @return 订单数
+     */
+    @Override
+    public int countUnusual() {
+        return orderDao.countUnusual();
+    }
+
+    /**
+     * 查询异常订单
+     * @return 订单列表
+     */
+    @Override
+    public List<Order> queryUnusual() {
+        return orderDao.queryUnusual();
+    }
 }

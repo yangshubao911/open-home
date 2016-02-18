@@ -60,6 +60,18 @@ public interface OrderService {
 	 * @return 订单列表
 	 */
 	Order queryOrder(long orderId);
-	
+
+	/**
+	 * 查询异常订单总数
+	 * @return 订单数
+	 */
+	int countUnusual();
+
+	/**
+	 * 查询异常订单
+	 * @param orderId    订单Id
+	 * @return 订单列表
+	 */
+	List<Order>  queryUnusual();
 
 }

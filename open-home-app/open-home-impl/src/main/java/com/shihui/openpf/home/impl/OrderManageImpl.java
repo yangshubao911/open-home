@@ -17,7 +17,6 @@ import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
-import com.shihui.openpf.home.util.SimpleResponse;
 import me.weimi.api.commons.context.RequestContext;
 
 import org.joda.time.DateTime;
@@ -56,6 +55,9 @@ public class OrderManageImpl implements OrderManage {
 
     @Resource
     RequestService requestService;
+
+    @Resource
+    MerchantGoodsService merchantGoodsService;
 
     private Logger log = LoggerFactory.getLogger(getClass());
     /**
@@ -96,32 +98,42 @@ public class OrderManageImpl implements OrderManage {
         }
 
         for (Order order : orderList) {
-            JSONObject order_json = new JSONObject();
-            order_json.put("orderId", String.valueOf(order.getOrderId()));
-            order_json.put("userId", order.getUserId());
-            order_json.put("phone", order.getPhone());
-
-            Goods goods = goodsService.findById(order.getGoodsId());
-            order_json.put("price", goods.getPrice());
-            order_json.put("shOffset", goods.getShOffSet());
-            order_json.put("due", new BigDecimal(goods.getPrice()).
-                    subtract(new BigDecimal(goods.getShOffSet())).
-                    setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-
-            order_json.put("merchantId", order.getMerchantId());
-            Merchant merchant = merchantManage.getById(order.getMerchantId());
-            order_json.put("merchantName", merchant.getMerchantName());
-            //order_json.put("settlement", merchantGoods.getPrice());
-            DateTime dateTime = new DateTime(order.getCreateTime());
-            order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
-            order_json.put("pay", order.getPay());
-            order_json.put("status", order.getOrderStatus());
-            orders_json.add(order_json);
+            orders_json.add(buildOrderVo(order));
         }
         result.put("orders", orders_json);
         return result.toJSONString();
     }
 
+    public JSONObject buildOrderVo(Order order) {
+        JSONObject order_json = new JSONObject();
+        order_json.put("orderId", String.valueOf(order.getOrderId()));
+        order_json.put("userId", order.getUserId());
+        order_json.put("phone", order.getPhone());
+
+        Goods goods = goodsService.findById(order.getGoodsId());
+        order_json.put("price", goods.getPrice());
+        order_json.put("shOffset", goods.getShOffSet());
+        order_json.put("due", new BigDecimal(goods.getPrice()).
+                subtract(new BigDecimal(goods.getShOffSet())).
+                setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+
+        order_json.put("merchantId", order.getMerchantId());
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
+        order_json.put("merchantName", merchant.getMerchantName());
+
+        MerchantGoods merchantGoods = new MerchantGoods();
+        merchantGoods.setGoodsId(order.getGoodsId());
+        merchantGoods.setMerchantId(order.getMerchantId());
+        MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+
+        order_json.put("settlement", db_merchantGoods.getSettlement());
+        DateTime dateTime = new DateTime(order.getCreateTime());
+        order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
+        order_json.put("pay", order.getPay());
+        order_json.put("status", order.getOrderStatus());
+        order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
+        return order_json;
+    }
     /**
      * 查询订单详情
      *
@@ -163,13 +175,18 @@ public class OrderManageImpl implements OrderManage {
         result.put("merchantId", order.getMerchantId());
         result.put("merchantName", merchant.getMerchantName());
 
-        //  MerchantGoods merchantGoods = merchantGoodsService.queryProvider(order.getProviderid());
+        MerchantGoods merchantGoods = new MerchantGoods();
+        merchantGoods.setGoodsId(order.getGoodsId());
+        merchantGoods.setMerchantId(order.getMerchantId());
+        MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+
+        result.put("settlement", db_merchantGoods.getSettlement());
         BigDecimal originalPrice = new BigDecimal(order.getPay()).add(new BigDecimal(order.getShOffSet()));
         result.put("originalPrice", originalPrice.stripTrailingZeros().toPlainString());
         result.put("pay", order.getPay());
         result.put("shOffset", order.getShOffSet());
-        result.put("userStatus", order.getOrderStatus());
-        result.put("userStatusName", OrderStatusEnum.parse(order.getOrderStatus()));
+        result.put("status", order.getOrderStatus());
+        result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
 
         return result.toJSONString();
     }
@@ -246,9 +263,28 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String countunusual() {
+        int total = orderService.countUnusual();
+        JSONObject result = new JSONObject();
+        result.put("total",total);
+        return result.toJSONString();
 
-        return null;
+    }
 
+    /**
+     * 查询异常订单
+     * @return 订单列表
+     */
+    @Override
+    public String queryUnusual() {
+
+        List<Order> orders = orderService.queryUnusual();
+        JSONArray orders_json = new JSONArray();
+        for(Order order : orders){
+            orders_json.add(buildOrderVo(order));
+        }
+        JSONObject result = new JSONObject();
+        result.put("orders", orders_json);
+        return result.toJSONString();
     }
 
     private String NonPaymentCancel(Order order, OrderDetailVo orderDetailVo) {
@@ -346,7 +382,11 @@ public class OrderManageImpl implements OrderManage {
             return buildResponse(1, "取消第三方订单失败");
         }
         //2.更新订单表
-        return buildResponse(0, "取消订单成功");
+        boolean update = orderService.updateOrder(order.getOrderId(),OrderStatusEnum.OrderBackClose);
+        if(update)
+            return buildResponse(0, "取消订单成功");
+        else
+            return buildResponse(1, "取消订单失败");
     }
 
     private String RefundPartial(Order order, OrderDetailVo orderDetailVo) {

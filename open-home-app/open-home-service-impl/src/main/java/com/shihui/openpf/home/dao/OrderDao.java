@@ -1,5 +1,6 @@
 package com.shihui.openpf.home.dao;
 
+import com.shihui.api.common.model.OrderStatusEnum;
 import com.shihui.openpf.home.model.Order;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
@@ -84,7 +85,7 @@ public class OrderDao extends AbstractDao<Order> {
                 sql.append("and create_time <= ? ");
                 valus.add(new Date(endTime));
             }
-            return jdbcTemplate.queryForInt(sql.toString(),valus.toArray());
+            return jdbcTemplate.queryForInt(sql.toString(), valus.toArray());
         } catch (Exception e) {
 
         }
@@ -99,10 +100,31 @@ public class OrderDao extends AbstractDao<Order> {
     public Order queryOrder(long orderId){
         String sql = "select * from order where order_id = " + orderId;
         try {
-            return super.queryForObject(sql,Order.class);
+            return super.queryForObject(sql, Order.class);
         }catch (Exception e){
 
         }
         return  null;
     }
+
+    /**
+     * 查询异常订单数量
+     *
+     * @return 异常订单数量
+     */
+    public int countUnusual(){
+        String sql = "select count(*) from order where status = ?";
+        return super.queryCount(sql, OrderStatusEnum.OrderRefunding.getValue());
+    }
+
+    /**
+     * 查询异常订单数量
+     *
+     * @return 异常订单数量
+     */
+    public List<Order> queryUnusual(){
+        String sql = "select * from order where status = ?";
+        return super.queryForList(sql, OrderStatusEnum.OrderRefunding.getValue());
+    }
+
 }

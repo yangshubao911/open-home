@@ -92,12 +92,19 @@ public class OrderResource {
     @GET
     @Path("/unusualOrder/count")
     @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
-    public String export(
+    public String count(
             @Context RequestContext rc) {
-
-        return "";
-
+        return orderManage.countunusual();
     }
+
+    @POST
+    @Path("/unusualOrder/query")
+    @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    public String query(
+            @Context RequestContext rc) {
+        return orderManage.queryUnusual();
+    }
+
 
 
 }
