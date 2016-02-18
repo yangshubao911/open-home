@@ -40,4 +40,12 @@ public interface OrderManage {
      * @return 返回订单详情
      */
     public String cancelOrder(long orderId , OrderCancelType orderCancelType);
+
+
+    /**
+     * 查询异常订单
+     *
+     * @return 返回订单详情
+     */
+    public String countunusual();
 }

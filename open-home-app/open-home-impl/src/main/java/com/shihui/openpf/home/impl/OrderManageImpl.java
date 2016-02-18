@@ -109,8 +109,8 @@ public class OrderManageImpl implements OrderManage {
                     setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 
             order_json.put("merchantId", order.getMerchantId());
-
-            //order_json.put("merchantName", );
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            order_json.put("merchantName", merchant.getMerchantName());
             //order_json.put("settlement", merchantGoods.getPrice());
             DateTime dateTime = new DateTime(order.getCreateTime());
             order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
@@ -159,16 +159,17 @@ public class OrderManageImpl implements OrderManage {
         Goods goods = goodsService.findById(order.getGoodsId());
         result.put("price", goods.getPrice());
 
-        //Merchant merchant = rechargeMerchantService.queryMerchant(order.getMerchantid());
+        Merchant merchant = merchantManage.getById(order.getMerchantId());
         result.put("merchantId", order.getMerchantId());
-        // result.put("merchantName", merchant.getMechantname());
+        result.put("merchantName", merchant.getMerchantName());
 
         //  MerchantGoods merchantGoods = merchantGoodsService.queryProvider(order.getProviderid());
-//        result.put("originalPrice", produce.getDue());
+        BigDecimal originalPrice = new BigDecimal(order.getPay()).add(new BigDecimal(order.getShOffSet()));
+        result.put("originalPrice", originalPrice.stripTrailingZeros().toPlainString());
         result.put("pay", order.getPay());
         result.put("shOffset", order.getShOffSet());
         result.put("userStatus", order.getOrderStatus());
-        // result.put("userStatusName", order.getStatus().getName());
+        result.put("userStatusName", OrderStatusEnum.parse(order.getOrderStatus()));
 
         return result.toJSONString();
     }
@@ -236,6 +237,18 @@ public class OrderManageImpl implements OrderManage {
 
 
         return result;
+    }
+
+    /**
+     * 查询异常订单
+     *
+     * @return 返回订单详情
+     */
+    @Override
+    public String countunusual() {
+
+        return null;
+
     }
 
     private String NonPaymentCancel(Order order, OrderDetailVo orderDetailVo) {

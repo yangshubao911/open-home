@@ -17,6 +17,13 @@ public interface MerchantGoodsService {
     public List<MerchantGoods> queryMerchantGoodsList(MerchantGoods merchantGoods);
 
     /**
+     * 查询商户业务商品信息
+     * @param merchantGoods 商户商品信息
+     * @return 商户商品关联信息
+     */
+    public MerchantGoods queryMerchantGoods(MerchantGoods merchantGoods);
+
+    /**
      * 更新商户业务商品绑定信息
      * @param merchantGoods 商户业务商品绑定信息
      * @return 更新结果

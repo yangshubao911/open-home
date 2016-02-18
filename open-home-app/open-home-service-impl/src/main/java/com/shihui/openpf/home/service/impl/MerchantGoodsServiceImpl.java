@@ -30,6 +30,16 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
     }
 
     /**
+     * 查询商户业务商品信息
+     * @param merchantGoods 商户商品信息
+     * @return 商户商品关联信息
+     */
+    @Override
+    public MerchantGoods queryMerchantGoods(MerchantGoods merchantGoods) {
+        return merchantGoodsDao.findById(merchantGoods);
+    }
+
+    /**
      * 更新商户业务商品绑定信息
      * @param merchantGoods 商户业务商品绑定信息
      * @return 更新结果
