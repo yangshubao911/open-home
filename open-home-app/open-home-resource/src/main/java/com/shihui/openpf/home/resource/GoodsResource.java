@@ -3,6 +3,8 @@
  */
 package com.shihui.openpf.home.resource;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -49,7 +51,9 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品图片", isRequired = true) @FormParam("image_id") String image_id,
 	        @ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = true) @FormParam("sh_off_set") String sh_off_set,
-	        @ParamDesc(desc = "商品价格", isRequired = true) @FormParam("price") String price) {
+	        @ParamDesc(desc = "商品价格", isRequired = true) @FormParam("price") String price,
+	        @ParamDesc(desc = "副标题", isRequired = true) @FormParam("goods_subtitle") String goods_subtitle,
+	        @ParamDesc(desc = "使用须知", isRequired = true) @FormParam("attention") String attention) {
 		Goods goods = new Goods();
 		goods.setCategoryId(category_id);
 		goods.setCityId(city_id);
@@ -60,6 +64,8 @@ public class GoodsResource {
 		goods.setServiceId(service_id);
 		goods.setShOffSet(sh_off_set);
 		goods.setPrice(price);
+		goods.setAttention(attention);
+		goods.setGoodsSubtitle(goods_subtitle);
 		return goodsService.create(goods);
 	}
 
@@ -74,7 +80,9 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品名称", isRequired = false) @FormParam("goods_name") String goods_name,
 	        @ParamDesc(desc = "商品图片", isRequired = false) @FormParam("image_id") String image_id,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = false) @FormParam("sh_off_set") String sh_off_set,
-	        @ParamDesc(desc = "商品价格", isRequired = false) @FormParam("price") String price) {
+	        @ParamDesc(desc = "商品价格", isRequired = false) @FormParam("price") String price,
+	        @ParamDesc(desc = "副标题", isRequired = true) @FormParam("goods_subtitle") String goods_subtitle,
+	        @ParamDesc(desc = "使用须知", isRequired = true) @FormParam("attention") String attention) {
 		Goods goods = new Goods();
 		goods.setGoodsId(goods_id);
 		goods.setGoodsDesc(goods_desc);
@@ -83,6 +91,8 @@ public class GoodsResource {
 		goods.setShOffSet(sh_off_set);
 		goods.setPrice(price);
 		goods.setGoodsStatus(goods_status);
+		goods.setAttention(attention);
+		goods.setGoodsSubtitle(goods_subtitle);
 		return goodsService.update(goods);
 	}
 
@@ -103,6 +113,16 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品分类id", isRequired = true) @QueryParam("category_id") int categoryId,
 	        @ParamDesc(desc = "城市id", isRequired = true) @QueryParam("city_id") int cityId) {
 		return JSON.toJSONString(goodsService.findByCity(categoryId, cityId));
+	}
+	
+	@Path("/batchUpdate")
+	@POST
+	@BaseInfo(desc = "批量更新商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public String batchUpdate(@Context RequestContext rc,
+	        @ParamDesc(desc = "data", isRequired = true) @FormParam("data") String json) {
+		List<Goods> goodsList = JSON.parseArray(json, Goods.class);
+		return goodsService.batchUpdate(goodsList);
 	}
 
 }

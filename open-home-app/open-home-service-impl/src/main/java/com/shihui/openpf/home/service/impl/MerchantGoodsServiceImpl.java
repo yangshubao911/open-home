@@ -5,9 +5,14 @@ import com.shihui.openpf.home.dao.MerchantGoodsDao;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.service.api.MerchantGoodsService;
 import com.shihui.openpf.home.util.SimpleResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -15,7 +20,7 @@ import java.util.List;
  */
 @Service
 public class MerchantGoodsServiceImpl implements MerchantGoodsService{
-
+	private Logger log = LoggerFactory.getLogger(getClass());
     @Resource
     MerchantGoodsDao merchantGoodsDao;
 
@@ -66,4 +71,26 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
             return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
         }
     }
+
+	@Override
+	public String batchAddGoods(List<MerchantGoods> list) {
+		try {
+			this.merchantGoodsDao.batchSave(list);
+			return JSON.toJSONString(new SimpleResponse(0, "绑定成功"));
+		} catch (SQLException e) {
+			log.error("批量绑定供应商商品异常", e);
+			 return JSON.toJSONString(new SimpleResponse(1, "绑定失败"));
+		}
+	}
+
+	@Override
+	public String batchUpdateAddedGoods(List<MerchantGoods> list) {
+		try {
+			this.merchantGoodsDao.batchUpdate(list);
+			return JSON.toJSONString(new SimpleResponse(0, "更新成功"));
+		} catch (SQLException e) {
+			log.error("批量更新已绑定供应商商品异常", e);
+			 return JSON.toJSONString(new SimpleResponse(1, "更新失败"));
+		}
+	}
 }

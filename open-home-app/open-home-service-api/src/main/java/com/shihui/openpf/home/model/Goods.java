@@ -74,6 +74,12 @@ public class Goods implements Serializable {
 	@Column(name="update_time")
 	private Date updateTime;
 	
+	private String attention;
+	
+	@JSONField(name="goods_subtitle")
+	@Column(name="goods_subtitle")
+	private String goodsSubtitle;
+	
 	@Transient
 	private Integer serviceMerchantCode;//业务对应商户ID
 
@@ -198,6 +204,22 @@ public class Goods implements Serializable {
 
 	public void setServiceMerchantCode(Integer serviceMerchantCode) {
 		this.serviceMerchantCode = serviceMerchantCode;
+	}
+
+	public String getAttention() {
+		return attention;
+	}
+
+	public void setAttention(String attention) {
+		this.attention = attention;
+	}
+
+	public String getGoodsSubtitle() {
+		return goodsSubtitle;
+	}
+
+	public void setGoodsSubtitle(String goodsSubtitle) {
+		this.goodsSubtitle = goodsSubtitle;
 	}
 
 }

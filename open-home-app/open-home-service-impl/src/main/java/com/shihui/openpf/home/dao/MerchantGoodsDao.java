@@ -1,6 +1,12 @@
 package com.shihui.openpf.home.dao;
 
-import com.shihui.openpf.home.model.MerchantGoods;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.sql.DataSource;
+
 import org.springframework.stereotype.Repository;
 
 import com.shihui.openpf.home.model.MerchantGoods;
@@ -9,6 +15,80 @@ import com.shihui.openpf.home.model.MerchantGoods;
  * Created by zhoutc on 2016/1/27.
  */
 @Repository
-public class MerchantGoodsDao extends AbstractDao<MerchantGoods>{
+public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
+	
+	/**
+	 * 批量保存
+	 * @param list
+	 * @return
+	 * @throws SQLException
+	 */
+	public int batchSave(List<MerchantGoods> list) throws SQLException {
+		String sql = "insert into merchant_goods(merchant_id, category_id, status, service_id, goods_id, settlement) values(?,?,?,?,?,?)";
+		DataSource dataSource = this.jdbcTemplate.getDataSource();
+		int result = 0;
+		try (Connection conn = dataSource.getConnection()) {
+			conn.setAutoCommit(false);
+			try (PreparedStatement ps = conn.prepareStatement(sql)) {
+				for (MerchantGoods mg : list) {
+                    ps.setInt(1, mg.getMerchantId());
+                    ps.setInt(2, mg.getCategoryId());
+                    ps.setInt(3, mg.getStatus());
+                    ps.setInt(4, mg.getServiceId());
+                    ps.setInt(5, mg.getGoodsId());
+                    ps.setString(6, mg.getSettlement());
+                    
+					ps.addBatch();
+				}
+				int[] resultarr = ps.executeBatch();
 
+				for (int i = 0; i < resultarr.length; i++) {
+					result += resultarr[i];
+				}
+				conn.commit();
+			} finally {
+				conn.setAutoCommit(true);
+			}
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
+	
+	/**
+	 * 批量更新
+	 * @param list
+	 * @return
+	 * @throws SQLException
+	 */
+	public int batchUpdate(List<MerchantGoods> list) throws SQLException {
+		String sql = "update merchant_goods set status=?,settlement=? where merchant_id=? and service_id=? and goods_id=?";
+		DataSource dataSource = this.jdbcTemplate.getDataSource();
+		int result = 0;
+		try (Connection conn = dataSource.getConnection()) {
+			conn.setAutoCommit(false);
+			try (PreparedStatement ps = conn.prepareStatement(sql)) {
+				for (MerchantGoods mg : list) {
+                    ps.setInt(1, mg.getStatus());
+                    ps.setString(2, mg.getSettlement());
+                    ps.setInt(3, mg.getMerchantId());
+                    ps.setInt(4, mg.getServiceId());
+                    ps.setInt(5, mg.getGoodsId());
+                    
+					ps.addBatch();
+				}
+				int[] resultarr = ps.executeBatch();
+
+				for (int i = 0; i < resultarr.length; i++) {
+					result += resultarr[i];
+				}
+				conn.commit();
+			} finally {
+				conn.setAutoCommit(true);
+			}
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
 }

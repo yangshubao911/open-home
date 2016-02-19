@@ -14,14 +14,15 @@ import com.shihui.openpf.home.model.Goods;
  */
 public interface GoodsService {
 
-    public String create(Goods goods);
+    String create(Goods goods);
 
-    public String update(Goods goods);
+    String update(Goods goods);
 
-    public Goods findById(long id);
+    Goods findById(long id);
 
-    public Goods findByCity(int categoryId, int cityId);
+    Goods findByCity(int categoryId, int cityId);
 
-    public List<Goods> list(int categoryId);
+    List<Goods> list(int categoryId);
 
+    String batchUpdate(List<Goods> goodsList);
 }

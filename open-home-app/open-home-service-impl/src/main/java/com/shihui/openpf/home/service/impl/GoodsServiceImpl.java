@@ -147,4 +147,20 @@ public class GoodsServiceImpl implements GoodsService {
 		return this.goodsDao.queryForList(sql, categoryId);
 	}
 
+	@Override
+	public String batchUpdate(List<Goods> goodsList) {
+		int successCount = 0;
+		Date now = new Date();
+		for(Goods goods : goodsList){
+			try {
+				goods.setUpdateTime(now);
+				this.goodsDao.update(goods);
+				successCount++;
+			} catch (Exception e) {
+				log.error("批量更新商品信息异常，goods_id={}", goods.getGoodsId(), e);
+			}
+		}
+		return JSON.toJSONString(new SimpleResponse(0, "更新商品信息完成，成功"+successCount+"，失败"+ (goodsList.size() - successCount)));
+	}
+
 }

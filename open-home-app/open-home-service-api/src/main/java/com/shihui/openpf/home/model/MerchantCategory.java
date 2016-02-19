@@ -24,9 +24,7 @@ public class MerchantCategory implements Serializable {
     @Column(name="category_id")
     private Integer categoryId;
 
-    @JSONField(name="m_s_c_status")
-    @Column(name="m_s_c_status")
-    private Integer m_s_c_status;
+    private Integer status;
 
     @Id
     @JSONField(name="service_id")
@@ -59,12 +57,12 @@ public class MerchantCategory implements Serializable {
         this.serviceId = serviceId;
     }
 
-    public Integer getM_s_c_status() {
-        return m_s_c_status;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setM_s_c_status(Integer m_s_c_status) {
-        this.m_s_c_status = m_s_c_status;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
 

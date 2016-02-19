@@ -1,20 +1,28 @@
 package com.shihui.openpf.home.resource;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import org.springframework.stereotype.Controller;
+
 import com.alibaba.fastjson.JSON;
-import com.shihui.openpf.home.model.MerchantCategory;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.service.api.MerchantGoodsService;
+
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
-import org.springframework.stereotype.Controller;
-
-import javax.annotation.Resource;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 /**
  * Created by zhoutc on 2016/2/1.
@@ -32,10 +40,12 @@ public class MerchantGoodsResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String list(
             @Context RequestContext rc,
-            @ParamDesc(desc = "商户业务关联ID", isRequired = true) @QueryParam("m_s_c_id") int m_s_c_id
+            @ParamDesc(desc = "商户ID", isRequired = true) @QueryParam("merchant_id") Integer merchant_id,
+            @ParamDesc(desc = "业务ID", isRequired = true) @QueryParam("service_id") Integer service_id
     ){
         MerchantGoods merchantGoods = new MerchantGoods();
-        merchantGoods.setM_s_c_id(m_s_c_id);
+        merchantGoods.setMerchantId(merchant_id);
+        merchantGoods.setServiceId(service_id);
         return JSON.toJSONString(merchantGoodsService.queryMerchantGoodsList(merchantGoods));
     }
 
@@ -55,7 +65,7 @@ public class MerchantGoodsResource {
         MerchantGoods merchantGoods = new MerchantGoods();
         merchantGoods.setMerchantId(merchant_id);
         merchantGoods.setGoodsId(goods_id);
-        merchantGoods.setM_s_g_status(status);
+        merchantGoods.setStatus(status);
         merchantGoods.setSettlement(settlement);
         return merchantGoodsService.updateMerchantGoods(merchantGoods);
     }
@@ -79,8 +89,32 @@ public class MerchantGoodsResource {
         merchantGoods.setMerchantId(merchant_id);
         merchantGoods.setGoodsId(goods_id);
         merchantGoods.setServiceId(service_id);
-        merchantGoods.setM_s_g_status(status);
+        merchantGoods.setStatus(status);
         merchantGoods.setSettlement(settlement);
         return merchantGoodsService.createMerchantGoods(merchantGoods);
+    }
+    
+    @Path("/batchAdd")
+    @POST
+    @BaseInfo(desc = "批量绑定商品分类", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String batchAdd(
+            @Context RequestContext rc,
+            @ParamDesc(desc = "data", isRequired = false) @FormParam("data") String json
+    ){
+        List<MerchantGoods> list = JSON.parseArray(json, MerchantGoods.class);
+        return merchantGoodsService.batchAddGoods(list);
+    }
+    
+    @Path("/batchUpdate")
+    @POST
+    @BaseInfo(desc = "批量更新已绑定商品分类", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String batchUpdate(
+            @Context RequestContext rc,
+            @ParamDesc(desc = "data", isRequired = false) @FormParam("data") String json
+    ){
+        List<MerchantGoods> list = JSON.parseArray(json, MerchantGoods.class);
+        return merchantGoodsService.batchUpdateAddedGoods(list);
     }
 }
