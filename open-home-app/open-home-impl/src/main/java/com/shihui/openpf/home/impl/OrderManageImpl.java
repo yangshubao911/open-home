@@ -12,11 +12,13 @@ import com.shihui.api.oms.sale.model.SimpleResult;
 import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
 import com.shihui.api.payment.model.Payment;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
+import com.shihui.openpf.common.dubbo.api.ServiceManage;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
+import com.shihui.openpf.home.util.DataExportUtils;
 import me.weimi.api.commons.context.RequestContext;
 
 import org.joda.time.DateTime;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +64,10 @@ public class OrderManageImpl implements OrderManage {
     @Resource
     MerchantGoodsService merchantGoodsService;
 
+    @Resource
+    ServiceManage serviceManage;
     private Logger log = LoggerFactory.getLogger(getClass());
+
     /**
      * 客户端创建订单
      *
@@ -136,6 +142,7 @@ public class OrderManageImpl implements OrderManage {
         order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
         return order_json;
     }
+
     /**
      * 查询订单详情
      *
@@ -201,7 +208,7 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String cancelOrder(long orderId, OrderCancelType orderCancelType) {
-        if(orderCancelType==null) return buildResponse(1, "取消订单类型错误");
+        if (orderCancelType == null) return buildResponse(1, "取消订单类型错误");
         Order order = orderService.queryOrder(orderId);
         OrderDetailVo orderDetailVo = orderDubboService.queryOrderDetail(orderId);
         if (order == null || orderDetailVo == null)
@@ -267,13 +274,14 @@ public class OrderManageImpl implements OrderManage {
     public String countunusual() {
         int total = orderService.countUnusual();
         JSONObject result = new JSONObject();
-        result.put("total",total);
+        result.put("total", total);
         return result.toJSONString();
 
     }
 
     /**
      * 查询异常订单
+     *
      * @return 订单列表
      */
     @Override
@@ -281,7 +289,7 @@ public class OrderManageImpl implements OrderManage {
 
         List<Order> orders = orderService.queryUnusual();
         JSONArray orders_json = new JSONArray();
-        for(Order order : orders){
+        for (Order order : orders) {
             orders_json.add(buildOrderVo(order));
         }
         JSONObject result = new JSONObject();
@@ -298,7 +306,7 @@ public class OrderManageImpl implements OrderManage {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         //2.调用dubbo接口取消未支付订单
@@ -318,7 +326,7 @@ public class OrderManageImpl implements OrderManage {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         //2.调用dubbo接口取消未支付订单
@@ -336,7 +344,7 @@ public class OrderManageImpl implements OrderManage {
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         long merchantCode = merchant.getMerchantCode();
@@ -355,7 +363,7 @@ public class OrderManageImpl implements OrderManage {
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         //2.更新订单表
@@ -369,7 +377,7 @@ public class OrderManageImpl implements OrderManage {
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         //2.更新订单表
@@ -380,12 +388,12 @@ public class OrderManageImpl implements OrderManage {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         //2.更新订单表
-        boolean update = orderService.updateOrder(order.getOrderId(),OrderStatusEnum.OrderBackClose);
-        if(update)
+        boolean update = orderService.updateOrder(order.getOrderId(), OrderStatusEnum.OrderBackClose);
+        if (update)
             return buildResponse(0, "取消订单成功");
         else
             return buildResponse(1, "取消订单失败");
@@ -401,7 +409,7 @@ public class OrderManageImpl implements OrderManage {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
-        if(!cancelThirdPartOrder(order,merchant)){
+        if (!cancelThirdPartOrder(order, merchant)) {
             return buildResponse(1, "取消第三方订单失败");
         }
         long merchantCode = merchant.getMerchantCode();
@@ -432,14 +440,70 @@ public class OrderManageImpl implements OrderManage {
             Request new_request = new Request();
             request.setRequestId(request.getRequestId());
             request.setRequestStatus(-1);
-            if(requestService.updateStatus(new_request)) {
+            if (requestService.updateStatus(new_request)) {
                 return true;
-            }else {
+            } else {
                 return false;
             }
-        }else {
+        } else {
             return false;
         }
+    }
+
+    /**
+     * 导出异常订单
+     *
+     * @return 订单列表
+     */
+    @Override
+    public String exportUnusual() {
+
+        List<String> title = new ArrayList<>();
+        title.add("序号");
+        title.add("订单号");
+        title.add("下单时间");
+        title.add("业务类型");
+        title.add("服务提供商");
+        title.add("服务商结算价");
+        title.add("实惠价（元）");
+        title.add("实惠现金补贴（元）");
+        title.add("实际用户支付（元）");
+        title.add("下单状态");
+
+        List<Object> list = new ArrayList<>();
+        List<List<Object>> data = new ArrayList<>();
+        List<Order> orders = orderService.queryUnusual();
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            list.add(i);
+            list.add(order.getOrderId());
+            list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
+            com.shihui.openpf.common.model.Service service = serviceManage.findById(order.getService_id());
+            list.add(service.getServiceName());
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            list.add(merchant.getMerchantName());
+            MerchantGoods merchantGoods = new MerchantGoods();
+            merchantGoods.setMerchantId(order.getMerchantId());
+            merchantGoods.setGoodsId(order.getGoodsId());
+            MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+            list.add(db_merchantGoods.getSettlement());
+            BigDecimal price = new BigDecimal(order.getShOffSet()).add(new BigDecimal(order.getPay()));
+            list.add(price.stripTrailingZeros().toPlainString());
+            list.add(order.getShOffSet());
+            list.add(order.getPay());
+            list.add(OrderStatusEnum.parse(order.getOrderStatus()).getName());
+            data.add(list);
+        }
+
+        String fileName = null;
+        try {
+            fileName = DataExportUtils.genExcel(String.valueOf(System.currentTimeMillis()), "unusualOrder", title, data,
+                    "utf-8");
+        } catch (Exception e) {
+
+        }
+
+        return fileName;
     }
 
     public String buildResponse(int status, String msg) {

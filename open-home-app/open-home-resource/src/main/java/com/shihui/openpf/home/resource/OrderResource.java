@@ -114,29 +114,13 @@ public class OrderResource {
     @Path("/unusualOrder/export")
     @Produces("application/vnd.ms-excel; charset=UTF-8")
     @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
-    public static Response export(
+    public  Response export(
             @Context RequestContext rc) {
-        List<String> title = new ArrayList<>();
-        title.add("1");
-        title.add("2");
-        title.add("3");
-        List<List<Object>> data = new ArrayList<>();
-        List<Object> list = new ArrayList<>();
-        list.add("a");
-        list.add("b");
-        list.add("c");
-        data.add(list);
-        String fileName = "";
-        try {
-             fileName = DataExportUtils.genExcel(String.valueOf(System.currentTimeMillis()), "unusualOrder", title, data,
-                    "utf-8");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        String fileName = orderManage.exportUnusual();
         File file = new File(fileName);
         Response.ResponseBuilder response = Response.ok((Object) file);
         response.header("Content-Disposition",
-                "attachment; filename=\"test.xls\"");
+                "attachment; filename=\"unusualOrder.csv\"");
         return response.build();
     }
 

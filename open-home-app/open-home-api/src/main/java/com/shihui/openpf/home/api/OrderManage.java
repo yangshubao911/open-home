@@ -55,4 +55,10 @@ public interface OrderManage {
      * @return 订单列表
      */
     public String queryUnusual();
+
+    /**
+     * 导出异常订单
+     * @return 订单列表
+     */
+    public String exportUnusual();
 }
