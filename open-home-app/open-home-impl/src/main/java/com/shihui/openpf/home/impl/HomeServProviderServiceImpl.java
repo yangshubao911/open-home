@@ -3,12 +3,8 @@
  */
 package com.shihui.openpf.home.impl;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.ServiceLoader;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -49,8 +45,8 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private CloseableHttpAsyncClient httpClient;
-	private Map<String,ParamAssembler> paramAssemblerMap;
-	private Map<String,ResultParser> resultParserMap;
+	private Map<String,ParamAssembler> paramAssemblerMap = new HashMap<>();
+	private Map<String,ResultParser> resultParserMap = new HashMap<>();
 	
 	@Resource
 	private GroupManage groupManage;

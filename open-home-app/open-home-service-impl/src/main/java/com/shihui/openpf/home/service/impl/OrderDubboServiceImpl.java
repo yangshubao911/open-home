@@ -1,6 +1,6 @@
 package com.shihui.openpf.home.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
+
 import com.shihui.api.clearing.dubbo.ClearingDubbo;
 import com.shihui.api.common.model.PaymentTypeEnum;
 import com.shihui.api.common.model.SettleMethodEnum;
@@ -17,6 +17,7 @@ import com.shihui.api.payment.model.Payment;
 import com.shihui.openpf.home.service.api.OrderDubboService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 

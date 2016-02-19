@@ -42,7 +42,7 @@ import me.weimi.api.commons.db.jdbc.JdbcTemplate;
  * @version 1.0 Created at: 2015年12月14日 上午11:13:05
  */
 public abstract class AbstractDao<T> {
-	@Resource(name = "open_common_jdbctemplate")
+	@Resource(name = "mysql_open_home")
 	protected JdbcTemplate jdbcTemplate;
 
 	/** 具体操作的实体类对象 */

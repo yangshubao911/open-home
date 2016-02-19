@@ -6,6 +6,7 @@ package com.shihui.openpf.home.resource;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
+import com.shihui.openpf.home.util.DataExportUtils;
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
@@ -17,6 +18,10 @@ import javax.annotation.Resource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zhouqisheng
@@ -103,6 +108,36 @@ public class OrderResource {
     public String query(
             @Context RequestContext rc) {
         return orderManage.queryUnusual();
+    }
+
+    @GET
+    @Path("/unusualOrder/export")
+    @Produces("application/vnd.ms-excel; charset=UTF-8")
+    @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    public static Response export(
+            @Context RequestContext rc) {
+        List<String> title = new ArrayList<>();
+        title.add("1");
+        title.add("2");
+        title.add("3");
+        List<List<Object>> data = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        data.add(list);
+        String fileName = "";
+        try {
+             fileName = DataExportUtils.genExcel(String.valueOf(System.currentTimeMillis()), "unusualOrder", title, data,
+                    "utf-8");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        File file = new File(fileName);
+        Response.ResponseBuilder response = Response.ok((Object) file);
+        response.header("Content-Disposition",
+                "attachment; filename=\"test.xls\"");
+        return response.build();
     }
 
 

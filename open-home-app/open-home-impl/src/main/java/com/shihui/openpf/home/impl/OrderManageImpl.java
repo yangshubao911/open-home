@@ -24,6 +24,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ import java.util.List;
 /**
  * Created by zhoutc on 2016/1/21.
  */
+@Service
 public class OrderManageImpl implements OrderManage {
 
     @Resource

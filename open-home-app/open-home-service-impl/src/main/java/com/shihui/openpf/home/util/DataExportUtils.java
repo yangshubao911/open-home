@@ -45,15 +45,15 @@ public class DataExportUtils {
 													// flushed to disk
 		Sheet sh = wb.createSheet(sheetName);
 		Row rowTitle = sh.createRow(0);
-		for (int cellnum = 0; cellnum < 10; cellnum++) {
+		for (int cellnum = 0; cellnum < title.size(); cellnum++) {
 			Cell cell = rowTitle.createCell(cellnum);
 			cell.setCellValue(title.get(cellnum));
 		}
 		for (int rownum = 0; rownum < data.size(); rownum++) {
 			Row row = sh.createRow(rownum + 1);
-			for (int cellnum = 0; cellnum < 10; cellnum++) {
+			for (int cellnum = 0; cellnum < title.size(); cellnum++) {
 				Cell cell = row.createCell(cellnum);
-				Object value = data.get(cellnum);
+				Object value = data.get(rownum).get(cellnum);
 				if (value == null) {
 					cell.setCellValue("");
 				} else {
