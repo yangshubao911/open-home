@@ -24,5 +24,8 @@ public interface GoodsService {
 
     List<Goods> list(int categoryId);
 
+    List<Goods> list(int serviceId , int cityId);
+
     String batchUpdate(List<Goods> goodsList);
+
 }

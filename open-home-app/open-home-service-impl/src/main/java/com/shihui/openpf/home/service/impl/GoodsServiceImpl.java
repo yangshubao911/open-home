@@ -96,8 +96,8 @@ public class GoodsServiceImpl implements GoodsService {
 			oldGoods.setGoodsStatus(goods.getGoodsStatus());
 		if(goods.getGoodsName() != null)
 			oldGoods.setGoodsName(goods.getGoodsName());
-		if(goods.getImgUrl() != null)
-			oldGoods.setImgUrl(goods.getImgUrl());
+		if(goods.getImageId() != null)
+			oldGoods.setImageId(goods.getImageId());
 		if(goods.getShOffSet() != null)
 			oldGoods.setShOffSet(goods.getShOffSet());
 		if(goods.getPrice() != null)
@@ -145,6 +145,12 @@ public class GoodsServiceImpl implements GoodsService {
 	public List<Goods> list(int categoryId) {
 		String sql = "select * from goods where category_id=?";
 		return this.goodsDao.queryForList(sql, categoryId);
+	}
+
+	@Override
+	public List<Goods> list(int serviceId , int cityId) {
+		String sql = "select * from goods where service_id = ? and city_id = ? order by category_id";
+		return this.goodsDao.queryForList(sql, serviceId,cityId);
 	}
 
 	@Override

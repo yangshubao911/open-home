@@ -27,4 +27,44 @@
     <context:component-scan base-package="com.shihui.rpc"/>
     <context:component-scan base-package="com.shihui.common"/>
 
+    <context:component-scan base-package="com.shihui.openpf" />
+
+    <bean id="activityRedisPollConfig"  class="redis.clients.jedis.JedisPoolConfig">
+        <property name="minIdle" value="5"/>
+        <property name="maxTotal" value="10"/>
+        <property name="blockWhenExhausted" value="1"/>
+        <property name="maxWaitMillis" value="500"/>
+        <property name="lifo" value="false"/>
+
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="numTestsPerEvictionRun" value="-2"/>
+        <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+        <property name="softMinEvictableIdleTimeMillis" value="3600000"/>
+        <property name="minEvictableIdleTimeMillis" value="-1"/>
+    </bean>
+
+    <bean id="jedisShard_1" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="${redis.open_common.ip_1}"/>
+        <constructor-arg index="1" type="int" value="${redis.open_common.port_1}"/>
+    </bean>
+
+    <bean id="jedisShard_2" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="${redis.open_common.ip_2}"/>
+        <constructor-arg index="1" type="int" value="${redis.open_common.port_2}"/>
+    </bean>
+
+    <bean id="sharedJedisPool" class="redis.clients.jedis.ShardedJedisPool" scope="singleton">
+        <constructor-arg index="0" ref="activityRedisPollConfig"/>
+        <constructor-arg index="1">
+            <list>
+                <ref bean="jedisShard_1"/>
+                <ref bean="jedisShard_2"/>
+                <!--<ref bean="jedisShard_3"/>
+                <ref bean="jedisShard_4"/>-->
+            </list>
+        </constructor-arg>
+    </bean>
+
 </beans>

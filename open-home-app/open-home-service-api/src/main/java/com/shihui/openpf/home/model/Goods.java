@@ -56,9 +56,9 @@ public class Goods implements Serializable {
 	@Column(name="goods_version")
 	private Integer goodsVersion;
 
-	@JSONField(name="img_url")
-	@Column(name="img_url")
-	private String imgUrl;
+	@JSONField(name="image_id")
+	@Column(name="image_id")
+	private String imageId;
 
 	private String price;
 
@@ -73,7 +73,9 @@ public class Goods implements Serializable {
 	@JSONField(name="update_time", format="yyyy-MM-dd HH:mm:ss")
 	@Column(name="update_time")
 	private Date updateTime;
-	
+
+	@JSONField(name="attention")
+	@Column(name="attention")
 	private String attention;
 	
 	@JSONField(name="goods_subtitle")
@@ -158,12 +160,12 @@ public class Goods implements Serializable {
 		this.goodsVersion = goodsVersion;
 	}
 
-	public String getImgUrl() {
-		return this.imgUrl;
+	public String getImageId() {
+		return imageId;
 	}
 
-	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
+	public void setImageId(String imageId) {
+		this.imageId = imageId;
 	}
 
 	public String getPrice() {
