@@ -1,20 +1,26 @@
 package com.shihui.openpf.home.service.impl;
 
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.dao.MerchantCategoryDao;
 import com.shihui.openpf.home.model.MerchantCategory;
 import com.shihui.openpf.home.service.api.MerchantCategoryService;
 import com.shihui.openpf.home.util.SimpleResponse;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * Created by zhoutc on 2016/2/1.
  */
 @Service
 public class MerchantCategoryServiceImpl implements MerchantCategoryService{
+	private Logger log = LoggerFactory.getLogger(getClass());
 
     @Resource
     MerchantCategoryDao merchantCategoryDao;
@@ -56,4 +62,15 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
             return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
         }
     }
+
+	@Override
+	public String batchCreate(List<MerchantCategory> merchantCategorys) { 	 	
+		try {
+			this.merchantCategoryDao.batchSave(merchantCategorys);
+			return JSON.toJSONString(new SimpleResponse(0, "绑定成功"));
+		} catch (SQLException e) {
+			log.error("批量绑定供应商商品分类异常", e);
+			 return JSON.toJSONString(new SimpleResponse(1, "绑定失败"));
+		}
+	}
 }

@@ -1,19 +1,28 @@
 package com.shihui.openpf.home.resource;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import org.springframework.stereotype.Controller;
+
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.MerchantCategory;
 import com.shihui.openpf.home.service.api.MerchantCategoryService;
+
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
-import org.springframework.stereotype.Controller;
-
-import javax.annotation.Resource;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 /**
  * Created by zhoutc on 2016/2/1.
@@ -56,7 +65,7 @@ public class MerchantCategoryResource {
         merchantCategory.setMerchantId(merchant_id);
         merchantCategory.setServiceId(service_id);
         merchantCategory.setCategoryId(category_id);
-        merchantCategory.setM_s_c_status(status);
+        merchantCategory.setStatus(status);
         return merchantCategoryService.updateCategory(merchantCategory);
     }
 
@@ -76,8 +85,20 @@ public class MerchantCategoryResource {
         merchantCategory.setMerchantId(merchant_id);
         merchantCategory.setServiceId(service_id);
         merchantCategory.setCategoryId(category_id);
-        merchantCategory.setM_s_c_status(status);
+        merchantCategory.setStatus(status);
         return merchantCategoryService.create(merchantCategory);
+    }
+    
+    @Path("/batchAdd")
+    @POST
+    @BaseInfo(desc = "批量绑定商品分类", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String batchAdd(
+            @Context RequestContext rc,
+            @ParamDesc(desc = "data", isRequired = true) @FormParam("data") String json
+    ){
+        List<MerchantCategory> merchantCategorys = JSON.parseArray(json, MerchantCategory.class);
+        return merchantCategoryService.batchCreate(merchantCategorys);
     }
 
 }

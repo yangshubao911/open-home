@@ -15,26 +15,20 @@ public class MerchantGoods implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @JSONField(name="m_s_g_id")
-    @Column(name="m_s_g_id")
-    private Integer m_s_g_id;
-
     @JSONField(name="goods_id")
     @Column(name="goods_id")
     private Integer goodsId;
 
-    @JSONField(name="m_s_g_status")
-    @Column(name="m_s_g_status")
-    private Integer m_s_g_status;
+    private Integer status;
 
     @JSONField(name="settlement")
     @Column(name="settlement")
     private String settlement;
-
+    @Id
     @JSONField(name="merchant_id")
     @Column(name="merchant_id")
     private Integer merchantId;
-
+    @Id
     @JSONField(name="service_id")
     @Column(name="service_id")
     private Integer serviceId;
@@ -43,18 +37,6 @@ public class MerchantGoods implements Serializable {
     @Column(name="category_id")
     private Integer categoryId;
 
-    @JSONField(name="m_s_c_id")
-    @Column(name="m_s_c_id")
-    private Integer m_s_c_id;
-
-
-    public Integer getM_s_g_id() {
-        return m_s_g_id;
-    }
-
-    public void setM_s_g_id(Integer m_s_g_id) {
-        this.m_s_g_id = m_s_g_id;
-    }
 
     public Integer getGoodsId() {
         return goodsId;
@@ -64,12 +46,12 @@ public class MerchantGoods implements Serializable {
         this.goodsId = goodsId;
     }
 
-    public Integer getM_s_g_status() {
-        return m_s_g_status;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setM_s_g_status(Integer m_s_g_status) {
-        this.m_s_g_status = m_s_g_status;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getSettlement() {
@@ -102,13 +84,5 @@ public class MerchantGoods implements Serializable {
 
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public Integer getM_s_c_id() {
-        return m_s_c_id;
-    }
-
-    public void setM_s_c_id(Integer m_s_c_id) {
-        this.m_s_c_id = m_s_c_id;
     }
 }
