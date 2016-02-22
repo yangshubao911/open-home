@@ -27,9 +27,9 @@ public class ClientResource {
     @Resource
     ClientService clientService;
 
-    @Path("/listGoods")
+    @Path("/goods/list")
     @GET
-    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @BaseInfo(desc = "查询归属城市所有分类商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
     @Produces({ MediaType.APPLICATION_JSON })
     public String list(@Context RequestContext rc,
                        @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
@@ -37,6 +37,21 @@ public class ClientResource {
                        @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId) {
         return clientService.listGoods(serviceId , userId, groupId);
     }
+
+
+    @Path("/goods/detail")
+    @GET
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String detail(@Context RequestContext rc,
+                         @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
+                         @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
+                         @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
+                         @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
+                         @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId) {
+        return clientService.listGoods(serviceId, userId, groupId);
+    }
+
 
 
 

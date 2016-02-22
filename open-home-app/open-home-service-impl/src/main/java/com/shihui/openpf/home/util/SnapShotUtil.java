@@ -53,7 +53,7 @@ public class SnapShotUtil {
 			Map<String, Object> goods_info = new HashMap<String, Object>();
 			goods_info.put("goods_id", goods.getGoodsId());
 			goods_info.put("goods_name", goods.getGoodsName());
-			goods_info.put("goods_img_multi", goods.getImgUrl());
+			goods_info.put("goods_img_multi", goods.getImageId());
 			goods_info.put("merchant_id", goods.getServiceMerchantCode());
 			goods_info.put("goods_type", 2);
 			goods_info.put("goods_desc", goods.getGoodsDesc());

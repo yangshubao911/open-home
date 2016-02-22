@@ -60,7 +60,7 @@ public class GoodsResource {
 		goods.setCityName(city_name);
 		goods.setGoodsDesc(goods_desc);
 		goods.setGoodsName(goods_name);
-		goods.setImgUrl(image_id);
+		goods.setImageId(image_id);
 		goods.setServiceId(service_id);
 		goods.setShOffSet(sh_off_set);
 		goods.setPrice(price);
@@ -87,7 +87,7 @@ public class GoodsResource {
 		goods.setGoodsId(goods_id);
 		goods.setGoodsDesc(goods_desc);
 		goods.setGoodsName(goods_name);
-		goods.setImgUrl(image_id);
+		goods.setImageId(image_id);
 		goods.setShOffSet(sh_off_set);
 		goods.setPrice(price);
 		goods.setGoodsStatus(goods_status);

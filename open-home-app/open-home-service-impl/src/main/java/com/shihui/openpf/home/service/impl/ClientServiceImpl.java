@@ -33,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 客户端查询商品列表
      *
-     * @return 更新结果
+     * @return 返回商品列表
      */
     @Override
     public String listGoods(Integer serviceId, Long userId, Long groupId) {
@@ -60,5 +60,15 @@ public class ClientServiceImpl implements ClientService {
         }
         result.put("list",goods_json);
         return result.toJSONString();
+    }
+
+    /**
+     * 客户端查询商品详情
+     *
+     * @return 返回商品接口
+     */
+    @Override
+    public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId) {
+        return null;
     }
 }
