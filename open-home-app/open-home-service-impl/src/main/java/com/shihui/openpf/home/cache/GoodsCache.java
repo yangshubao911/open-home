@@ -1,5 +1,6 @@
 package com.shihui.openpf.home.cache;
 
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 import com.shihui.openpf.common.util.Constants;
@@ -8,6 +9,7 @@ import javax.annotation.Resource;
 /**
  * Created by zhoutc on 2016/2/20.
  */
+@Service
 public class GoodsCache {
 
     @Resource
