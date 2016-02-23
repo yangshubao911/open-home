@@ -3,17 +3,20 @@
  */
 package com.shihui.openpf.home.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import java.util.Date;
+import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.dao.CategoryDao;
 import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.service.api.CategoryService;
 import com.shihui.openpf.home.util.SimpleResponse;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author zhouqisheng
@@ -22,6 +25,7 @@ import java.util.List;
  */
 @Service
 public class CategoryServiceImpl implements CategoryService {
+	Logger log = LoggerFactory.getLogger(getClass());
 	@Resource
 	private CategoryDao categoryDao;
 
@@ -34,10 +38,15 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public String create(Category category) {
 		Date now = new Date();
-		category.setStatus(1);
 		category.setCreateTime(now);
 		category.setUpdateTime(now);
-		return JSON.toJSONString(new SimpleResponse(0, categoryDao.insert(category)));
+		long id = 0;
+		try {
+			id = categoryDao.insert(category);
+		} catch (Exception e) {
+			log.error("创建商品类型异常，{}", JSON.toJSONString(category), e);
+		}
+		return JSON.toJSONString(new SimpleResponse(0, id));
 	}
 
 	/*
@@ -50,7 +59,14 @@ public class CategoryServiceImpl implements CategoryService {
 	public String update(Category category) {
 		Date now = new Date();
 		category.setUpdateTime(now);
-		if(categoryDao.update(category) > 0){
+		int result = 0;
+		try {
+			result = categoryDao.update(category);
+		} catch (Exception e) {
+			log.error("更新商品类型异常，{}", JSON.toJSONString(category), e);
+		}
+		
+		if(result > 0){
 			return JSON.toJSONString(new SimpleResponse(0, "更新成功"));
 		}else{
 			return JSON.toJSONString(new SimpleResponse(1, "更新失败"));

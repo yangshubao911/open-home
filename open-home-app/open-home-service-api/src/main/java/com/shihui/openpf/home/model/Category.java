@@ -29,9 +29,9 @@ public class Category implements Serializable {
 	@Column(name = "create_time")
 	private Date createTime;
 
-	@JSONField(name = "img_url")
-	@Column(name = "img_url")
-	private String imgUrl;
+	@JSONField(name = "image_id")
+	@Column(name = "image_id")
+	private String imageId;
 
 	@JSONField(name = "service_id")
 	@Column(name = "service_id")
@@ -84,12 +84,12 @@ public class Category implements Serializable {
 		this.createTime = createTime;
 	}
 
-	public String getImgUrl() {
-		return imgUrl;
+	public String getImageId() {
+		return imageId;
 	}
 
-	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
+	public void setImageId(String imageId) {
+		this.imageId = imageId;
 	}
 
 	public Integer getServiceId() {
