@@ -51,34 +51,45 @@ public class GoodsServiceImpl implements GoodsService {
 		goods.setUpdateTime(now);
 		//默认商品版本为1
 		goods.setGoodsVersion(1);
-		long id = this.goodsDao.insert(goods);
-		//创建商品快照
-		goods.setGoodsId(id);
-		//获得业务对应商户ID，快照需要此字段
-		
-		Service service = this.serviceManage.findById(goods.getServiceId());
-		if(service == null){
-			return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
+		long id;
+		try {
+			id = this.goodsDao.insert(goods);
+		} catch (Exception e) {
+			log.error("创建商品失败，{}", JSON.toJSONString(goods), e);
+			return JSON.toJSONString(new SimpleResponse(1,"创建商品失败"));
 		}
-		
-		goods.setServiceMerchantCode(service.getServiceMerchantCode());
-		
-		String result = SnapShotUtil.sendSnapShot(goods);
-		if(result == null || result.isEmpty()){
-			this.goodsDao.delete(goods);
-			log.warn("【创建】调用创建商品快照接口失败，删除已创建商品，商品id={}", id);
-			return JSON.toJSONString(new SimpleResponse(1,"创建商品快照失败"));
+		try {
+			//创建商品快照
+			goods.setGoodsId(id);
+			//获得业务对应商户ID，快照需要此字段
+			
+			Service service = this.serviceManage.findById(goods.getServiceId());
+			if(service == null){
+				return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
+			}
+			
+			goods.setServiceMerchantCode(service.getServiceMerchantCode());
+			
+			String result = SnapShotUtil.sendSnapShot(goods);
+			if(result == null || result.isEmpty()){
+				this.goodsDao.delete(goods);
+				log.warn("【创建】调用创建商品快照接口失败，删除已创建商品，商品id={}", id);
+				return JSON.toJSONString(new SimpleResponse(1,"创建商品快照失败"));
+			}
+			JSONObject jo = JSONObject.parseObject(result);
+			boolean status = jo.getBoolean("status");
+			if (!status){
+				this.goodsDao.delete(goods);
+				log.warn("【创建】创建商品快照失败，删除已创建商品，商品id={}", id);
+				return JSON.toJSONString(new SimpleResponse(1,"创建商品快照失败"));
+			}
+			int version = jo.getIntValue("version_id");
+			goods.setGoodsVersion(version);
+			this.goodsDao.update(goods);
+		} catch (Exception e) {
+			log.error("创建商品快照异常,{}", JSON.toJSONString(goods), e);
+			return JSON.toJSONString(new SimpleResponse(1, "创建商品快照失败"));
 		}
-		JSONObject jo = JSONObject.parseObject(result);
-		boolean status = jo.getBoolean("status");
-        if (!status){
-        	this.goodsDao.delete(goods);
-			log.warn("【创建】创建商品快照失败，删除已创建商品，商品id={}", id);
-			return JSON.toJSONString(new SimpleResponse(1,"创建商品快照失败"));
-        }
-        int version = jo.getIntValue("version_id");
-        goods.setGoodsVersion(version);
-        this.goodsDao.update(goods);
 		
 		return JSON.toJSONString(new SimpleResponse(0, id));
 	}
@@ -119,8 +130,15 @@ public class GoodsServiceImpl implements GoodsService {
         }
         int version = jo.getIntValue("version_id");
         goods.setGoodsVersion(version);
+        
+        int ret = 0;
+		try {
+			ret = this.goodsDao.update(goods);
+		} catch (Exception e) {
+			log.error("更新商品异常，{}", JSON.toJSONString(goods), e);
+		}
 		
-		if(this.goodsDao.update(goods) > 0){
+		if(ret > 0){
 			return JSON.toJSONString(new SimpleResponse(0, "更新商品信息成功"));
 		}else{
 			return JSON.toJSONString(new SimpleResponse(1, "更新商品信息失败"));

@@ -409,8 +409,10 @@ public abstract class AbstractDao<T> {
 	 * @return
 	 */
 	public T queryForObject(String sql, Object... args){
-		T result = (T) this.jdbcTemplate.queryForObject(sql, args, rowMapper);
-		return result;
+		List<T> list =  this.jdbcTemplate.query(sql, args, rowMapper);
+		if(list.size() > 0)
+			return list.get(0);
+		return null;
 	}
 	
 	/**
