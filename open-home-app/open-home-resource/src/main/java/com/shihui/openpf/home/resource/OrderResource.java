@@ -3,6 +3,7 @@
  */
 package com.shihui.openpf.home.resource;
 
+import com.shihui.openpf.common.util.StringUtil;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
@@ -52,10 +53,15 @@ public class OrderResource {
 
         try {
             Order queryOrder = new Order();
+            if(!StringUtil.isEmpty(orderId))
             queryOrder.setOrderId(Long.parseLong(orderId));
+            if(!StringUtil.isEmpty(status))
             queryOrder.setOrderStatus(Byte.valueOf(status));
+            if(!StringUtil.isEmpty(phoneNum))
             queryOrder.setPhone(phoneNum);
+            if(!StringUtil.isEmpty(userId))
             queryOrder.setUserId(Long.parseLong(userId));
+            if(!StringUtil.isEmpty(userId))
 
             return orderManage.queryOrderList(rc,queryOrder,startTime,endTime,cursor,count );
         }catch (Exception e){

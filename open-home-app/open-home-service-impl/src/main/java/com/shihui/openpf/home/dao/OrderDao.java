@@ -3,6 +3,8 @@ package com.shihui.openpf.home.dao;
 import com.shihui.api.common.model.OrderStatusEnum;
 import com.shihui.openpf.home.model.Order;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Column;
@@ -18,9 +20,10 @@ import java.util.List;
  */
 @Repository
 public class OrderDao extends AbstractDao<Order> {
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public List<Order> queryOrder(Order order , String startTime, String endTime, int page , int size) {
-        StringBuilder sql = new StringBuilder("select * from home_order where 1 = 1 ");
+        StringBuilder sql = new StringBuilder("select * from order where 1 = 1 ");
         Field[] fields = Order.class.getDeclaredFields();
         try {
             ArrayList<Object> valus = new ArrayList<Object>();
@@ -53,6 +56,7 @@ public class OrderDao extends AbstractDao<Order> {
             sql.append("limit ").append(page*size).append(",").append(size);
             return super.queryForList(sql.toString(), valus.toArray(), Order.class);
         } catch (Exception e) {
+            log.error("OrderDao error!!",e);
         }
         return null;
     }
@@ -90,7 +94,7 @@ public class OrderDao extends AbstractDao<Order> {
             }
             return jdbcTemplate.queryForInt(sql.toString(), valus.toArray());
         } catch (Exception e) {
-
+            log.error("OrderDao error!!",e);
         }
         return -1;
     }
