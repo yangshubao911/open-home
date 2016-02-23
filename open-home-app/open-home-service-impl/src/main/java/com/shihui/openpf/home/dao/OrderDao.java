@@ -23,25 +23,29 @@ public class OrderDao extends AbstractDao<Order> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public List<Order> queryOrder(Order order , String startTime, String endTime, int page , int size) {
-        StringBuilder sql = new StringBuilder("select * from order where 1 = 1 ");
+        StringBuilder sql = new StringBuilder("select * from `order` where 1 = 1 ");
+
         Field[] fields = Order.class.getDeclaredFields();
         try {
             ArrayList<Object> valus = new ArrayList<Object>();
             for (Field field : fields) {
+                String fieldName = this.fieldNameMap.get(field.getName());
+                if(fieldName == null){
+                    fieldName = this.idsFieldNameMap.get(field.getName());
+                }
+                if (fieldName == null) {
+                    continue;
+                }
                 field.setAccessible(true);
                 Transient transientAno = field.getAnnotation(Transient.class);
                 if (transientAno != null) {
                     continue;
                 }
                 Object value = field.get(order);
-                String fieldName = null;
-                Column columnAno = field.getAnnotation(Column.class);
-                if (columnAno != null)
-                    fieldName = columnAno.name();
-                if (fieldName == null)
-                    fieldName = field.getName();
-                sql.append("and ").append(fieldName).append(" = ? ");
-                valus.add(value);
+                if(value!=null) {
+                    sql.append("and ").append(fieldName).append(" = ? ");
+                    valus.add(value);
+                }
 
             }
             if(startTime!=null||!startTime.equals("")) {
@@ -62,33 +66,35 @@ public class OrderDao extends AbstractDao<Order> {
     }
 
     public int countQueryOrder(Order order, String startTime, String endTime) {
-        StringBuilder sql = new StringBuilder("select * from home_order where 1 = 1 ");
+        StringBuilder sql = new StringBuilder("select count(*) from `order` where 1 = 1 ");
         Field[] fields = Order.class.getDeclaredFields();
         try {
             ArrayList<Object> valus = new ArrayList<Object>();
             for (Field field : fields) {
+                String fieldName = this.fieldNameMap.get(field.getName());
+                if(fieldName == null){
+                    fieldName = this.idsFieldNameMap.get(field.getName());
+                }
+                if (fieldName == null) {
+                    continue;
+                }
                 field.setAccessible(true);
                 Transient transientAno = field.getAnnotation(Transient.class);
                 if (transientAno != null) {
                     continue;
                 }
                 Object value = field.get(order);
-                String fieldName = null;
-                Column columnAno = field.getAnnotation(Column.class);
-                if (columnAno != null)
-                    fieldName = columnAno.name();
-                if (fieldName == null)
-                    fieldName = field.getName();
+
                 if(value!=null) {
                     sql.append("and ").append(fieldName).append(" = ? ");
                     valus.add(value);
                 }
             }
-            if(startTime!=null||!startTime.equals("")) {
+            if(startTime!=null&&!startTime.equals("")) {
                 sql.append("and create_time >= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime));
             }
-            if(endTime!=null||!endTime.equals("")) {
+            if(endTime!=null&&!endTime.equals("")) {
                 sql.append("and create_time <= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
@@ -105,7 +111,7 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 订单详情
      */
     public Order queryOrder(long orderId){
-        String sql = "select * from order where order_id = " + orderId;
+        String sql = "select * from `order` where order_id = " + orderId;
         try {
             return super.queryForObject(sql, Order.class);
         }catch (Exception e){
@@ -120,7 +126,7 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 异常订单数量
      */
     public int countUnusual(){
-        String sql = "select count(*) from order where order_status = ?";
+        String sql = "select count(*) from `order` where order_status = ?";
         return super.queryCount(sql, OrderStatusEnum.OrderRefunding.getValue());
     }
 
@@ -130,7 +136,7 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 异常订单数量
      */
     public List<Order> queryUnusual(){
-        String sql = "select * from order where order_status = ?";
+        String sql = "select * from order where `order`_status = ?";
         return super.queryForList(sql, OrderStatusEnum.OrderRefunding.getValue());
     }
 
