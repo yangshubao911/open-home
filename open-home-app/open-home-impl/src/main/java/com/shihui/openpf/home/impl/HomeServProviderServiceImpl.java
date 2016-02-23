@@ -3,12 +3,18 @@
  */
 package com.shihui.openpf.home.impl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ServiceLoader;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.slf4j.Logger;
@@ -42,6 +48,8 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	public static final String DEFAULT_ADAPTER = "defaultAdapter";
 	public static final String DEFAULT_ENCODING = "utf8";
 	public static final long WAIT_TIME_OUT = 3000;//请求等待时间，单位毫秒
+	
+	private static final int HTTP_GET = 1;
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private CloseableHttpAsyncClient httpClient;
@@ -79,7 +87,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		Group group = this.groupManage.getGroupInfoByGid(gid);
 		if(group == null){
 			HomeResponse response = new HomeResponse();
-			response.setCode(-1);
+			response.setCode(1004);
 			response.setMsg("小区未开通服务或者小区信息不存在");
 			
 			return response;
@@ -88,7 +96,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		Map<Merchant, MerchantApi> merchantApiMap = this.merchantManage.getMerchantAvailableTimeApi(serviceType, goodsId, group.getCityId(), group.getDistrictId(), group.getPlateId());
 		if(merchantApiMap == null || merchantApiMap.size() == 0){
 			HomeResponse response = new HomeResponse();
-			response.setCode(-1);
+			response.setCode(1004);
 			response.setMsg("抱歉，本地点没有提供服务的供应商");
 			
 			return response;
@@ -110,14 +118,8 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			//执行请求，非阻塞方式
 			OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(entry.getKey(), resultParser);
 			handlers.add(handler);
-			HttpPost httpPost = new HttpPost(api.getApiUrl());
-			Map<String, String> param = paramParser.getServiceAvailableTimeParam(entry.getKey(), serviceType, group.getCityId(), longitude, latitude);
-			
-			try {
-				FastHttpUtils.executeHttpPostReturnString(httpClient, httpPost, param, DEFAULT_ENCODING, handler, false);
-			} catch (Exception e) {
-				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
-			}
+			Map<String, String> param = paramParser.getServiceAvailableTimeParam(entry.getKey(), serviceType, group.getCityId(), longitude, latitude, api.getVersion());
+		    this.executeHttpRequst(api, param, handler, HTTP_GET);
 		}
 		//解析并合并结果
 		HomeResponse response = new HomeResponse();
@@ -153,8 +155,25 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	}
 
 	@Override
-	public HomeResponse createOrder(Merchant merchant, int serviceType, OrderInfo orderInfo) {
-		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.CREATE_ORDER);
+	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, int gid, String longitude,
+			String latitude, String serviceStartTime) {
+		//查询小区信息
+		Group group = this.groupManage.getGroupInfoByGid(gid);
+		if(group == null){
+			HomeResponse response = new HomeResponse();
+			response.setCode(-1);
+			response.setMsg("小区未开通服务或者小区信息不存在");
+			
+			return response;
+		}
+		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.IS_SERVICE_AVAILABLE);
+		if(api == null){
+			HomeResponse response = new HomeResponse();
+			response.setCode(2004);
+			response.setMsg("接口不存在");
+			
+			return response;
+		}
 		ParamAssembler paramParser = null;
 		ResultParser resultParser = null;
 		//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
@@ -167,15 +186,50 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		}
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
-		HttpPost httpPost = new HttpPost(api.getApiUrl());
-		Map<String, String> param = paramParser.createOrderParam(merchant, serviceType, orderInfo);
-		
-		try {
-			FastHttpUtils.executeHttpPostReturnString(httpClient, httpPost, param, DEFAULT_ENCODING, handler, false);
-		} catch (Exception e) {
-			log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
-		}
+		Map<String, String> param = paramParser.isServiceAvailableParam(merchant, serviceType, group.getCityId(), longitude, latitude, serviceStartTime, api.getVersion());
+		this.executeHttpRequst(api, param, handler, HTTP_GET);
 		String content = handler.get();
+		if(content == null || content.isEmpty()){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("请求接口失败");
+			return response;
+		}
+		HomeResponse response = handler.getResultParser().isServiceAvailableResult(merchant, content);
+		return response;
+	}
+
+	@Override
+	public HomeResponse createOrder(Merchant merchant, int serviceType, OrderInfo orderInfo) {
+		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.CREATE_ORDER);
+		if(api == null){
+			HomeResponse response = new HomeResponse();
+			response.setCode(0);
+			response.setMsg("接口不存在");
+			
+			return response;
+		}
+		ParamAssembler paramParser = null;
+		ResultParser resultParser = null;
+		//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
+		if(api.getAdapterName() == null || api.getAdapterName().isEmpty()){
+			paramParser = this.paramAssemblerMap.get(DEFAULT_ADAPTER);
+			resultParser = this.resultParserMap.get(DEFAULT_ADAPTER);
+		}else {
+			paramParser = this.paramAssemblerMap.get(api.getAdapterName());
+			resultParser = this.resultParserMap.get(api.getAdapterName());
+		}
+		//执行请求，非阻塞方式
+		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
+		Map<String, String> param = paramParser.createOrderParam(merchant, serviceType, orderInfo, api.getVersion());
+		this.executeHttpRequst(api, param, handler, HTTP_GET);
+		String content = handler.get();
+		if(content == null || content.isEmpty()){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("请求接口失败");
+			return response;
+		}
 		HomeResponse response = handler.getResultParser().createOrderResult(merchant, content);
 		return response;
 	}
@@ -183,6 +237,13 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	@Override
 	public HomeResponse cancelOrder(Merchant merchant, int serviceType, String orderId) {
 		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.CANCEL_ORDER);
+		if(api == null){
+			HomeResponse response = new HomeResponse();
+			response.setCode(2004);
+			response.setMsg("接口不存在");
+			
+			return response;
+		}
 		ParamAssembler paramParser = null;
 		ResultParser resultParser = null;
 		//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
@@ -195,22 +256,29 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		}
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
-		HttpPost httpPost = new HttpPost(api.getApiUrl());
-		Map<String, String> param = paramParser.cancelOrderParam(merchant, serviceType, orderId);
-		
-		try {
-			FastHttpUtils.executeHttpPostReturnString(httpClient, httpPost, param, DEFAULT_ENCODING, handler, false);
-		} catch (Exception e) {
-			log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
-		}
+		Map<String, String> param = paramParser.cancelOrderParam(merchant, serviceType, orderId, api.getVersion());
+		this.executeHttpRequst(api, param, handler, HTTP_GET);
 		String content = handler.get();
+		if(content == null || content.isEmpty()){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("请求接口失败");
+			return response;
+		}
 		HomeResponse response = handler.getResultParser().cancelOrderResult(merchant, content);
 		return response;
 	}
 
 	@Override
-	public HomeResponse payNotice(Merchant merchant, int serviceType, String orderId) {
+	public HomeResponse payNotice(Merchant merchant, int serviceType, String orderId, String settlePrice) {
 		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.PAY_NOTICE);
+		if(api == null){
+			HomeResponse response = new HomeResponse();
+			response.setCode(2004);
+			response.setMsg("接口不存在");
+			
+			return response;
+		}
 		ParamAssembler paramParser = null;
 		ResultParser resultParser = null;
 		//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
@@ -223,15 +291,15 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		}
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
-		HttpPost httpPost = new HttpPost(api.getApiUrl());
-		Map<String, String> param = paramParser.payNoticeParam(merchant, serviceType, orderId);
-		
-		try {
-			FastHttpUtils.executeHttpPostReturnString(httpClient, httpPost, param, DEFAULT_ENCODING, handler, false);
-		} catch (Exception e) {
-			log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
-		}
+		Map<String, String> param = paramParser.payNoticeParam(merchant, serviceType, orderId, settlePrice, api.getVersion());
+		this.executeHttpRequst(api, param, handler, HTTP_GET);
 		String content = handler.get();
+		if(content == null || content.isEmpty()){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("请求接口失败");
+			return response;
+		}
 		HomeResponse response = handler.getResultParser().payNoticeResult(merchant, content);
 		return response;
 	}
@@ -239,6 +307,13 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	@Override
 	public HomeResponse evaluateOrder(Merchant merchant, int serviceType, String orderId, int score, String comments) {
 		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.EVALUATE_ORDER);
+		if(api == null){
+			HomeResponse response = new HomeResponse();
+			response.setCode(2004);
+			response.setMsg("接口不存在");
+			
+			return response;
+		}
 		ParamAssembler paramParser = null;
 		ResultParser resultParser = null;
 		//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
@@ -251,17 +326,57 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		}
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
-		HttpPost httpPost = new HttpPost(api.getApiUrl());
-		Map<String, String> param = paramParser.evaluateOrderParam(merchant, serviceType, orderId, score, comments);
-		
-		try {
-			FastHttpUtils.executeHttpPostReturnString(httpClient, httpPost, param, DEFAULT_ENCODING, handler, false);
-		} catch (Exception e) {
-			log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
-		}
+		Map<String, String> param = paramParser.evaluateOrderParam(merchant, serviceType, orderId, score, comments, api.getVersion());
+		this.executeHttpRequst(api, param, handler, HTTP_GET);
 		String content = handler.get();
+		if(content == null || content.isEmpty()){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("请求接口失败");
+			return response;
+		}
 		HomeResponse response = handler.getResultParser().evaluateOrderResult(merchant, content);
 		return response;
+	}
+	
+	/**
+	 * 执行http method
+	 * @param api
+	 * @param param
+	 * @param handler
+	 * @param defaultMethod
+	 */
+	private void executeHttpRequst(MerchantApi api, Map<String, String> param, OpenHomeHttpCallbackHandler<String> handler, int defaultMethod){
+		int httpMethod = api.getHttpMethod();
+		if(httpMethod == 0){
+			httpMethod = defaultMethod;
+		}
+		if(httpMethod == HTTP_GET){//http get
+			StringBuilder url = new StringBuilder(api.getApiUrl());
+			if(url.indexOf("?") <0){
+				url.append("?");
+			}
+			for(Entry<String, String> entry2 : param.entrySet()){
+				url.append(entry2.getKey()).append("=").append(entry2.getValue()).append("&");
+			}
+			if(url.length() > 0){
+				url.deleteCharAt(url.length() - 1);
+			}
+			HttpGet httpGet = new HttpGet(url.toString());
+			try {
+				FastHttpUtils.executeHttpGetReturnString(httpClient, httpGet, DEFAULT_ENCODING, handler, false);
+			} catch (Exception e) {
+				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
+			}
+		}else{// http post
+			HttpPost httpPost = new HttpPost(api.getApiUrl());
+			try {
+				FastHttpUtils.executeHttpPostReturnString(httpClient, httpPost, param, DEFAULT_ENCODING, handler, false);
+			} catch (Exception e) {
+				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
+			}
+		}
+		
 	}
 
 }

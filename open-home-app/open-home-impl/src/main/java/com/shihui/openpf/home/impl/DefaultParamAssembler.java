@@ -3,17 +3,15 @@
  */
 package com.shihui.openpf.home.impl;
 
-import java.security.MessageDigest;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.shihui.openpf.common.util.AlgorithmUtil;
-import com.shihui.openpf.common.util.SignUtil;
 import org.apache.commons.beanutils.BeanMap;
 
 import com.shihui.openpf.common.model.Merchant;
+import com.shihui.openpf.common.util.SignUtil;
 import com.shihui.openpf.home.api.ParamAssembler;
 import com.shihui.openpf.home.model.OrderInfo;
 
@@ -33,15 +31,32 @@ public class DefaultParamAssembler implements ParamAssembler {
 	 */
 	@Override
 	public Map<String, String> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId,
-			String longitude, String latitude) {
+			String longitude, String latitude, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("cityId", String.valueOf(cityId));
 		param.put("serviceType", String.valueOf(serviceType));
 		param.put("longitude", longitude);
 		param.put("latitude", latitude);
-		param.put("md5Key", merchant.getMd5Key());
-		param.put("sign", SignUtil.genSign(param));
+		param.put("version", version);
+
+		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
+		return param;
+	}
+
+	@Override
+	public Map<String, String> isServiceAvailableParam(Merchant merchant, int serviceType, int cityId,
+			String longitude, String latitude, String serviceStartTime, String version) {
+		TreeMap<String, String> param = new TreeMap<>();
+		param.put("key", merchant.getMerchantKey());
+		param.put("cityId", String.valueOf(cityId));
+		param.put("serviceType", String.valueOf(serviceType));
+		param.put("longitude", longitude);
+		param.put("latitude", latitude);
+		param.put("version", version);
+		param.put("serviceStartTime", serviceStartTime);
+		//计算签名，必须最后计算
+		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
 
 		return param;
 	}
@@ -55,7 +70,7 @@ public class DefaultParamAssembler implements ParamAssembler {
 	 * com.shihui.openpf.home.model.OrderInfo)
 	 */
 	@Override
-	public Map<String, String> createOrderParam(Merchant merchant, int serviceType, OrderInfo orderInfo) {
+	public Map<String, String> createOrderParam(Merchant merchant, int serviceType, OrderInfo orderInfo, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("serviceType", String.valueOf(serviceType));
@@ -65,9 +80,10 @@ public class DefaultParamAssembler implements ParamAssembler {
 		for(Entry<Object, Object> entry : set){
 			param.put(entry.getKey().toString(), entry.getValue().toString());
 		}
-		param.put("md5Key", merchant.getMd5Key());
-		param.put("sign", SignUtil.genSign(param));
-
+		param.put("version", version);
+		//计算签名，必须最后计算
+		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
+		
 		return param;
 	}
 
@@ -79,14 +95,15 @@ public class DefaultParamAssembler implements ParamAssembler {
 	 * openpf.common.model.Merchant, int, java.lang.String)
 	 */
 	@Override
-	public Map<String, String> cancelOrderParam(Merchant merchant, int serviceType, String orderId) {
+	public Map<String, String> cancelOrderParam(Merchant merchant, int serviceType, String orderId, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("serviceType", String.valueOf(serviceType));
 		param.put("orderId", orderId);
-		param.put("md5Key", merchant.getMd5Key());
-		param.put("sign", SignUtil.genSign(param));
-
+		param.put("version", version);
+		//计算签名，必须最后计算
+		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
+		
 		return param;
 	}
 
@@ -97,13 +114,14 @@ public class DefaultParamAssembler implements ParamAssembler {
 	 * openpf.common.model.Merchant, int, java.lang.String)
 	 */
 	@Override
-	public Map<String, String> payNoticeParam(Merchant merchant, int serviceType, String orderId) {
+	public Map<String, String> payNoticeParam(Merchant merchant, int serviceType, String orderId, String settlePrice, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("serviceType", String.valueOf(serviceType));
 		param.put("orderId", orderId);
-		param.put("md5Key", merchant.getMd5Key());
-		param.put("sign", SignUtil.genSign(param));
+		param.put("version", version);
+		//计算签名，必须最后计算
+		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
 		
 		return param;
 	}
@@ -118,15 +136,16 @@ public class DefaultParamAssembler implements ParamAssembler {
 	 */
 	@Override
 	public Map<String, String> evaluateOrderParam(Merchant merchant, int serviceType, String orderId, int score,
-			String comments) {
+			String comments, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("serviceType", String.valueOf(serviceType));
 		param.put("orderId", orderId);
 		param.put("score",String.valueOf(score));
 		param.put("comments", comments);
-		param.put("md5Key", merchant.getMd5Key());
-		param.put("sign", SignUtil.genSign(param));
+		param.put("version", version);
+		//计算签名，必须最后计算
+		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
 		
 		return param;
 	}
@@ -135,8 +154,5 @@ public class DefaultParamAssembler implements ParamAssembler {
 	public String getAdapterName() {
 		return HomeServProviderServiceImpl.DEFAULT_ADAPTER;
 	}
-
-
-
 
 }

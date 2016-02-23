@@ -25,6 +25,11 @@ public class HttpCallbackHandler<T> implements IHttpCallbackHandler<T> {
      * 是否成功
      */
     protected boolean isSuccessed = false;
+    
+    /**
+     * http 状态码
+     */
+    protected int statusCode;
 
     HttpRequestBase http ;
     /**
@@ -40,9 +45,10 @@ public class HttpCallbackHandler<T> implements IHttpCallbackHandler<T> {
     }
 
     @Override
-    public void completed(T respBody) {
+    public void completed(int statusCode, T respBody) {
         http.releaseConnection();
         this.result = respBody;
+        this.statusCode = statusCode;
         latch.countDown();//-1
         this.setIsSuccess(true);
     }
@@ -87,5 +93,10 @@ public class HttpCallbackHandler<T> implements IHttpCallbackHandler<T> {
     public void setHttpRequestConnection(HttpRequestBase http) {
         this.http = http;
     }
+
+	@Override
+	public int getStatusCode() {
+		return this.statusCode;
+	}
 
 }

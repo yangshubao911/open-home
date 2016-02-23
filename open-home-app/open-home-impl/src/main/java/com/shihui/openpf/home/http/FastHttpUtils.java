@@ -121,6 +121,7 @@ public final class FastHttpUtils {
 				public void completed(HttpResponse resp) {
 					HttpEntity entity = resp.getEntity();
 					String body = "";
+					int statusCode = resp.getStatusLine().getStatusCode();
 					try {
 						if (entity != null) {
 							final InputStream instream = entity.getContent();
@@ -138,7 +139,7 @@ public final class FastHttpUtils {
 								EntityUtils.consume(entity);
 							}
 						}
-						handler.completed(body);
+						handler.completed(statusCode, body);
 					} catch (ParseException | IOException e) {
 						handler.failed(e);
 					}
@@ -334,6 +335,7 @@ public final class FastHttpUtils {
 				@Override
 				public void completed(HttpResponse resp) {
 					HttpEntity responseEntity = resp.getEntity();
+					int statusCode = resp.getStatusLine().getStatusCode();
 					String body = "";
 					try {
 						if (responseEntity != null) {
@@ -353,7 +355,7 @@ public final class FastHttpUtils {
 								EntityUtils.consume(responseEntity);
 							}
 						}
-						handler.completed(body);
+						handler.completed(statusCode, body);
 					} catch (ParseException | IOException e) {
 						handler.failed(e);
 					}

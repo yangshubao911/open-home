@@ -22,12 +22,21 @@ public class DefaultResultParser implements ResultParser {
 		return JSON.parseObject(result, HomeResponse.class);
 	}
 
+	@Override
+	public HomeResponse isServiceAvailableResult(Merchant merchant, String result) {
+		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
+		response.setMerchant(merchant);
+		return response;
+	}
+
 	/* (non-Javadoc)
 	 * @see com.shihui.openpf.home.api.ResultParser#createOrderResult(com.shihui.openpf.common.model.Merchant, java.lang.String)
 	 */
 	@Override
 	public HomeResponse createOrderResult(Merchant merchant, String result) {
-		return JSON.parseObject(result, HomeResponse.class);
+		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
+		response.setMerchant(merchant);
+		return response;
 	}
 
 	/* (non-Javadoc)
@@ -35,7 +44,9 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse cancelOrderResult(Merchant merchant, String result) {
-		return JSON.parseObject(result, HomeResponse.class);
+		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
+		response.setMerchant(merchant);
+		return response;
 	}
 
 	/* (non-Javadoc)
@@ -43,7 +54,9 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse payNoticeResult(Merchant merchant, String result) {
-		return JSON.parseObject(result, HomeResponse.class);
+		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
+		response.setMerchant(merchant);
+		return response;
 	}
 
 	/* (non-Javadoc)
@@ -51,7 +64,9 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse evaluateOrderResult(Merchant merchant, String result) {
-		return JSON.parseObject(result, HomeResponse.class);
+		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
+		response.setMerchant(merchant);
+		return response;
 	}
 
 	@Override

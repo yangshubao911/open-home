@@ -17,7 +17,7 @@ public class HomeResponse implements Serializable {
 	private static final long serialVersionUID = 2801145761444410744L;
     
 	private Merchant merchant;
-	private int code;// 查询结果
+	private int code = -1;// 查询结果
 	private String msg;// 结果描述
 	private String result;// 查询内容
 

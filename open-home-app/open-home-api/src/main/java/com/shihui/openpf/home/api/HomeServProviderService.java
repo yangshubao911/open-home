@@ -25,6 +25,16 @@ public interface HomeServProviderService {
 	public HomeResponse getServiceAvailableTime(int serviceType, int goodsId, int gid, String longitude, String latitude);
 	
 	/**
+	 * @param serviceType 上门服务业务类型
+	 * @param goodsId 商品id
+	 * @param gid 小区id 
+	 * @param longitude 高德坐标经度
+	 * @param latitude 高德坐标纬度
+	 * @return
+	 */
+	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, int gid, String longitude, String latitude,String serviceStartTime);
+	
+	/**
 	 * 创建订单
 	 * @param merchant 商户标识，开放平台为商户分配
 	 * @param serviceType 上门服务业务类型
@@ -47,9 +57,10 @@ public interface HomeServProviderService {
 	 * @param merchant 商户标识，开放平台为商户分配
 	 * @param serviceType 上门服务业务类型
 	 * @param orderId 订单ID
+	 * @param settlePrice 支付金额
 	 * @return
 	 */
-	public HomeResponse payNotice(Merchant merchant , int serviceType, String orderId);
+	public HomeResponse payNotice(Merchant merchant , int serviceType, String orderId, String settlePrice);
 	
 	/**
 	 * 评价订单接口

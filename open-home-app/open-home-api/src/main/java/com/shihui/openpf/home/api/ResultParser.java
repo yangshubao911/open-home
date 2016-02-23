@@ -33,6 +33,14 @@ public interface ResultParser {
 	HomeResponse getServiceAvailableTimeResult(Merchant merchant, String result);
 	
 	/**
+	 * 服务是否可用
+	 * @param merchant
+	 * @param result
+	 * @return
+	 */
+	HomeResponse isServiceAvailableResult(Merchant merchant, String result);
+	
+	/**
 	 * 创建订单
 	 * @param key 商户标识，开放平台为商户分配
 	 * @param serviceType 上门服务业务类型

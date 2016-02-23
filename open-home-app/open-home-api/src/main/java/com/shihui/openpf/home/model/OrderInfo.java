@@ -11,7 +11,6 @@ import java.util.Map;
  * @version 1.0 Created at: 2016年1月28日 下午3:53:39
  */
 public class OrderInfo {
-	private String orderId;
 	private Integer cityId;
 	private String serviceAddress;
 	private String detailAddress;
@@ -25,14 +24,6 @@ public class OrderInfo {
 	private Integer goodsId;
 	private String remark;
 	private Map<String, Object> extend;
-
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
 
 	public Integer getCityId() {
 		return cityId;

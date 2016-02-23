@@ -3,68 +3,75 @@ package com.shihui.openpf.home.http;
 import org.apache.http.client.methods.HttpRequestBase;
 
 /**
- * 请求HTTP 回调处理接口
- * Created by SongJian on 2016/1/4.
+ * 请求HTTP 回调处理接口 Created by SongJian on 2016/1/4.
  */
 public interface IHttpCallbackHandler<T> {
 
-    /**
-     * 处理异常时，执行该方法,设置isSuccess=false
-     *
-     * @return
-     */
-    void failed(Exception e);
+	/**
+	 * 处理异常时，执行该方法,设置isSuccess=false
+	 *
+	 * @return
+	 */
+	void failed(Exception e);
 
-    /**
-     * 处理正常时，执行该方法
-     *
-     * @return
-     */
-    void completed(T respBody);
+	/**
+	 * 处理正常时，执行该方法
+	 *
+	 * @return
+	 */
+	void completed(int statusCode, T respBody);
 
-    /**
-     * 处理取消时，执行该方法
-     *
-     * @return
-     */
-    void cancelled();
+	/**
+	 * 处理取消时，执行该方法
+	 *
+	 * @return
+	 */
+	void cancelled();
 
-    /**
-     * 是否成功,注意默认成功
-     *
-     * @return
-     */
-    boolean isSuccess();
+	/**
+	 * 是否成功,注意默认成功
+	 *
+	 * @return
+	 */
+	boolean isSuccess();
 
-    /**
-     *
-     * @param isSuccess
-     */
-    void setIsSuccess(boolean isSuccess);
+	/**
+	 *
+	 * @param isSuccess
+	 */
+	void setIsSuccess(boolean isSuccess);
 
-    /**
-     * 取得异常信息
-     */
-    Throwable getExceptions();
+	/**
+	 * 取得异常信息
+	 */
+	Throwable getExceptions();
 
-    /**
-     * 得到返回值
-     *
-     * @return
-     */
-    T get();
+	/**
+	 * 得到返回值
+	 *
+	 * @return
+	 */
+	T get();
 
-    /**
-     * 默认String 1.String 2.byte[] 3.OutputStream
-     *
-     * @return
-     */
-    int getResultType();
+	/**
+	 * 获得http statuscode
+	 * 
+	 * @return
+	 */
+	int getStatusCode();
 
-    /**
-     * 关闭这个链接
-     * @param http
-     */
-    void setHttpRequestConnection(HttpRequestBase http);
+	/**
+	 * 默认String 1.String 2.byte[] 3.OutputStream
+	 *
+	 * @return
+	 */
+	int getResultType();
+
+	/**
+	 * 关闭这个链接
+	 * 
+	 * @param http
+	 */
+	void setHttpRequestConnection(HttpRequestBase http);
 
 }
