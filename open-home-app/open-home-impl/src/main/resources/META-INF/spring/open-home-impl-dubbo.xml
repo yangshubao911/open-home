@@ -12,5 +12,7 @@
 	<dubbo:reference id="groupManage" interface="com.shihui.openpf.common.dubbo.api.GroupManage" />
 	<!-- 供应商地接口 -->
 	<dubbo:reference id="merchantManage"  interface="com.shihui.openpf.common.dubbo.api.MerchantManage" />
-	
+	<!-- 供应商服务关联接口 -->
+	<dubbo:service id="merchantBusinessManage" interface="com.shihui.openpf.common.dubbo.api.MerchantBusinessManage"/>
+
 </beans>
