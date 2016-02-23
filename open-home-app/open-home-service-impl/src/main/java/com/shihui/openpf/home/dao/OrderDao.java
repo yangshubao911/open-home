@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @Repository
 public class OrderDao extends AbstractDao<Order> {
 
-    public List<Order> queryOrder(Order order , Long startTime, Long endTime, int page , int size) {
+    public List<Order> queryOrder(Order order , String startTime, String endTime, int page , int size) {
         StringBuilder sql = new StringBuilder("select * from home_order where 1 = 1 ");
         Field[] fields = Order.class.getDeclaredFields();
         try {
@@ -40,13 +41,13 @@ public class OrderDao extends AbstractDao<Order> {
                 valus.add(value);
 
             }
-            if(startTime!=null) {
+            if(startTime!=null||!startTime.equals("")) {
                 sql.append("and create_time >= ? ");
-                valus.add(new Date(startTime));
+                valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime));
             }
-            if(endTime!=null) {
+            if(endTime!=null||!endTime.equals("")) {
                 sql.append("and create_time <= ? ");
-                valus.add(new Date(endTime));
+                valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
 
             sql.append("limit ").append(page*size).append(",").append(size);
@@ -56,7 +57,7 @@ public class OrderDao extends AbstractDao<Order> {
         return null;
     }
 
-    public int countQueryOrder(Order order, Long startTime, Long endTime) {
+    public int countQueryOrder(Order order, String startTime, String endTime) {
         StringBuilder sql = new StringBuilder("select * from home_order where 1 = 1 ");
         Field[] fields = Order.class.getDeclaredFields();
         try {
@@ -74,16 +75,18 @@ public class OrderDao extends AbstractDao<Order> {
                     fieldName = columnAno.name();
                 if (fieldName == null)
                     fieldName = field.getName();
-                sql.append("and ").append(fieldName).append(" = ? ");
-                valus.add(value);
+                if(value!=null) {
+                    sql.append("and ").append(fieldName).append(" = ? ");
+                    valus.add(value);
+                }
             }
-            if(startTime!=null) {
+            if(startTime!=null||!startTime.equals("")) {
                 sql.append("and create_time >= ? ");
-                valus.add(new Date(startTime));
+                valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime));
             }
-            if(endTime!=null) {
+            if(endTime!=null||!endTime.equals("")) {
                 sql.append("and create_time <= ? ");
-                valus.add(new Date(endTime));
+                valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
             return jdbcTemplate.queryForInt(sql.toString(), valus.toArray());
         } catch (Exception e) {
@@ -113,7 +116,7 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 异常订单数量
      */
     public int countUnusual(){
-        String sql = "select count(*) from order where status = ?";
+        String sql = "select count(*) from order where order_status = ?";
         return super.queryCount(sql, OrderStatusEnum.OrderRefunding.getValue());
     }
 
@@ -123,7 +126,7 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 异常订单数量
      */
     public List<Order> queryUnusual(){
-        String sql = "select * from order where status = ?";
+        String sql = "select * from order where order_status = ?";
         return super.queryForList(sql, OrderStatusEnum.OrderRefunding.getValue());
     }
 

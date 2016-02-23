@@ -89,7 +89,7 @@ public class OrderManageImpl implements OrderManage {
      * @return 返回结果
      */
     @Override
-    public String queryOrderList(RequestContext rc, Order queryOrder, Long startTime, Long endTime, int page, int size) {
+    public String queryOrderList(RequestContext rc, Order queryOrder, String startTime, String endTime, int page, int size) {
         JSONObject result = new JSONObject();
         JSONArray orders_json = new JSONArray();
         //  Order queryOrder = JSON.parseObject(json, Order.class);

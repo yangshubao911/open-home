@@ -2,7 +2,11 @@ package com.shihui.openpf.home.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.shihui.openpf.common.dubbo.api.GroupManage;
+import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
+import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.model.Group;
+import com.shihui.openpf.common.model.Merchant;
+import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.util.StringUtil;
 import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Goods;
@@ -11,6 +15,7 @@ import com.shihui.openpf.home.service.api.GoodsService;
 import me.weimi.api.commons.json.JSONArray;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,12 +26,14 @@ public class ClientServiceImpl implements ClientService {
 
     @Resource
     GroupManage groupManage;
-
     @Resource
     GoodsService goodsService;
-
     @Resource
     GoodsCache goodsCache;
+    @Resource
+    MerchantManage merchantManage;
+    @Resource
+    MerchantBusinessManage merchantBusinessManage;
 
     /**
      * 客户端查询商品列表
@@ -49,10 +56,17 @@ public class ClientServiceImpl implements ClientService {
             good_json.put("goodsVersion",good.getGoodsVersion());
             good_json.put("goodsName",good.getGoodsName());
             good_json.put("goodsSubtitle",good.getGoodsSubtitle());
+
+            //活动计算价格
+            //
+            //活动计算价格
             good_json.put("originalPrice", good.getPrice());
             String pay = StringUtil.decimalSub(good.getPrice(),new String[]{good.getShOffSet()});
             good_json.put("pay",pay);
             good_json.put("shOffset",good.getShOffSet());
+
+
+
             good_json.put("sellNum",goodsCache.querySell(good.getCategoryId()));
             goods_json.add(good_json);
         }
@@ -67,6 +81,25 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId) {
+
+        Group group = groupManage.getGroupInfoByGid(groupId);
+        int cityId = group.getCityId();
+
+        MerchantBusiness search = new MerchantBusiness();
+        search.setServiceId(serviceId);
+        search.setStatus(1);
+        List<MerchantBusiness> merchantBusinesses =  merchantBusinessManage.queryList(search);
+        List<Integer> searchlist = new ArrayList<>();
+        if(merchantBusinesses==null||merchantBusinesses.size()==0) return null;
+        for(MerchantBusiness merchantBusiness : merchantBusinesses){
+            searchlist.add(merchantBusiness.getMerchantId());
+        }
+        List<Merchant> merchantList =  merchantManage.batchQuery(searchlist);
+        if(merchantList==null||merchantList.size()==0) return null;
+        for(Merchant merchant : merchantList){
+
+        }
+
         return null;
     }
 }

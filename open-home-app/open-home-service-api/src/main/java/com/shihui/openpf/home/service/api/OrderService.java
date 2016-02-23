@@ -45,14 +45,14 @@ public interface OrderService {
 	 * @param order
 	 * @return 订单列表
 	 */
-	List<Order> queryOrderList(Order order, Long startTime , Long endTime, int page, int size);
+	List<Order> queryOrderList(Order order, String startTime , String endTime, int page, int size);
 
 	/**
 	 * 查询订单总数
 	 * @param order
 	 * @return 订单数
 	 */
-	int countQueryOrder(Order order, Long startTime , Long endTime);
+	int countQueryOrder(Order order, String startTime , String endTime);
 
 	/**
 	 * 根据条件分页查询订单
@@ -69,7 +69,6 @@ public interface OrderService {
 
 	/**
 	 * 查询异常订单
-	 * @param orderId    订单Id
 	 * @return 订单列表
 	 */
 	List<Order>  queryUnusual();

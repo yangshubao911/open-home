@@ -44,8 +44,8 @@ public class OrderResource {
                            @ParamDesc(desc = "商户id", isRequired = false) @QueryParam("merchantId") String merchantId,
                            @ParamDesc(desc = "订单id", isRequired = false) @QueryParam("orderId") String orderId,
                            @ParamDesc(desc = "订单状态", isRequired = false) @QueryParam("status") String status,
-                           @ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") Long startTime,
-                           @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") Long endTime,
+                           @ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") String startTime,
+                           @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") String endTime,
                            @ParamDesc(desc = "页标", isRequired = false) @QueryParam("cursor") @DefaultValue("1") int cursor ,
                            @ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("count") @DefaultValue("10") int count) {
 

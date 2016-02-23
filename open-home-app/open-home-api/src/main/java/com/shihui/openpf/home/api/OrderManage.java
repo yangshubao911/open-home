@@ -24,7 +24,7 @@ public interface OrderManage {
      *
      * @return 返回结果
      */
-    public String queryOrderList(RequestContext rc, Order order, Long startTime, Long endTime ,int page, int size);
+    public String queryOrderList(RequestContext rc, Order order, String startTime, String endTime ,int page, int size);
 
     /**
      * 查询订单详情
