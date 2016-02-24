@@ -17,10 +17,10 @@ public class Order implements Serializable {
 
 	@Id
 	@Column(name="order_id")
-	private long orderId;
+	private Long orderId;
 
 	@Column(name="campaign_id")
-	private int campaignId;
+	private Integer campaignId;
 
 	@Column(name="create_time")
 	private Date createTime;
@@ -29,28 +29,28 @@ public class Order implements Serializable {
 	private String extend;
 
 	@Column(name="gid")
-	private int gid;
+	private Integer gid;
 
 	@Column(name="goods_id")
-	private int goodsId;
+	private Integer goodsId;
 
 	@Column(name="goods_num")
-	private int goodsNum;
+	private Integer goodsNum;
 
 	@Column(name="goods_version")
-	private int goodsVersion;
+	private Integer goodsVersion;
 
 	@Column(name="merchant_id")
-	private int merchantId;
+	private Integer merchantId;
 
 	@Column(name="order_status")
-	private byte orderStatus;
+	private Byte orderStatus;
 
 	@Column(name="pay")
 	private String pay;
 
 	@Column(name="payment_type")
-	private int paymentType;
+	private Integer paymentType;
 
 	@Column(name="price")
 	private String price;
@@ -62,10 +62,10 @@ public class Order implements Serializable {
 	private Date updateTime;
 
 	@Column(name="user_id")
-	private long userId;
+	private Long userId;
 
 	@Column(name="service_id")
-	private int service_id;
+	private Integer service_id;
 
 	@Column(name="remark")
 	private String remark;
@@ -76,24 +76,24 @@ public class Order implements Serializable {
 	public Order() {
 	}
 
-	public long getOrderId() {
-		return this.orderId;
+	public Long getOrderId() {
+		return orderId;
 	}
 
-	public void setOrderId(long orderId) {
+	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
 	}
 
-	public int getCampaignId() {
-		return this.campaignId;
+	public Integer getCampaignId() {
+		return campaignId;
 	}
 
-	public void setCampaignId(int campaignId) {
+	public void setCampaignId(Integer campaignId) {
 		this.campaignId = campaignId;
 	}
 
 	public Date getCreateTime() {
-		return this.createTime;
+		return createTime;
 	}
 
 	public void setCreateTime(Date createTime) {
@@ -101,79 +101,79 @@ public class Order implements Serializable {
 	}
 
 	public String getExtend() {
-		return this.extend;
+		return extend;
 	}
 
 	public void setExtend(String extend) {
 		this.extend = extend;
 	}
 
-	public int getGid() {
-		return this.gid;
+	public Integer getGid() {
+		return gid;
 	}
 
-	public void setGid(int gid) {
+	public void setGid(Integer gid) {
 		this.gid = gid;
 	}
 
-	public int getGoodsId() {
-		return this.goodsId;
+	public Integer getGoodsId() {
+		return goodsId;
 	}
 
-	public void setGoodsId(int goodsId) {
+	public void setGoodsId(Integer goodsId) {
 		this.goodsId = goodsId;
 	}
 
-	public int getGoodsNum() {
-		return this.goodsNum;
+	public Integer getGoodsNum() {
+		return goodsNum;
 	}
 
-	public void setGoodsNum(int goodsNum) {
+	public void setGoodsNum(Integer goodsNum) {
 		this.goodsNum = goodsNum;
 	}
 
-	public int getGoodsVersion() {
-		return this.goodsVersion;
+	public Integer getGoodsVersion() {
+		return goodsVersion;
 	}
 
-	public void setGoodsVersion(int goodsVersion) {
+	public void setGoodsVersion(Integer goodsVersion) {
 		this.goodsVersion = goodsVersion;
 	}
 
-	public int getMerchantId() {
-		return this.merchantId;
+	public Integer getMerchantId() {
+		return merchantId;
 	}
 
-	public void setMerchantId(int merchantId) {
+	public void setMerchantId(Integer merchantId) {
 		this.merchantId = merchantId;
 	}
 
-	public byte getOrderStatus() {
-		return this.orderStatus;
+	public Byte getOrderStatus() {
+		return orderStatus;
 	}
 
-	public void setOrderStatus(byte orderStatus) {
+	public void setOrderStatus(Byte orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 
 	public String getPay() {
-		return this.pay;
+		return pay;
 	}
 
 	public void setPay(String pay) {
 		this.pay = pay;
 	}
 
-	public int getPaymentType() {
-		return this.paymentType;
+	public Integer getPaymentType() {
+		return paymentType;
 	}
 
-	public void setPaymentType(int paymentType) {
+	public void setPaymentType(Integer paymentType) {
 		this.paymentType = paymentType;
 	}
 
 	public String getPrice() {
-		return this.price;
+		return price;
 	}
 
 	public void setPrice(String price) {
@@ -181,7 +181,7 @@ public class Order implements Serializable {
 	}
 
 	public String getShOffSet() {
-		return this.shOffSet;
+		return shOffSet;
 	}
 
 	public void setShOffSet(String shOffSet) {
@@ -189,26 +189,26 @@ public class Order implements Serializable {
 	}
 
 	public Date getUpdateTime() {
-		return this.updateTime;
+		return updateTime;
 	}
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-	public int getService_id() {
+	public Integer getService_id() {
 		return service_id;
 	}
 
-	public void setService_id(int service_id) {
+	public void setService_id(Integer service_id) {
 		this.service_id = service_id;
 	}
 

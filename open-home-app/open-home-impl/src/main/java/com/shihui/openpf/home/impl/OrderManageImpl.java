@@ -154,6 +154,7 @@ public class OrderManageImpl implements OrderManage {
         JSONObject result = new JSONObject();
         Order order = orderService.queryOrder(orderId);
 
+        if(order==null) return null;
         PaymentTypeEnum paymentTypeEnum = null;
         if (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
             paymentTypeEnum = PaymentTypeEnum.Alipay;
