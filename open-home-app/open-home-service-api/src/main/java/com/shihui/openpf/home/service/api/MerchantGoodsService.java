@@ -58,5 +58,14 @@ public interface MerchantGoodsService {
 	 * @return
 	 */
 	public String batchUpdateAddedGoods(List<MerchantGoods> list);
+	
+	/**
+	 * 查询商户已绑定商品
+	 * @param merchantId
+	 * @param serviceId
+	 * @param categoryId
+	 * @return
+	 */
+	List<MerchantGoods> findByConditions(Integer merchantId, Integer serviceId, Integer categoryId);
 
 }

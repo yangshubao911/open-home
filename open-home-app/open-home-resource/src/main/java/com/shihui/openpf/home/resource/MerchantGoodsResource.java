@@ -12,11 +12,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.service.api.MerchantGoodsService;
+import com.shihui.openpf.home.util.SimpleResponse;
 
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
@@ -30,6 +33,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
 @Controller
 @Path("/v2/openpf/home/merchant/goods")
 public class MerchantGoodsResource {
+	private Logger log = LoggerFactory.getLogger(getClass());
 
     @Resource
     MerchantGoodsService merchantGoodsService;
@@ -41,12 +45,17 @@ public class MerchantGoodsResource {
     public String list(
             @Context RequestContext rc,
             @ParamDesc(desc = "商户ID", isRequired = true) @QueryParam("merchant_id") Integer merchant_id,
-            @ParamDesc(desc = "业务ID", isRequired = true) @QueryParam("service_id") Integer service_id
+            @ParamDesc(desc = "业务ID", isRequired = true) @QueryParam("service_id") Integer service_id,
+            @ParamDesc(desc = "商品分类ID", isRequired = false) @QueryParam("category_id") Integer category_id
     ){
-        MerchantGoods merchantGoods = new MerchantGoods();
-        merchantGoods.setMerchantId(merchant_id);
-        merchantGoods.setServiceId(service_id);
-        return JSON.toJSONString(merchantGoodsService.queryMerchantGoodsList(merchantGoods));
+        List<MerchantGoods> list;
+		try {
+			list = merchantGoodsService.findByConditions(merchant_id, service_id, category_id);
+		} catch (Exception e) {
+			log.error("查询商户商品遗产", e);
+			return new SimpleResponse(1, "查询失败").toString();
+		}
+        return JSON.toJSONString(list);
     }
 
 

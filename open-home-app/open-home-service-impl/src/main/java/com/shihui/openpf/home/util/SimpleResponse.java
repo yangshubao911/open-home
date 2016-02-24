@@ -33,4 +33,11 @@ public class SimpleResponse {
 	public void setMsg(Object msg) {
 		this.msg = msg;
 	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"status\":").append(status).append(",\"msg\":\"").append(msg).append("\"}");
+		return sb.toString();
+	}
 }

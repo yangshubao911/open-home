@@ -44,12 +44,17 @@ public class MerchantCategoryResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String list(
             @Context RequestContext rc,
-            @ParamDesc(desc = "业务id", isRequired = true) @QueryParam("service_id") int service_id,
-            @ParamDesc(desc = "商户id", isRequired = true) @QueryParam("merchant_id") int merchant_id
+            @ParamDesc(desc = "业务id", isRequired = true) @QueryParam("service_id") Integer service_id,
+            @ParamDesc(desc = "商户id", isRequired = true) @QueryParam("merchant_id") Integer merchant_id
     ){
-        MerchantCategory merchantCategory = new MerchantCategory();
-        merchantCategory.setMerchantId(merchant_id);
-        return JSON.toJSONString(merchantCategoryService.queryCategoryList(merchantCategory));
+    	List<MerchantCategory> list;
+		try {
+			list = merchantCategoryService.queryByConditions(merchant_id, service_id);
+		} catch (Exception e) {
+			log.error("查询商户商品分类异常", e);
+			return new SimpleResponse(1, "查询失败").toString();
+		}
+        return JSON.toJSONString(list);
     }
 
 

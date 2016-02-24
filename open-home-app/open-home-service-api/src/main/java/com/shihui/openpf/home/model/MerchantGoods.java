@@ -1,11 +1,13 @@
 package com.shihui.openpf.home.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.io.Serializable;
+import javax.persistence.Transient;
+
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * Created by zhoutc on 2016/1/26.
@@ -18,6 +20,10 @@ public class MerchantGoods implements Serializable {
     @JSONField(name="goods_id")
     @Column(name="goods_id")
     private Integer goodsId;
+    
+    @Transient
+    @JSONField(name="goods_name")
+    private String goodsName;
 
     private Integer status;
 
@@ -36,7 +42,10 @@ public class MerchantGoods implements Serializable {
     @JSONField(name="category_id")
     @Column(name="category_id")
     private Integer categoryId;
-
+    
+    @Transient
+    @JSONField(name="category_name")
+    private String categoryName;
 
     public Integer getGoodsId() {
         return goodsId;
@@ -85,4 +94,20 @@ public class MerchantGoods implements Serializable {
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
+
+	public String getGoodsName() {
+		return goodsName;
+	}
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
 }
