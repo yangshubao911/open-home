@@ -60,16 +60,22 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 
     /**
      * 创建商户业务商品绑定信息
+     *
      * @param merchantGoods 商户业务商品绑定信息
      * @return 创建结果
      */
     @Override
     public String createMerchantGoods(MerchantGoods merchantGoods) {
-        if(merchantGoodsDao.insert(merchantGoods)>0){
-            return JSON.toJSONString(new SimpleResponse(0, "创建成功"));
-        }else {
-            return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
+        try {
+            boolean save = merchantGoodsDao.save(merchantGoods) > 0;
+            if (save)
+                return JSON.toJSONString(new SimpleResponse(0, "创建成功"));
+
+        } catch (Exception e) {
+            log.error("MerchantGoodsService error!!", e);
         }
+
+        return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
     }
 
 	@Override
