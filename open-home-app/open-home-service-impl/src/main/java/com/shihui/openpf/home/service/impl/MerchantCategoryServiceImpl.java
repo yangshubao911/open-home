@@ -51,16 +51,22 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
 
     /**
      * 创建商户业务分类
+     *
      * @param merchantCategory 创建商户业务分类信息
      * @return 创建结果
      */
     @Override
     public String create(MerchantCategory merchantCategory) {
-        if(merchantCategoryDao.insert(merchantCategory)>0){
-            return JSON.toJSONString(new SimpleResponse(0, "创建成功"));
-        }else {
-            return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
+        try {
+            boolean result = merchantCategoryDao.save(merchantCategory) > 0;
+            if (result)
+                return JSON.toJSONString(new SimpleResponse(0, "创建成功"));
+        }catch (Exception e){
+            log.error("MerchantCategoryService create error!!",e);
         }
+
+        return JSON.toJSONString(new SimpleResponse(1, "创建失败"));
+
     }
 
 	@Override
