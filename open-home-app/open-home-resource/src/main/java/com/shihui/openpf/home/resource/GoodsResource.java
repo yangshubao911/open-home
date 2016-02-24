@@ -15,11 +15,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.service.api.GoodsService;
+import com.shihui.openpf.home.util.SimpleResponse;
 
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
@@ -35,6 +38,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
 @Controller
 @Path("/v2/openpf/home/goods")
 public class GoodsResource {
+	private Logger log = LoggerFactory.getLogger(getClass());
 	@Resource
 	private GoodsService goodsService;
 
@@ -74,8 +78,8 @@ public class GoodsResource {
 		try {
 			ret = goodsService.create(goods);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("新增商品异常，{}", JSON.toJSONString(goods), e);
+			return JSON.toJSONString(new SimpleResponse(1, "创建商品失败"));
 		}
 		return ret;
 	}
@@ -108,7 +112,15 @@ public class GoodsResource {
 		goods.setGoodsStatus(goods_status);
 		goods.setAttention(attention);
 		goods.setGoodsSubtitle(goods_subtitle);
-		return goodsService.update(goods);
+		String ret;
+		try {
+			ret = goodsService.update(goods);
+		} catch (Exception e) {
+			log.error("更新商品异常，{}", JSON.toJSONString(goods), e);
+			return JSON.toJSONString(new SimpleResponse(1, "更新商品失败"));
+		}
+		
+		return ret;
 	}
 
 	@Path("/list")
