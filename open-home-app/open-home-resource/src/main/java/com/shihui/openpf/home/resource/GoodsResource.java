@@ -15,11 +15,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.service.api.GoodsService;
+import com.shihui.openpf.home.util.SimpleResponse;
 
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
@@ -35,6 +38,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
 @Controller
 @Path("/v2/openpf/home/goods")
 public class GoodsResource {
+	private Logger log = LoggerFactory.getLogger(getClass());
 	@Resource
 	private GoodsService goodsService;
 
@@ -49,8 +53,10 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品描述", isRequired = true) @FormParam("goods_desc") String goods_desc,
 	        @ParamDesc(desc = "商品名称", isRequired = true) @FormParam("goods_name") String goods_name,
 	        @ParamDesc(desc = "商品图片", isRequired = true) @FormParam("image_id") String image_id,
+	        @ParamDesc(desc = "商品详情图片", isRequired = true) @FormParam("detail_image") String detail_image,
 	        @ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = true) @FormParam("sh_off_set") String sh_off_set,
+	        @ParamDesc(desc = "首单优惠", isRequired = true) @FormParam("first_sh_off_set") String first_sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = true) @FormParam("price") String price,
 	        @ParamDesc(desc = "副标题", isRequired = true) @FormParam("goods_subtitle") String goods_subtitle,
 	        @ParamDesc(desc = "使用须知", isRequired = true) @FormParam("attention") String attention) {
@@ -61,12 +67,21 @@ public class GoodsResource {
 		goods.setGoodsDesc(goods_desc);
 		goods.setGoodsName(goods_name);
 		goods.setImageId(image_id);
+		goods.setDetailImage(detail_image);
 		goods.setServiceId(service_id);
 		goods.setShOffSet(sh_off_set);
+		goods.setFirstShOffSet(first_sh_off_set);
 		goods.setPrice(price);
 		goods.setAttention(attention);
 		goods.setGoodsSubtitle(goods_subtitle);
-		return goodsService.create(goods);
+		String ret = null;
+		try {
+			ret = goodsService.create(goods);
+		} catch (Exception e) {
+			log.error("新增商品异常，{}", JSON.toJSONString(goods), e);
+			return JSON.toJSONString(new SimpleResponse(1, "创建商品失败"));
+		}
+		return ret;
 	}
 
 	@Path("/update")
@@ -79,21 +94,33 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品状态", isRequired = false) @FormParam("goods_status") Integer goods_status,
 	        @ParamDesc(desc = "商品名称", isRequired = false) @FormParam("goods_name") String goods_name,
 	        @ParamDesc(desc = "商品图片", isRequired = false) @FormParam("image_id") String image_id,
+	        @ParamDesc(desc = "商品详情图片", isRequired = false) @FormParam("detail_image") String detail_image,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = false) @FormParam("sh_off_set") String sh_off_set,
+	        @ParamDesc(desc = "首单优惠", isRequired = false) @FormParam("first_sh_off_set") String first_sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = false) @FormParam("price") String price,
-	        @ParamDesc(desc = "副标题", isRequired = true) @FormParam("goods_subtitle") String goods_subtitle,
-	        @ParamDesc(desc = "使用须知", isRequired = true) @FormParam("attention") String attention) {
+	        @ParamDesc(desc = "副标题", isRequired = false) @FormParam("goods_subtitle") String goods_subtitle,
+	        @ParamDesc(desc = "使用须知", isRequired = false) @FormParam("attention") String attention) {
 		Goods goods = new Goods();
 		goods.setGoodsId(goods_id);
 		goods.setGoodsDesc(goods_desc);
 		goods.setGoodsName(goods_name);
 		goods.setImageId(image_id);
+		goods.setDetailImage(detail_image);
 		goods.setShOffSet(sh_off_set);
+		goods.setFirstShOffSet(first_sh_off_set);
 		goods.setPrice(price);
 		goods.setGoodsStatus(goods_status);
 		goods.setAttention(attention);
 		goods.setGoodsSubtitle(goods_subtitle);
-		return goodsService.update(goods);
+		String ret;
+		try {
+			ret = goodsService.update(goods);
+		} catch (Exception e) {
+			log.error("更新商品异常，{}", JSON.toJSONString(goods), e);
+			return JSON.toJSONString(new SimpleResponse(1, "更新商品失败"));
+		}
+		
+		return ret;
 	}
 
 	@Path("/list")

@@ -59,6 +59,10 @@ public class Goods implements Serializable {
 	@JSONField(name="image_id")
 	@Column(name="image_id")
 	private String imageId;
+	
+	@JSONField(name="detail_image")
+	@Column(name="detail_image")
+	private String detailImage;
 
 	private String price;
 
@@ -81,6 +85,10 @@ public class Goods implements Serializable {
 	@JSONField(name="goods_subtitle")
 	@Column(name="goods_subtitle")
 	private String goodsSubtitle;
+	
+	@JSONField(name="first_sh_off_set")
+	@Column(name="first_sh_off_set")
+	private String firstShOffSet;
 	
 	@Transient
 	private Integer serviceMerchantCode;//业务对应商户ID
@@ -224,4 +232,19 @@ public class Goods implements Serializable {
 		this.goodsSubtitle = goodsSubtitle;
 	}
 
+	public String getDetailImage() {
+		return detailImage;
+	}
+
+	public void setDetailImage(String detailImage) {
+		this.detailImage = detailImage;
+	}
+
+	public String getFirstShOffSet() {
+		return firstShOffSet;
+	}
+
+	public void setFirstShOffSet(String firstShOffSet) {
+		this.firstShOffSet = firstShOffSet;
+	}
 }

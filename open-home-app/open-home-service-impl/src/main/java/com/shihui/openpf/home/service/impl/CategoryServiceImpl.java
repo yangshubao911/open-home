@@ -45,6 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
 			id = categoryDao.insert(category);
 		} catch (Exception e) {
 			log.error("创建商品类型异常，{}", JSON.toJSONString(category), e);
+			return JSON.toJSONString(new SimpleResponse(1, "创建商品类型失败"));
 		}
 		return JSON.toJSONString(new SimpleResponse(0, id));
 	}
