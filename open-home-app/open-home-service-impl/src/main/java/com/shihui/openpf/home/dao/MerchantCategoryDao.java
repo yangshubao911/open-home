@@ -38,6 +38,9 @@ public class MerchantCategoryDao extends AbstractDao<MerchantCategory> {
 				 result += resultarr[i];
 			 }
 			 conn.commit();
+		 }catch(SQLException e){
+			 conn.rollback();
+			 throw e;
 		 }finally{
 			 conn.setAutoCommit(true);
 		 }

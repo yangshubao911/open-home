@@ -38,4 +38,11 @@ public interface MerchantCategoryService {
     public String batchCreate(List<MerchantCategory> merchantCategorys);
 
 
+    /**
+     * 查询商户绑定商品分类
+     * @param merchantId
+     * @param serviceId
+     * @return
+     */
+    List<MerchantCategory> queryByConditions(int merchantId, int serviceId);
 }

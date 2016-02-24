@@ -46,7 +46,10 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
 					result += resultarr[i];
 				}
 				conn.commit();
-			} finally {
+			} catch(SQLException e){
+				 conn.rollback();
+				 throw e;
+			 } finally {
 				conn.setAutoCommit(true);
 			}
 			return result;
@@ -83,7 +86,10 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
 					result += resultarr[i];
 				}
 				conn.commit();
-			} finally {
+			} catch(SQLException e){
+				 conn.rollback();
+				 throw e;
+			 }finally {
 				conn.setAutoCommit(true);
 			}
 			return result;

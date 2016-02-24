@@ -55,6 +55,7 @@ public class GoodsResource {
 	        @ParamDesc(desc = "商品图片", isRequired = true) @FormParam("image_id") String image_id,
 	        @ParamDesc(desc = "商品详情图片", isRequired = true) @FormParam("detail_image") String detail_image,
 	        @ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
+	        @ParamDesc(desc = "状态", isRequired = true) @FormParam("goods_status") Integer goods_status,
 	        @ParamDesc(desc = "实惠抵扣", isRequired = true) @FormParam("sh_off_set") String sh_off_set,
 	        @ParamDesc(desc = "首单优惠", isRequired = true) @FormParam("first_sh_off_set") String first_sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = true) @FormParam("price") String price,
@@ -69,6 +70,7 @@ public class GoodsResource {
 		goods.setImageId(image_id);
 		goods.setDetailImage(detail_image);
 		goods.setServiceId(service_id);
+		goods.setGoodsStatus(goods_status);
 		goods.setShOffSet(sh_off_set);
 		goods.setFirstShOffSet(first_sh_off_set);
 		goods.setPrice(price);

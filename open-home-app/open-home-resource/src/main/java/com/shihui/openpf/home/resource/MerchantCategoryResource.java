@@ -12,11 +12,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.MerchantCategory;
 import com.shihui.openpf.home.service.api.MerchantCategoryService;
+import com.shihui.openpf.home.util.SimpleResponse;
 
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
@@ -31,6 +34,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
 @Path("/v2/openpf/home/merchant/category")
 public class MerchantCategoryResource {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
     @Resource
     MerchantCategoryService merchantCategoryService;
 
@@ -40,12 +44,17 @@ public class MerchantCategoryResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String list(
             @Context RequestContext rc,
-            @ParamDesc(desc = "业务id", isRequired = true) @QueryParam("service_id") int service_id,
-            @ParamDesc(desc = "商户id", isRequired = true) @QueryParam("merchant_id") int merchant_id
+            @ParamDesc(desc = "业务id", isRequired = true) @QueryParam("service_id") Integer service_id,
+            @ParamDesc(desc = "商户id", isRequired = true) @QueryParam("merchant_id") Integer merchant_id
     ){
-        MerchantCategory merchantCategory = new MerchantCategory();
-        merchantCategory.setMerchantId(merchant_id);
-        return JSON.toJSONString(merchantCategoryService.queryCategoryList(merchantCategory));
+    	List<MerchantCategory> list;
+		try {
+			list = merchantCategoryService.queryByConditions(merchant_id, service_id);
+		} catch (Exception e) {
+			log.error("查询商户商品分类异常", e);
+			return new SimpleResponse(1, "查询失败").toString();
+		}
+        return JSON.toJSONString(list);
     }
 
 
@@ -97,7 +106,13 @@ public class MerchantCategoryResource {
             @Context RequestContext rc,
             @ParamDesc(desc = "data", isRequired = true) @FormParam("data") String json
     ){
-        List<MerchantCategory> merchantCategorys = JSON.parseArray(json, MerchantCategory.class);
+        List<MerchantCategory> merchantCategorys;
+		try {
+			merchantCategorys = JSON.parseArray(json, MerchantCategory.class);
+		} catch (Exception e) {
+			log.error("批量绑定商品分类参数错误", e);
+			return JSON.toJSONString(new SimpleResponse(1,"参数格式错误"));
+		}
         return merchantCategoryService.batchCreate(merchantCategorys);
     }
 

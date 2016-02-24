@@ -99,4 +99,13 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 			 return JSON.toJSONString(new SimpleResponse(1, "更新失败"));
 		}
 	}
+	
+	@Override
+	public List<MerchantGoods> findByConditions(Integer merchantId, Integer serviceId, Integer categoryId){
+		String sql = "select a.*,b.goods_name,c.name as category_name from merchant_goods a, goods b, category c where a.goods_id=b.goods_id and a.category_id=c.id and a.merchant_id=? and a.service_id=?";
+		if(categoryId == null)
+		return merchantGoodsDao.queryForList(sql, merchantId, serviceId);
+		sql = sql + " and a.category_id=?";
+		return merchantGoodsDao.queryForList(sql, merchantId, serviceId, categoryId);
+	}
 }

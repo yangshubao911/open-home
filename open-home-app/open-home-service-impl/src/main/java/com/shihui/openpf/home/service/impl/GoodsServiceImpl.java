@@ -46,7 +46,6 @@ public class GoodsServiceImpl implements GoodsService {
 		
 		Date now = new Date();
 		//默认商品状态启用
-		goods.setGoodsStatus(1);
 		goods.setCreateTime(now);
 		goods.setUpdateTime(now);
 		//默认商品版本为1
