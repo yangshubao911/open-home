@@ -11,6 +11,7 @@ import com.shihui.api.oms.sale.model.OrderPaymentMapping;
 import com.shihui.api.oms.sale.model.SimpleResult;
 import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
 import com.shihui.api.payment.model.Payment;
+import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.dubbo.api.ServiceManage;
 import com.shihui.openpf.common.model.Merchant;
@@ -21,6 +22,7 @@ import com.shihui.openpf.home.service.api.*;
 import com.shihui.openpf.home.util.DataExportUtils;
 import me.weimi.api.commons.context.RequestContext;
 
+import me.weimi.api.merchant.service.MerchantService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -66,6 +68,10 @@ public class OrderManageImpl implements OrderManage {
 
     @Resource
     ServiceManage serviceManage;
+
+    @Resource
+    MerchantBusinessManage merchantBusinessManage;
+
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -199,6 +205,31 @@ public class OrderManageImpl implements OrderManage {
         result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
 
         return result.toJSONString();
+    }
+
+    /**
+     * 取消订单
+     *
+     * @param orderId 订单ID
+     * @return 返回订单详情
+     */
+    @Override
+    public String queryThirdOrder(String key, String serviceType, String orderId, String version, String sign) {
+        HomeResponse response = new HomeResponse();
+        try {
+            Merchant merchant = merchantManage.getByKey(key);
+            if(merchant == null){
+                return buildHomeResponse(1001,"参数错误");
+            }
+
+
+
+
+        }catch (Exception e){
+
+        }
+
+        return null;
     }
 
     /**
@@ -509,6 +540,13 @@ public class OrderManageImpl implements OrderManage {
 
     public String buildResponse(int status, String msg) {
         return JSONObject.toJSONString(new SimpleResult(status, msg));
+    }
+
+    public String buildHomeResponse(int code, String msg) {
+        HomeResponse response = new HomeResponse();
+        response.setMsg(msg);
+        response.setCode(code);
+        return JSONObject.toJSONString(response);
     }
 
 

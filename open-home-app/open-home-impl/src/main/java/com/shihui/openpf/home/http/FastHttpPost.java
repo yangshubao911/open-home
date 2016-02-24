@@ -29,7 +29,7 @@ public class FastHttpPost {
     public FastHttpPost(String url) throws UnsupportedEncodingException {
         Args.notBlank(url, "url can't set blank");
         httpPost = new HttpPost(url);
-    }
+}
 
     public FastHttpPost(String url, String encode) throws UnsupportedEncodingException {
         Args.notBlank(url, "url can't set blank");

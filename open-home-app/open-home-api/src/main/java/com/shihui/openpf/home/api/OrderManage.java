@@ -35,6 +35,14 @@ public interface OrderManage {
     public String queryOrder(long orderId);
 
     /**
+     * 查询第三方订单详情
+     * @param orderId 订单ID
+     *
+     * @return 返回订单详情
+     */
+    public String queryThirdOrder(String key,String serviceType,String orderId,String version,String sign);
+
+    /**
      * 取消订单
      *
      * @param orderId 订单ID

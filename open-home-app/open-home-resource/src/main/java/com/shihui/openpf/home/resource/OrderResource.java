@@ -70,13 +70,28 @@ public class OrderResource {
     }
 
     @GET
-    @Path("/detail")
-    @BaseInfo(desc = "查询订单详情", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
-    public String cityOrderDetail(
+         @Path("/detail")
+         @BaseInfo(desc = "查询订单详情", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+         public String detail(
             @Context RequestContext rc,
             @ParamDesc(isRequired = true, desc = "订单ID") @QueryParam("orderId") long orderId
     ) {
         return orderManage.queryOrder(orderId);
+    }
+
+    @GET
+    @Path("/thirdOrder")
+    @Produces({MediaType.TEXT_HTML})
+    @BaseInfo(desc = "查询第三方订单详情", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    public String thirdOrder(
+            @Context RequestContext rc,
+            @ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
+            @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") String serviceType,
+            @ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
+            @ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
+            @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign
+    ) {
+        return orderManage.queryThirdOrder(key,serviceType,orderId,version,sign);
     }
 
     @GET
