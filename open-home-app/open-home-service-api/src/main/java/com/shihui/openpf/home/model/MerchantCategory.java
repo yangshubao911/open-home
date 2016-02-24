@@ -24,6 +24,8 @@ public class MerchantCategory implements Serializable {
     @Column(name="category_id")
     private Integer categoryId;
 
+    @JSONField(name="status")
+    @Column(name="status")
     private Integer status;
 
     @Id

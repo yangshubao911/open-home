@@ -76,12 +76,12 @@ public class MerchantGoodsResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String create(
             @Context RequestContext rc,
-            @ParamDesc(desc = "商户id", isRequired = false) @FormParam("merchant_id") Integer merchant_id,
-            @ParamDesc(desc = "商品id", isRequired = false) @FormParam("goods_id") Integer goods_id,
-            @ParamDesc(desc = "分类id", isRequired = false) @FormParam("category_id") Integer category_id,
-            @ParamDesc(desc = "业务id", isRequired = false) @FormParam("service_id") Integer service_id,
-            @ParamDesc(desc = "商户商品开通状态", isRequired = false) @FormParam("status") Integer status,
-            @ParamDesc(desc = "结算价", isRequired = false) @FormParam("settlement") String settlement
+            @ParamDesc(desc = "商户id", isRequired = true) @FormParam("merchant_id") Integer merchant_id,
+            @ParamDesc(desc = "商品id", isRequired = true) @FormParam("goods_id") Integer goods_id,
+            @ParamDesc(desc = "分类id", isRequired = true) @FormParam("category_id") Integer category_id,
+            @ParamDesc(desc = "业务id", isRequired = true) @FormParam("service_id") Integer service_id,
+            @ParamDesc(desc = "商户商品开通状态", isRequired = true) @FormParam("status") Integer status,
+            @ParamDesc(desc = "结算价", isRequired = true) @FormParam("settlement") String settlement
 
     ){
         MerchantGoods merchantGoods = new MerchantGoods();
