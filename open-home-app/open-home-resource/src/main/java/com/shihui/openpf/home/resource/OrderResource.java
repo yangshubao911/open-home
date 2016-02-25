@@ -35,7 +35,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
  * @version 1.0 Created at: 2016年1月19日 下午3:00:15
  */
 @Controller
-@Path("/v2/sh/openpf/home/order")
+@Path("/v2/openpf/home/order")
 public class OrderResource {
 
     @Resource
