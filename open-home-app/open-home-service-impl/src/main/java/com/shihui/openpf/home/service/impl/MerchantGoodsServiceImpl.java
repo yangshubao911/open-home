@@ -83,7 +83,7 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 		try {
 			this.merchantGoodsDao.batchSave(list);
 			return JSON.toJSONString(new SimpleResponse(0, "绑定成功"));
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			log.error("批量绑定供应商商品异常", e);
 			 return JSON.toJSONString(new SimpleResponse(1, "绑定失败"));
 		}
@@ -94,7 +94,7 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 		try {
 			this.merchantGoodsDao.batchUpdate(list);
 			return JSON.toJSONString(new SimpleResponse(0, "更新成功"));
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			log.error("批量更新已绑定供应商商品异常", e);
 			 return JSON.toJSONString(new SimpleResponse(1, "更新失败"));
 		}
