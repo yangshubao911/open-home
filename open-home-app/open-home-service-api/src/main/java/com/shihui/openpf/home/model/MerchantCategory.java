@@ -28,7 +28,7 @@ public class MerchantCategory implements Serializable {
     
     @Transient
     @JSONField(name="category_name")
-    private Integer categoryName;
+    private String categoryName;
 
     @JSONField(name="status")
     @Column(name="status")
@@ -73,11 +73,11 @@ public class MerchantCategory implements Serializable {
         this.status = status;
     }
 
-	public Integer getCategoryName() {
+	public String getCategoryName() {
 		return categoryName;
 	}
 
-	public void setCategoryName(Integer categoryName) {
+	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
 

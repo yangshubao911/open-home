@@ -72,8 +72,8 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
 	@Override
 	public String batchCreate(List<MerchantCategory> merchantCategorys) { 	 	
 		try {
-			this.merchantCategoryDao.batchSave(merchantCategorys);
-			return JSON.toJSONString(new SimpleResponse(0, "绑定成功"));
+			int n = this.merchantCategoryDao.batchSave(merchantCategorys);
+			return JSON.toJSONString(new SimpleResponse(0, "绑定成功:" + n + "，失败：" + (merchantCategorys.size() - n)));
 		} catch (SQLException e) {
 			log.error("批量绑定供应商商品分类异常", e);
 			 return JSON.toJSONString(new SimpleResponse(1, "绑定失败"));
