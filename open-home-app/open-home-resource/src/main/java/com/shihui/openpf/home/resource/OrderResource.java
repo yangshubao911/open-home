@@ -68,7 +68,8 @@ public class OrderResource {
             queryOrder.setPhone(phoneNum);
             if(!StringUtil.isEmpty(userId))
             queryOrder.setUserId(Long.parseLong(userId));
-
+            if(!StringUtil.isEmpty(merchantId))
+            queryOrder.setMerchantId(Integer.parseInt(merchantId));
             return orderManage.queryOrderList(rc,queryOrder,startTime,endTime,cursor,count );
         }catch (Exception e){
 
