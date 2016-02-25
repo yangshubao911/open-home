@@ -46,6 +46,12 @@ public class MerchantGoods implements Serializable {
     @Transient
     @JSONField(name="category_name")
     private String categoryName;
+    
+    private String price;
+    
+    @Transient
+    @JSONField(name="sh_off_set")
+    private String shOffSet;
 
     public Integer getGoodsId() {
         return goodsId;
@@ -109,5 +115,21 @@ public class MerchantGoods implements Serializable {
 
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
+	}
+
+	public String getShOffSet() {
+		return shOffSet;
+	}
+
+	public void setShOffSet(String shOffSet) {
+		this.shOffSet = shOffSet;
 	}
 }

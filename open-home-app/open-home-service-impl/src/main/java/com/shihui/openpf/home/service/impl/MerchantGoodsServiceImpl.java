@@ -1,19 +1,18 @@
 package com.shihui.openpf.home.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.shihui.openpf.home.dao.MerchantGoodsDao;
-import com.shihui.openpf.home.model.MerchantGoods;
-import com.shihui.openpf.home.service.api.MerchantGoodsService;
-import com.shihui.openpf.home.util.SimpleResponse;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-
-import java.sql.SQLException;
-import java.util.List;
+import com.alibaba.fastjson.JSON;
+import com.shihui.openpf.home.dao.MerchantGoodsDao;
+import com.shihui.openpf.home.model.MerchantGoods;
+import com.shihui.openpf.home.service.api.MerchantGoodsService;
+import com.shihui.openpf.home.util.SimpleResponse;
 
 /**
  * Created by zhoutc on 2016/2/1.
@@ -102,7 +101,7 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 	
 	@Override
 	public List<MerchantGoods> findByConditions(Integer merchantId, Integer serviceId, Integer categoryId){
-		String sql = "select a.*,b.goods_name,c.name as category_name from merchant_goods a, goods b, category c where a.goods_id=b.goods_id and a.category_id=c.id and a.merchant_id=? and a.service_id=?";
+		String sql = "select a.*,b.goods_name,b.price,b.sh_off_set,c.name as category_name from merchant_goods a, goods b, category c where a.goods_id=b.goods_id and a.category_id=c.id and a.merchant_id=? and a.service_id=?";
 		if(categoryId == null)
 		return merchantGoodsDao.queryForList(sql, merchantId, serviceId);
 		sql = sql + " and a.category_id=?";
