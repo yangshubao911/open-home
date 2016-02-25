@@ -1,6 +1,6 @@
 package com.shihui.openpf.home.resource;
 
-import com.alibaba.fastjson.JSON;
+
 import com.shihui.openpf.home.service.api.ClientService;
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
@@ -51,6 +51,19 @@ public class ClientResource {
                          @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId) {
         return clientService.listGoods(serviceId, userId, groupId);
     }
+
+
+
+    @Path("/test")
+    @GET
+    @BaseInfo(desc = "test", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String test(@Context RequestContext rc) {
+        clientService.test();
+        return "-------------";
+    }
+
+
 
 
 
