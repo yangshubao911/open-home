@@ -165,54 +165,60 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String queryOrder(long orderId) {
-        JSONObject result = new JSONObject();
-        Order order = orderService.queryOrder(orderId);
+        try {
+            JSONObject result = new JSONObject();
+            Order order = orderService.queryOrder(orderId);
 
-        if(order==null) return null;
-        PaymentTypeEnum paymentTypeEnum = null;
-        if (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
-            paymentTypeEnum = PaymentTypeEnum.Alipay;
-        if (order.getPaymentType() == PaymentTypeEnum.Wxpay.getValue())
-            paymentTypeEnum = PaymentTypeEnum.Wxpay;
+            if (order == null) return null;
+            PaymentTypeEnum paymentTypeEnum = null;
+            if (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
+                paymentTypeEnum = PaymentTypeEnum.Alipay;
+            if (order.getPaymentType() == PaymentTypeEnum.Wxpay.getValue())
+                paymentTypeEnum = PaymentTypeEnum.Wxpay;
 
-        OrderPaymentMapping orderPaymentMapping = orderDubboService.queryPaymentMapping(orderId, paymentTypeEnum);
-        result.put("payType", order.getPaymentType());
-        if (orderPaymentMapping != null) {
-            result.put("transId", orderPaymentMapping.getTransId());
-            Payment payment = orderDubboService.queryPayMentInfo(orderPaymentMapping.getTransId());
-            if (payment != null) {
-                if (payment.getPaymentTime() != null && !"".equals(payment.getPaymentTime())) {
-                    DateTime date = new DateTime(payment.getPaymentTime().getTime());
-                    result.put("payTime", date.toString("yyyy-MM-dd HH:mm:ss"));
+            OrderPaymentMapping orderPaymentMapping = orderDubboService.queryPaymentMapping(orderId, paymentTypeEnum);
+            result.put("payType", order.getPaymentType());
+            if (orderPaymentMapping != null) {
+                result.put("transId", orderPaymentMapping.getTransId());
+                Payment payment = orderDubboService.queryPayMentInfo(orderPaymentMapping.getTransId());
+                if (payment != null) {
+                    if (payment.getPaymentTime() != null && !"".equals(payment.getPaymentTime())) {
+                        DateTime date = new DateTime(payment.getPaymentTime().getTime());
+                        result.put("payTime", date.toString("yyyy-MM-dd HH:mm:ss"));
+                    }
                 }
+
             }
+            result.put("createTime", new DateTime(order.getCreateTime()).toString("yyyy-MM-dd HH:mm:ss"));
+            result.put("userId", order.getUserId());
+            result.put("phone", order.getPhone());
 
+            Goods goods = goodsService.findById(order.getGoodsId());
+            result.put("price", goods.getPrice());
+
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            result.put("merchantId", order.getMerchantId());
+            result.put("merchantName", merchant.getMerchantName());
+
+            MerchantGoods merchantGoods = new MerchantGoods();
+            merchantGoods.setGoodsId(order.getGoodsId());
+            merchantGoods.setMerchantId(order.getMerchantId());
+            MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+
+            result.put("settlement", db_merchantGoods.getSettlement());
+            BigDecimal originalPrice = new BigDecimal(order.getPay()).add(new BigDecimal(order.getShOffSet()));
+            result.put("originalPrice", originalPrice.stripTrailingZeros().toPlainString());
+            result.put("pay", order.getPay());
+            result.put("shOffset", order.getShOffSet());
+            result.put("status", order.getOrderStatus());
+            result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
+
+            return result.toJSONString();
+        }catch (Exception e){
+            log.error("OrderManageImpl queryOrder error!!",e);
         }
-        result.put("createTime", new DateTime(order.getCreateTime()).toString("yyyy-MM-dd HH:mm:ss"));
-        result.put("userId", order.getUserId());
-        result.put("phone", order.getPhone());
 
-        Goods goods = goodsService.findById(order.getGoodsId());
-        result.put("price", goods.getPrice());
-
-        Merchant merchant = merchantManage.getById(order.getMerchantId());
-        result.put("merchantId", order.getMerchantId());
-        result.put("merchantName", merchant.getMerchantName());
-
-        MerchantGoods merchantGoods = new MerchantGoods();
-        merchantGoods.setGoodsId(order.getGoodsId());
-        merchantGoods.setMerchantId(order.getMerchantId());
-        MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
-
-        result.put("settlement", db_merchantGoods.getSettlement());
-        BigDecimal originalPrice = new BigDecimal(order.getPay()).add(new BigDecimal(order.getShOffSet()));
-        result.put("originalPrice", originalPrice.stripTrailingZeros().toPlainString());
-        result.put("pay", order.getPay());
-        result.put("shOffset", order.getShOffSet());
-        result.put("status", order.getOrderStatus());
-        result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
-
-        return result.toJSONString();
+        return "";
     }
 
     /**

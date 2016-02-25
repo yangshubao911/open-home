@@ -48,11 +48,11 @@ public class OrderDao extends AbstractDao<Order> {
                 }
 
             }
-            if(startTime!=null||!startTime.equals("")) {
+            if(startTime!=null&&!startTime.equals("")) {
                 sql.append("and create_time >= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime));
             }
-            if(endTime!=null||!endTime.equals("")) {
+            if(endTime!=null&&!endTime.equals("")) {
                 sql.append("and create_time <= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
