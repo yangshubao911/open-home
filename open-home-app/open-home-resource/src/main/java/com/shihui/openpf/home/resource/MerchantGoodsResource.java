@@ -111,7 +111,13 @@ public class MerchantGoodsResource {
             @Context RequestContext rc,
             @ParamDesc(desc = "data", isRequired = false) @FormParam("data") String json
     ){
-        List<MerchantGoods> list = JSON.parseArray(json, MerchantGoods.class);
+        List<MerchantGoods> list;
+		try {
+			list = JSON.parseArray(json, MerchantGoods.class);
+		} catch (Exception e) {
+			log.error("批量添加商户商品参数转换异常 param={}", json, e);
+			return new SimpleResponse(1, "参数格式错误").toString();
+		}
         return merchantGoodsService.batchAddGoods(list);
     }
     
@@ -123,7 +129,13 @@ public class MerchantGoodsResource {
             @Context RequestContext rc,
             @ParamDesc(desc = "data", isRequired = false) @FormParam("data") String json
     ){
-        List<MerchantGoods> list = JSON.parseArray(json, MerchantGoods.class);
+        List<MerchantGoods> list;
+		try {
+			list = JSON.parseArray(json, MerchantGoods.class);
+		} catch (Exception e) {
+			log.error("批量更新商户商品参数转换异常 param={}", json, e);
+			return new SimpleResponse(1, "参数格式错误").toString();
+		}
         return merchantGoodsService.batchUpdateAddedGoods(list);
     }
 }
