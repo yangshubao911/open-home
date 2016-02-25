@@ -111,9 +111,9 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 订单详情
      */
     public Order queryOrder(long orderId){
-        String sql = "select * from `order` where order_id = " + orderId;
+        String sql = "select * from `order` where order_id = ?";
         try {
-            return super.queryForObject(sql, Order.class);
+            return super.queryForObject(sql,orderId);
         }catch (Exception e){
 
         }
