@@ -104,57 +104,70 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String queryOrderList(RequestContext rc, Order queryOrder, String startTime, String endTime, int page, int size) {
-        JSONObject result = new JSONObject();
-        JSONArray orders_json = new JSONArray();
-        //  Order queryOrder = JSON.parseObject(json, Order.class);
-        int total = orderService.countQueryOrder(queryOrder, startTime, endTime);
-        result.put("total", total);
-        result.put("page", page);
-        result.put("size", size);
-        if (total <= 0) return result.toJSONString();
-        List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime, page, size);
+      try {
+          JSONObject result = new JSONObject();
+          JSONArray orders_json = new JSONArray();
+          //  Order queryOrder = JSON.parseObject(json, Order.class);
+          int total = orderService.countQueryOrder(queryOrder, startTime, endTime);
+          result.put("total", total);
+          result.put("page", page);
+          result.put("size", size);
+          if (total <= 0) return result.toJSONString();
+          List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime, page, size);
 
-        List<Integer> merchants = new ArrayList<>();
-        for (Order order : orderList) {
-            merchants.add(order.getMerchantId());
-        }
+          List<Integer> merchants = new ArrayList<>();
+          for (Order order : orderList) {
+              merchants.add(order.getMerchantId());
+          }
 
-        for (Order order : orderList) {
-            orders_json.add(buildOrderVo(order));
-        }
-        result.put("orders", orders_json);
-        return result.toJSONString();
+          for (Order order : orderList) {
+              JSONObject order_json = buildOrderVo(order);
+              if (order_json != null)
+                  orders_json.add(order_json);
+          }
+          result.put("orders", orders_json);
+          return result.toJSONString();
+      }catch (Exception e){
+          log.error("OrderManageImpl queryOrderList error!!",e);
+      }
+        return "";
     }
 
     public JSONObject buildOrderVo(Order order) {
-        JSONObject order_json = new JSONObject();
-        order_json.put("orderId", String.valueOf(order.getOrderId()));
-        order_json.put("userId", order.getUserId());
-        order_json.put("phone", order.getPhone());
+        try {
+            JSONObject order_json = new JSONObject();
+            order_json.put("orderId", String.valueOf(order.getOrderId()));
+            order_json.put("userId", order.getUserId());
+            order_json.put("phone", order.getPhone());
 
-        Goods goods = goodsService.findById(order.getGoodsId());
-        order_json.put("price", goods.getPrice());
-        order_json.put("shOffset", goods.getShOffSet());
-        order_json.put("due", new BigDecimal(goods.getPrice()).
-                subtract(new BigDecimal(goods.getShOffSet())).
-                setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            Goods goods = goodsService.findById(order.getGoodsId());
+            order_json.put("price", goods.getPrice());
+            order_json.put("shOffset", goods.getShOffSet());
+            order_json.put("due", new BigDecimal(goods.getPrice()).
+                    subtract(new BigDecimal(goods.getShOffSet())).
+                    setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 
-        order_json.put("merchantId", order.getMerchantId());
-        Merchant merchant = merchantManage.getById(order.getMerchantId());
-        order_json.put("merchantName", merchant.getMerchantName());
+            order_json.put("merchantId", order.getMerchantId());
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            order_json.put("merchantName", merchant.getMerchantName());
 
-        MerchantGoods merchantGoods = new MerchantGoods();
-        merchantGoods.setGoodsId(order.getGoodsId());
-        merchantGoods.setMerchantId(order.getMerchantId());
-        MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+            MerchantGoods merchantGoods = new MerchantGoods();
+            merchantGoods.setGoodsId(order.getGoodsId());
+            merchantGoods.setMerchantId(order.getMerchantId());
+            MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
 
-        order_json.put("settlement", db_merchantGoods.getSettlement());
-        DateTime dateTime = new DateTime(order.getCreateTime());
-        order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
-        order_json.put("pay", order.getPay());
-        order_json.put("status", order.getOrderStatus());
-        order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
-        return order_json;
+            order_json.put("settlement", db_merchantGoods.getSettlement());
+            DateTime dateTime = new DateTime(order.getCreateTime());
+            order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
+            order_json.put("pay", order.getPay());
+            order_json.put("status", order.getOrderStatus());
+            order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
+            return order_json;
+        }catch (Exception e){
+            log.error("OrderManageImpl buildOrderVo error!!",e);
+        }
+
+        return null;
     }
 
     /**
