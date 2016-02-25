@@ -1,5 +1,7 @@
 package com.shihui.openpf.home.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,6 +24,7 @@ public class Order implements Serializable {
 	@Column(name="campaign_id")
 	private Integer campaignId;
 
+	@JSONField(name = "create_time", format = "yyyy-MM-dd HH:mm:ss")
 	@Column(name="create_time")
 	private Date createTime;
 
@@ -58,6 +61,7 @@ public class Order implements Serializable {
 	@Column(name="sh_off_set")
 	private String shOffSet;
 
+	@JSONField(name = "update_time", format = "yyyy-MM-dd HH:mm:ss")
 	@Column(name="update_time")
 	private Date updateTime;
 
