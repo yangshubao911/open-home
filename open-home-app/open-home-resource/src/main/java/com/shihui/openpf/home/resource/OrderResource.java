@@ -87,10 +87,10 @@ public class OrderResource {
     }
 
     @GET
-    @Path("/thirdOrder")
+    @Path("/thirdOrder/detail")
     @Produces({MediaType.TEXT_HTML})
-    @BaseInfo(desc = "查询第三方订单详情", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
-    public String thirdOrder(
+    @BaseInfo(desc = "查询第三方订单详情", status = ApiStatus.PUBLIC, needAuth = AuthType.OPTION)
+    public String thirdOrderDetail(
             @Context RequestContext rc,
             @ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
             @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
@@ -98,8 +98,40 @@ public class OrderResource {
             @ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
             @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign
     ) {
-        return orderManage.queryThirdOrder(key,serviceType,orderId,version,sign);
+        return orderManage.queryThirdOrder(key, serviceType, orderId, version, sign);
     }
+
+    @POST
+    @Path("/thirdOrder/cancel")
+    @Produces({MediaType.TEXT_HTML})
+    @BaseInfo(desc = "第三方取消订单接口", status = ApiStatus.PUBLIC, needAuth = AuthType.OPTION)
+    public String thirdOrderCancel(
+            @Context RequestContext rc,
+            @ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
+            @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
+            @ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
+            @ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
+            @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign
+    ) {
+        return orderManage.cancelThirdOrder(key, serviceType, orderId, version, sign);
+    }
+
+
+    @POST
+    @Path("/thirdOrder/update")
+    @Produces({MediaType.TEXT_HTML})
+    @BaseInfo(desc = "第三方更新订单接口", status = ApiStatus.PUBLIC, needAuth = AuthType.OPTION)
+    public String thirdOrderUpdate(
+            @Context RequestContext rc,
+            @ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
+            @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
+            @ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
+            @ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
+            @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign
+    ) {
+        return orderManage.cancelThirdOrder(key,serviceType,orderId,version,sign);
+    }
+
 
     @GET
     @Path("/cancel")
@@ -115,7 +147,7 @@ public class OrderResource {
         } catch (Exception e) {
 
         }
-        return orderManage.cancelOrder(orderId, orderCancelType);
+        return orderManage.cancelLocalOrder(orderId, orderCancelType);
 
     }
 

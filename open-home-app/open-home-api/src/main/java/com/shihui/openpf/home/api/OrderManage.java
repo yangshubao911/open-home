@@ -43,12 +43,29 @@ public interface OrderManage {
     public String queryThirdOrder(String key,Integer serviceType,String orderId,String version,String sign);
 
     /**
-     * 取消订单
+     * 取消第三方订单
      *
      * @param orderId 订单ID
-     * @return 返回订单详情
+     * @return 返回取消订单结果
      */
-    public String cancelOrder(long orderId , OrderCancelType orderCancelType);
+    public String cancelThirdOrder(String key,int serviceType,String orderId,String version,String sign);
+
+     /**
+     * 更新第三方订单
+     *
+     * @param orderId 订单ID
+     * @return 返回更新订单结果
+     */
+    public String updateThirdOrder(String key,int serviceType,String orderId,String version,String sign, int status);
+
+
+    /**
+     * 取消平台订单
+     *
+     * @param orderId 订单ID
+     * @return 返回取消订单结果
+     */
+    public String cancelLocalOrder(long orderId , OrderCancelType orderCancelType);
 
 
     /**
