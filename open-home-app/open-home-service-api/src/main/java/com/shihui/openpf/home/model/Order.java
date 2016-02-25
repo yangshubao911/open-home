@@ -29,7 +29,7 @@ public class Order implements Serializable {
 	private String extend;
 
 	@Column(name="gid")
-	private Integer gid;
+	private Long gid;
 
 	@Column(name="goods_id")
 	private Integer goodsId;
@@ -108,11 +108,11 @@ public class Order implements Serializable {
 		this.extend = extend;
 	}
 
-	public Integer getGid() {
+	public Long getGid() {
 		return gid;
 	}
 
-	public void setGid(Integer gid) {
+	public void setGid(Long gid) {
 		this.gid = gid;
 	}
 
