@@ -57,7 +57,7 @@ public class OrderDao extends AbstractDao<Order> {
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
 
-            sql.append("limit ").append(page*size).append(",").append(size);
+            sql.append("limit ").append((page-1)*size).append(",").append(size);
             return super.queryForList(sql.toString(), valus.toArray(), Order.class);
         } catch (Exception e) {
             log.error("OrderDao error!!",e);
