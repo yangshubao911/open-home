@@ -93,7 +93,7 @@ public class OrderResource {
     public String thirdOrder(
             @Context RequestContext rc,
             @ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
-            @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") String serviceType,
+            @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
             @ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
             @ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
             @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign

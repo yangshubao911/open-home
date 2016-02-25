@@ -1,5 +1,7 @@
 package com.shihui.openpf.home.cache;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
@@ -15,6 +17,8 @@ public class GoodsCache {
     @Resource
     private ShardedJedisPool jedisPool;
 
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     /**
      * 增加商品分类销售数量
      * @param categoryId  分类ID
@@ -22,10 +26,20 @@ public class GoodsCache {
      * @return
      */
     public Long increaseSell(int categoryId){
-        String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
-                 Constants.REDIS_KEY_SEPARATOR + categoryId;
-        ShardedJedis jedis = jedisPool.getResource();
-        return jedis.incr(key);
+        ShardedJedis jedis = null;
+        try {
+            String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
+                    Constants.REDIS_KEY_SEPARATOR + categoryId;
+            jedis = jedisPool.getResource();
+            return jedis.incr(key);
+        }catch (Exception e){
+            log.error("GoodsCache increaseSell error!!",e);
+        }finally {
+            if(jedis != null){
+                jedis.close();
+            }
+        }
+        return -1l;
     }
 
     /**

@@ -82,7 +82,7 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
 
 	@Override
 	public List<MerchantCategory> queryByConditions(int merchantId, int serviceId) {
-		String sql = "select a.*,b.`name` as category_name from merchant_category a,category b where a.category_id=b.id and a.service_id=? and a.merchant_id=?";
+		String sql = "select a.*,b.`name` as category_name from merchant_category a,category b where a.category_id=b.id and a.merchant_id=? and a.service_id=?";
 		return merchantCategoryDao.queryForList(sql, merchantId, serviceId);
 	}
 }

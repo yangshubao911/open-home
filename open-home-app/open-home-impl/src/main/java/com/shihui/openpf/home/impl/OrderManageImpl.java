@@ -11,10 +11,13 @@ import com.shihui.api.oms.sale.model.OrderPaymentMapping;
 import com.shihui.api.oms.sale.model.SimpleResult;
 import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
 import com.shihui.api.payment.model.Payment;
+import com.shihui.openpf.common.dubbo.api.GroupManage;
 import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.dubbo.api.ServiceManage;
+import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
+import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.*;
@@ -71,6 +74,9 @@ public class OrderManageImpl implements OrderManage {
 
     @Resource
     MerchantBusinessManage merchantBusinessManage;
+
+    @Resource
+    GroupManage groupManage;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -214,22 +220,72 @@ public class OrderManageImpl implements OrderManage {
      * @return 返回订单详情
      */
     @Override
-    public String queryThirdOrder(String key, String serviceType, String orderId, String version, String sign) {
+    public String queryThirdOrder(String key, Integer serviceType, String orderId, String version, String sign) {
         HomeResponse response = new HomeResponse();
         try {
             Merchant merchant = merchantManage.getByKey(key);
             if(merchant == null){
                 return buildHomeResponse(1001,"参数错误");
             }
+            com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
+            if(service == null){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            MerchantBusiness search = new MerchantBusiness();
+            search.setMerchantId(merchant.getMerchantId());
+            search.setServiceId(service.getServiceId());
+            MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
+            if(merchantBusiness == null){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            if(merchant.getMerchantStatus()!=1 || service.getServiceStatus()!=-1 ||
+                    merchantBusiness.getStatus()!=-1){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            Request request = new Request();
+            request.setRequestId(orderId);
+            Request db_request = requestService.queryById(request);
+            if(db_request == null){
+                return buildHomeResponse(3001,"未查询到订单");
+            }
+            Order order = orderService.queryOrder(request.getOrderId());
+            if(order == null){
+                return buildHomeResponse(3001,"未查询到订单");
+            }
 
+            Goods goods = goodsService.findById(order.getGoodsId());
+            if(goods == null){
+                return buildHomeResponse(1004,"其他错误");
+            }
+            Contact contact = contactService.queryByOrderId(request.getOrderId());
+            response.setCode(0);
+            response.setMsg("查询成功");
 
+            JSONObject order_json = new JSONObject();
+            order_json.put("orderId", orderId);
 
-
+            Group group = groupManage.getGroupInfoByGid(order.getGid());
+            if(group!=null) {
+                order_json.put("cityId", group.getCityId());
+                order_json.put("cityName", group.getName());
+            }
+            order_json.put("serviceAddress",contact.getServiceAddress());
+            order_json.put("detailAddress",contact.getDetailAddress());
+            order_json.put("longitude",contact.getLongitude());
+            order_json.put("latitude",contact.getLatitude());
+            order_json.put("phone",contact.getPhoneNum());
+            order_json.put("amount",1);
+            order_json.put("goodsId",goods.getCategoryId());
+            order_json.put("serviceStartTime",contact.getServiceStartTime());
+            order_json.put("remark",order.getRemark());
+            order_json.put("extend",order.getExtend());
+            response.setResult(order_json.toJSONString());
+            return JSONObject.toJSONString(response);
         }catch (Exception e){
-
+         log.error("OrderManageImpl queryThirdOrder error",e);
+            return buildHomeResponse(1004,"其他错误");
         }
 
-        return null;
     }
 
     /**

@@ -40,7 +40,7 @@ public interface OrderManage {
      *
      * @return 返回订单详情
      */
-    public String queryThirdOrder(String key,String serviceType,String orderId,String version,String sign);
+    public String queryThirdOrder(String key,Integer serviceType,String orderId,String version,String sign);
 
     /**
      * 取消订单
