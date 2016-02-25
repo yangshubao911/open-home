@@ -148,7 +148,7 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Override
 	public Goods findById(long id) {
-		String sql = "select * from goods where id=?";
+		String sql = "select * from goods where goods_id = ?";
 		return this.goodsDao.queryForObject(sql, id);
 	}
 
