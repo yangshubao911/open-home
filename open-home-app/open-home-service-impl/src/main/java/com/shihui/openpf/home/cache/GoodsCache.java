@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 import com.shihui.openpf.common.util.Constants;
+
 import javax.annotation.Resource;
 
 /**
@@ -21,38 +22,48 @@ public class GoodsCache {
 
     /**
      * 增加商品分类销售数量
-     * @param categoryId  分类ID
-
+     *
+     * @param categoryId 分类ID
      * @return
      */
-    public Long increaseSell(int categoryId){
+    public Long increaseSell(int categoryId) {
         ShardedJedis jedis = null;
         try {
             String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
                     Constants.REDIS_KEY_SEPARATOR + categoryId;
             jedis = jedisPool.getResource();
             return jedis.incr(key);
-        }catch (Exception e){
-            log.error("GoodsCache increaseSell error!!",e);
-        }finally {
-            if(jedis != null){
+        } catch (Exception e) {
+            log.error("GoodsCache increaseSell error!!", e);
+        } finally {
+            if (jedis != null) {
                 jedis.close();
             }
         }
-        return -1l;
+        return 0l;
     }
 
     /**
      * 查询商品分类销售数量
-     * @param categoryId  分类ID
-
+     *
+     * @param categoryId 分类ID
      * @return
      */
-    public Long querySell(int categoryId){
-        String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
-                Constants.REDIS_KEY_SEPARATOR + categoryId;
-        ShardedJedis jedis = jedisPool.getResource();
-        return Long.parseLong(jedis.get(key));
+    public Long querySell(int categoryId) {
+        ShardedJedis jedis = null;
+        try {
+            String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
+                    Constants.REDIS_KEY_SEPARATOR + categoryId;
+            jedis = jedisPool.getResource();
+            return Long.parseLong(jedis.get(key));
+        } catch (Exception e) {
+            log.error("GoodsCache querySell error!!", e);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return 0l;
     }
 
 }
