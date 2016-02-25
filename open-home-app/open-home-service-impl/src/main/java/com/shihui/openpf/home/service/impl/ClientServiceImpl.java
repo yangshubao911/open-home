@@ -12,6 +12,8 @@ import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.service.api.ClientService;
 import com.shihui.openpf.home.service.api.GoodsService;
+import com.shihui.openpf.home.util.HomeExcepFactor;
+import me.weimi.api.app.AppException;
 import me.weimi.api.commons.json.JSONArray;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -56,7 +58,6 @@ public class ClientServiceImpl implements ClientService {
             good_json.put("goodsVersion",good.getGoodsVersion());
             good_json.put("goodsName",good.getGoodsName());
             good_json.put("goodsSubtitle",good.getGoodsSubtitle());
-
             //活动计算价格
             //
             //活动计算价格
@@ -101,5 +102,10 @@ public class ClientServiceImpl implements ClientService {
         }
 
         return null;
+    }
+
+    @Override
+    public void test() {
+        throw new AppException(HomeExcepFactor.TEST);
     }
 }

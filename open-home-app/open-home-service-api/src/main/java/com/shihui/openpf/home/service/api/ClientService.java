@@ -18,4 +18,6 @@ public interface ClientService {
      * @return 返回商品接口
      */
     public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId);
+
+    void test();
 }
