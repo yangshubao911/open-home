@@ -178,6 +178,8 @@ public class OrderResource {
         Response.ResponseBuilder response = Response.ok((Object) file);
         response.header("Content-Disposition",
                 "attachment; filename=\"unusualOrder.csv\"");
+        response.header("content-transfer-encoding", "binary");
+
         return response.build();
     }
 
