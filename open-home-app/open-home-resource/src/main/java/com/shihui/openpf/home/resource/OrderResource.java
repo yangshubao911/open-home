@@ -177,7 +177,7 @@ public class OrderResource {
         File file = new File(fileName);
         Response.ResponseBuilder response = Response.ok((Object) file);
         response.header("Content-Disposition",
-                "attachment; filename=\"unusualOrder.csv\"");
+                "attachment; filename=\"unusualOrder.xlsx\"");
         response.header("content-transfer-encoding", "binary");
 
         return response.build();
