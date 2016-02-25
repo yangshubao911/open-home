@@ -180,6 +180,7 @@ public class OrderManageImpl implements OrderManage {
     public String queryOrder(long orderId) {
         try {
             JSONObject result = new JSONObject();
+            result.put("orderId",orderId);
             Order order = orderService.queryOrder(orderId);
 
             if (order == null) return null;
@@ -225,7 +226,9 @@ public class OrderManageImpl implements OrderManage {
             result.put("shOffset", order.getShOffSet());
             result.put("status", order.getOrderStatus());
             result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
-
+            result.put("due", new BigDecimal(goods.getPrice()).
+                    subtract(new BigDecimal(goods.getShOffSet())).
+                    setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             return result.toJSONString();
         }catch (Exception e){
             log.error("OrderManageImpl queryOrder error!!",e);
