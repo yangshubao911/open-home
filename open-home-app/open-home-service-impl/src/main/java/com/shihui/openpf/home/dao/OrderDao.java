@@ -58,7 +58,7 @@ public class OrderDao extends AbstractDao<Order> {
             }
 
             sql.append("limit ").append((page-1)*size).append(",").append(size);
-            return super.queryForList(sql.toString(), valus.toArray(), Order.class);
+            return super.queryForList(sql.toString(), valus.toArray());
         } catch (Exception e) {
             log.error("OrderDao error!!",e);
         }
