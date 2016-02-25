@@ -158,7 +158,7 @@ public class OrderManageImpl implements OrderManage {
 
             order_json.put("settlement", db_merchantGoods.getSettlement());
             DateTime dateTime = new DateTime(order.getCreateTime());
-            order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
+            order_json.put("createTime", dateTime.toString("yyyy-MM-dd HH:mm:ss"));
             order_json.put("pay", order.getPay());
             order_json.put("status", order.getOrderStatus());
             order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
