@@ -159,7 +159,7 @@ public class OrderResource {
         return orderManage.countunusual();
     }
 
-    @POST
+    @GET
     @Path("/unusualOrder/query")
     @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
     public String query(

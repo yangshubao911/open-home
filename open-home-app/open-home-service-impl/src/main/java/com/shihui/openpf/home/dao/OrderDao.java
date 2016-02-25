@@ -136,7 +136,7 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 异常订单数量
      */
     public List<Order> queryUnusual(){
-        String sql = "select * from order where `order`_status = ?";
+        String sql = "select * from `order` where order_status = ?";
         return super.queryForList(sql, OrderStatusEnum.OrderRefunding.getValue());
     }
 
