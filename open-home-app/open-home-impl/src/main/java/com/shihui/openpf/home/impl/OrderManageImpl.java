@@ -18,6 +18,7 @@ import com.shihui.openpf.common.dubbo.api.ServiceManage;
 import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
+import com.shihui.openpf.common.util.SignUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.*;
@@ -38,6 +39,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Created by zhoutc on 2016/1/21.
@@ -214,9 +216,9 @@ public class OrderManageImpl implements OrderManage {
     }
 
     /**
-     * 取消订单
+     * 查询第三方订单
      *
-     * @param orderId 订单ID
+     * @param orderId 第三方订单ID
      * @return 返回订单详情
      */
     @Override
@@ -241,6 +243,16 @@ public class OrderManageImpl implements OrderManage {
             if(merchant.getMerchantStatus()!=1 || service.getServiceStatus()!=-1 ||
                     merchantBusiness.getStatus()!=-1){
                 return buildHomeResponse(2003,"服务类型不支持");
+            }
+
+            TreeMap<String, String> param = new TreeMap<>();
+            param.put("key",key);
+            param.put("serviceType",String.valueOf(serviceType));
+            param.put("orderId",orderId);
+            param.put("version",version);
+            String server_sign = SignUtil.genSign(param,merchant.getMd5Key());
+            if(server_sign.compareTo(sign)!=0){
+                return buildHomeResponse(1002,"签名错误");
             }
             Request request = new Request();
             request.setRequestId(orderId);
@@ -289,18 +301,157 @@ public class OrderManageImpl implements OrderManage {
     }
 
     /**
-     * 取消订单
+     * 取消第三方订单
      *
      * @param orderId 订单ID
-     * @return 返回订单详情
+     * @return 返回取消订单结果
      */
     @Override
-    public String cancelOrder(long orderId, OrderCancelType orderCancelType) {
-        if (orderCancelType == null) return buildResponse(1, "取消订单类型错误");
+    public String cancelThirdOrder(String key, int serviceType, String orderId, String version, String sign) {
+        HomeResponse response = new HomeResponse();
+        try {
+            Merchant merchant = merchantManage.getByKey(key);
+            if(merchant == null){
+                return buildHomeResponse(1001,"参数错误");
+            }
+            com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
+            if(service == null){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            MerchantBusiness search = new MerchantBusiness();
+            search.setMerchantId(merchant.getMerchantId());
+            search.setServiceId(service.getServiceId());
+            MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
+            if(merchantBusiness == null){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            if(merchant.getMerchantStatus()!=1 || service.getServiceStatus()!=-1 ||
+                    merchantBusiness.getStatus()!=-1){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+
+            TreeMap<String, String> param = new TreeMap<>();
+            param.put("key",key);
+            param.put("serviceType",String.valueOf(serviceType));
+            param.put("orderId",orderId);
+            param.put("version",version);
+            String server_sign = SignUtil.genSign(param,merchant.getMd5Key());
+            if(server_sign.compareTo(sign)!=0){
+                return buildHomeResponse(1002,"签名错误");
+            }
+            Request request = new Request();
+            request.setRequestId(orderId);
+            Request db_request = requestService.queryById(request);
+            if(db_request == null){
+                return buildHomeResponse(3001,"未查询到订单");
+            }
+            Order order = orderService.queryOrder(request.getOrderId());
+            if(order == null){
+                return buildHomeResponse(3001,"未查询到订单");
+            }
+            OrderCancelType orderCancelType = null;
+            Byte status = order.getOrderStatus();
+            switch (OrderStatusEnum.parse(status)){
+
+            }
+            return cancelOrder(order, orderCancelType);
+        }catch (Exception e){
+            log.error("OrderManageImpl queryThirdOrder error",e);
+            return buildHomeResponse(1004,"其他错误");
+        }
+    }
+
+    /**
+     * 更新第三方订单
+     *
+     * @param orderId 订单ID
+     * @return 返回更新订单结果
+     */
+    @Override
+    public String updateThirdOrder(String key, int serviceType, String orderId, String version, String sign, int status) {
+        HomeResponse response = new HomeResponse();
+        try {
+            Merchant merchant = merchantManage.getByKey(key);
+            if(merchant == null){
+                return buildHomeResponse(1001,"参数错误");
+            }
+            com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
+            if(service == null){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            MerchantBusiness search = new MerchantBusiness();
+            search.setMerchantId(merchant.getMerchantId());
+            search.setServiceId(service.getServiceId());
+            MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
+            if(merchantBusiness == null){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+            if(merchant.getMerchantStatus()!=1 || service.getServiceStatus()!=-1 ||
+                    merchantBusiness.getStatus()!=-1){
+                return buildHomeResponse(2003,"服务类型不支持");
+            }
+
+            TreeMap<String, String> param = new TreeMap<>();
+            param.put("key",key);
+            param.put("serviceType",String.valueOf(serviceType));
+            param.put("orderId",orderId);
+            param.put("version",version);
+            param.put("status",String.valueOf(status));
+            String server_sign = SignUtil.genSign(param,merchant.getMd5Key());
+            if(server_sign.compareTo(sign)!=0){
+                return buildHomeResponse(1002,"签名错误");
+            }
+            Request request = new Request();
+            request.setRequestId(orderId);
+            Request db_request = requestService.queryById(request);
+            if(db_request == null){
+                return buildHomeResponse(3001,"未查询到订单");
+            }
+            Order order = orderService.queryOrder(request.getOrderId());
+            if(order == null){
+                return buildHomeResponse(3001,"未查询到订单");
+            }
+            OrderCancelType orderCancelType = null;
+            Byte order_status = order.getOrderStatus();
+
+            switch (OrderStatusEnum.parse(status)){
+
+            }
+            return cancelOrder(order, orderCancelType);
+        }catch (Exception e){
+            log.error("OrderManageImpl queryThirdOrder error",e);
+            return buildHomeResponse(1004,"其他错误");
+        }
+    }
+
+    /**
+     * 取消平台订单
+     *
+     * @param orderId 订单ID
+     * @return 返回取消订单结果
+     */
+    @Override
+    public String cancelLocalOrder(long orderId , OrderCancelType orderCancelType){
         Order order = orderService.queryOrder(orderId);
+        if(order == null){
+            return buildHomeResponse(3001,"未查询到订单");
+        }
+        return cancelOrder(order,orderCancelType);
+    }
+
+    /**
+     * 取消订单
+     *
+     * @param order 订单
+     * @return 返回订单详情
+     */
+    public String cancelOrder(Order order, OrderCancelType orderCancelType) {
+        if (orderCancelType == null) return buildHomeResponse(1004, "其他错误");
+        //Order order = orderService.queryOrder(orderId);
+        long orderId = order.getOrderId();
         OrderDetailVo orderDetailVo = orderDubboService.queryOrderDetail(orderId);
         if (order == null || orderDetailVo == null)
-            return buildResponse(1, "未找到订单");
+            return buildHomeResponse(3001, "未查询到订单");
 
         if (order.getOrderStatus() == OrderStatusEnum.OrderBackClose.getValue() ||
                 order.getOrderStatus() == OrderStatusEnum.OrderCloseByMerchant.getValue() ||
@@ -309,18 +460,18 @@ public class OrderManageImpl implements OrderManage {
                 order.getOrderStatus() == OrderStatusEnum.OrderHadRefund.getValue() ||
                 order.getOrderStatus() == OrderStatusEnum.OrderMrchantClose.getValue() ||
                 order.getOrderStatus() == OrderStatusEnum.OrderRefunding.getValue()) {
-            return buildResponse(1, "订单已经取消");
+            return buildHomeResponse(3101, "取消订单失败");
         }
 
         Contact contact = contactService.queryByOrderId(orderId);
+        if(contact==null)return buildHomeResponse(1004, "其他错误");
         DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime serviceStartTime = DateTime.parse(contact.getServiceStartTime(), format);
         DateTime now = new DateTime();
 
-
         if (serviceStartTime.getMillis() - 2 * 60 * 60 * 1000 <= now.getMillis()) {
             if (orderCancelType.getValue() != OrderCancelType.REFUND_PARTIAL.getValue())
-                return buildResponse(2, "订单取消超时");
+                return buildHomeResponse(3102, "取消订单超时");
         }
 
         String result = null;
@@ -389,19 +540,19 @@ public class OrderManageImpl implements OrderManage {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnpaid.getValue()) {
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
+            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.cancelOrderByUser(order.getUserId(), order.getOrderId())) {
-            return buildResponse(0, "取消订单成功");
+            return buildHomeResponse(0, "取消订单成功");
         } else {
-            return buildResponse(1, "取消订单失败");
+            return buildHomeResponse(3101, "取消订单失败");
         }
     }
 
@@ -409,67 +560,67 @@ public class OrderManageImpl implements OrderManage {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderDistribute.getValue()) {
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderDistribute.getName());
+            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderDistribute.getName());
         }
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.userRefund(order.getUserId(), order.getOrderId())) {
-            return buildResponse(0, "取消订单成功");
+            return buildHomeResponse(0, "取消订单成功");
         } else {
-            return buildResponse(1, "取消订单失败");
+            return buildHomeResponse(3101, "取消订单失败");
         }
     }
 
     private String MerchantCancel(Order order, OrderDetailVo orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
+            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         long merchantCode = merchant.getMerchantCode();
         //2.调用dubbo接口取消未支付订单
         if (orderDubboService.merchantCancel(order.getOrderId(), merchantCode, order.getUserId())) {
-            return buildResponse(0, "取消订单成功");
+            return buildHomeResponse(0, "取消订单成功");
         } else {
-            return buildResponse(1, "取消订单失败");
+            return buildHomeResponse(3101, "取消订单失败");
         }
     }
 
     private String OutOfTimeCancel(Order order, OrderDetailVo orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnpaid.getValue()) {
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
+            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         //2.更新订单表
-        return buildResponse(0, "取消订单成功");
+        return buildHomeResponse(0, "取消订单成功");
     }
 
     private String MerchantOutOfTimeCancel(Order order, OrderDetailVo orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
+            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         //2.更新订单表
-        return buildResponse(0, "取消订单成功");
+        return buildHomeResponse(0, "取消订单成功");
     }
 
     private String PhpCloseCancel(Order order, OrderDetailVo orderDetailVo) {
@@ -477,14 +628,14 @@ public class OrderManageImpl implements OrderManage {
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         //2.更新订单表
         boolean update = orderService.updateOrder(order.getOrderId(), OrderStatusEnum.OrderBackClose);
         if (update)
-            return buildResponse(0, "取消订单成功");
+            return buildHomeResponse(0, "取消订单成功");
         else
-            return buildResponse(1, "取消订单失败");
+            return buildHomeResponse(3101, "取消订单失败");
     }
 
     private String RefundPartial(Order order, OrderDetailVo orderDetailVo) {
@@ -492,13 +643,13 @@ public class OrderManageImpl implements OrderManage {
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderDistribute.getValue() ||
                 order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
-            return buildResponse(1, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName() + "或" + OrderStatusEnum.OrderDistribute.getName());
+            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName() + "或" + OrderStatusEnum.OrderDistribute.getName());
         }
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildResponse(1, "取消第三方订单失败");
+            return buildHomeResponse(3101, "取消第三方订单失败");
         }
         long merchantCode = merchant.getMerchantCode();
         long refundMoney_l = 0l;
@@ -507,9 +658,9 @@ public class OrderManageImpl implements OrderManage {
         if (orderDubboService.partialRefund(order.getOrderId(), order.getUserId(), refundMoney_l,
                 settlementMoney_l, SettleMethodEnum.UnSettle, merchantCode, "上门服务OPS部分退款",
                 "{}", 111112, UserTypeEnum.ShihuiApp, "homeservice@17shihui.com")) {
-            return buildResponse(0, "取消订单成功");
+            return buildHomeResponse(0, "取消订单成功");
         } else {
-            return buildResponse(1, "取消订单失败");
+            return buildHomeResponse(3101, "取消订单失败");
         }
     }
 
