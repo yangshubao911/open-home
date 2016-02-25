@@ -47,6 +47,7 @@ public class MerchantGoods implements Serializable {
     @JSONField(name="category_name")
     private String categoryName;
     
+    @Transient
     private String price;
     
     @Transient
