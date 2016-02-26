@@ -29,14 +29,14 @@ public class SnapShotUtil {
 
 	static {
 		if (DefaultConfigLoader.getInstance().getEnv().equals(ConfigLoader.Env.prod)) {
-			APPID = "8";
-			SALT = "NYFaqL";
-			APPSN = "67d501d249c739939c841a1eb94a235e";
+			APPID = "";
+			SALT = "";
+			APPSN = "";
 			SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com//index.php/kuaizhao/create";
 		} else {
-			APPID = "8";
-			SALT = "MvaXyd";
-			APPSN = "d1b1134ee2acbf2943ab864c18f311a0";
+			APPID = "11";
+			SALT = "XfxqHI";
+			APPSN = "01853313c3dbd10305ced7e4dcb1a573";
 			SNAPSHOT_URL = "http://test.snapshots.17shihui.com/index.php/kuaizhao/create";
 		}
 	}
