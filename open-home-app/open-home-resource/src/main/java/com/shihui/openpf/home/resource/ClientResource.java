@@ -2,6 +2,7 @@ package com.shihui.openpf.home.resource;
 
 
 import com.shihui.openpf.home.service.api.ClientService;
+import com.shihui.openpf.home.util.HomeConfigurer;
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
@@ -49,6 +50,28 @@ public class ClientResource {
                          @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                          @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
                          @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId) {
-        return clientService.detail(serviceId, userId, groupId, categoryId , goodsId);
+        return clientService.detail(serviceId, userId, groupId, categoryId, goodsId);
     }
+
+    @Path("/order/confrim")
+    @GET
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String orderConfirm(@Context RequestContext rc,
+                         @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
+                         @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
+                         @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
+                         @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
+                         @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
+                         @ParamDesc(desc = "是否使用实惠现金", isRequired = true) @QueryParam("costSh") int costSh) {
+        return clientService.orderConfirm(serviceId, userId, groupId, categoryId, goodsId, costSh);
+    }
+
+    @Path("/order/test")
+    @GET
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    public String test(@Context RequestContext rc) {
+        return HomeConfigurer.test;
+    }
+
 }

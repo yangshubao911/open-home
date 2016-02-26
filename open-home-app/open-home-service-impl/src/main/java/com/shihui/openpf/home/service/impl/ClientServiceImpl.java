@@ -122,21 +122,22 @@ public class ClientServiceImpl implements ClientService {
         if (service.getServiceStatus() != 1) {
             throw new AppException(HomeExcepFactor.Service_Close);
         }
-        Group group = groupManage.getGroupInfoByGid(groupId);
-        if (group == null) {
-            throw new AppException(HomeExcepFactor.Group_Unfound);
-        }
-        int cityId = group.getCityId();
 
-        Category category_search = new Category();
-        category_search.setId(categoryId);
-        Category categorie = categoryService.findById(category_search);
-        if (categorie == null) {
-            throw new AppException(HomeExcepFactor.Category_Unfound);
-        }
         Goods goods = goodsService.findById(goodsId);
         if (goods == null) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);
+        }
+        if(goods.getGoodsStatus()!=1){
+            throw new AppException(HomeExcepFactor.Goods_Close);
+        }
+        Category category_search = new Category();
+        category_search.setId(goods.getCategoryId());
+        Category category = categoryService.findById(category_search);
+        if (category == null) {
+            throw new AppException(HomeExcepFactor.Category_Unfound);
+        }
+        if(category.getStatus()!=1) {
+            throw new AppException(HomeExcepFactor.Category_Close);
         }
 
         JSONObject goods_json = new JSONObject();
@@ -191,4 +192,41 @@ public class ClientServiceImpl implements ClientService {
         return result.toJSONString();
     }
 
+    /**
+     * 客户端订单确认接口
+     *
+     * @return 返回订单详情
+     */
+    @Override
+    public String orderConfirm(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId, Integer costSh) {
+
+        com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
+        if (service.getServiceStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Service_Close);
+        }
+        Goods goods = goodsService.findById(goodsId);
+        if (goods == null) {
+            throw new AppException(HomeExcepFactor.Goods_Unfound);
+        }
+        if(goods.getGoodsStatus()!=1){
+            throw new AppException(HomeExcepFactor.Goods_Close);
+        }
+        Category search = new Category();
+        search.setId(goods.getCategoryId());
+        Category category = categoryService.findById(search);
+        if (category == null) {
+            throw new AppException(HomeExcepFactor.Category_Unfound);
+        }
+        if(category.getStatus()!=1) {
+            throw new AppException(HomeExcepFactor.Category_Close);
+        }
+
+
+
+
+
+
+
+        return null;
+    }
 }

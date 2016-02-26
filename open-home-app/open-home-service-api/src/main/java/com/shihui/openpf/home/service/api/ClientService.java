@@ -19,4 +19,11 @@ public interface ClientService {
      */
     public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId);
 
+    /**
+     * 客户端订单确认接口
+     *
+     * @return 返回订单详情
+     */
+    public String orderConfirm(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, Integer costSh);
+
 }
