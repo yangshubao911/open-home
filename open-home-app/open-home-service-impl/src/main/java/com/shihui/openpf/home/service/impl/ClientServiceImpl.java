@@ -83,7 +83,7 @@ public class ClientServiceImpl implements ClientService {
         JSONArray goods_jsonArray = new JSONArray();
         for (Goods goods : goodsList) {
             JSONObject goods_json = new JSONObject();
-            if (goods.getGoodsStatus() == 1 && categoryMap.get(goods.getCategoryId()) != null) {
+            if (goods.getGoodsStatus() != 1 && categoryMap.get(goods.getCategoryId()) != null) {
                 goods_json.put("serviceId", goods.getServiceId());
                 goods_json.put("goodsId", goods.getGoodsId());
                 goods_json.put("categoryId", goods.getCategoryId());
