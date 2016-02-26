@@ -22,24 +22,11 @@ public class SnapShotUtil {
 	 */
 	private static final ApacheHttpClient APACHE_HTTP_CLIENT = new ApacheHttpClient(10000, 10000);
 
-	private static String APPID = "";
-	private static String SALT = "WghLt8";
-	private static String APPSN = "ad20ff9381d5c08a02d9f2583f456b80";
-	private static String SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com/kuaizhao/create";
+	private static String APPID = OpenHomeConfig.snapshot_appid;
+	private static String SALT = OpenHomeConfig.snapshot_salt;
+	private static String APPSN = OpenHomeConfig.snapshot_appsn;
+	private static String SNAPSHOT_URL = OpenHomeConfig.snapshot_url;
 
-	static {
-		if (DefaultConfigLoader.getInstance().getEnv().equals(ConfigLoader.Env.prod)) {
-			APPID = "";
-			SALT = "";
-			APPSN = "";
-			SNAPSHOT_URL = "http://snapshots.intra.hiwemeet.com//index.php/kuaizhao/create";
-		} else {
-			APPID = "11";
-			SALT = "XfxqHI";
-			APPSN = "01853313c3dbd10305ced7e4dcb1a573";
-			SNAPSHOT_URL = "http://test.snapshots.17shihui.com/index.php/kuaizhao/create";
-		}
-	}
 
 	/**
 	 * 创建商品快照

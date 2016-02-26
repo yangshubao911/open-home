@@ -7,7 +7,7 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd"
         >
-    <bean id="configure" class="com.shihui.openpf.home.util.OpenHomeConfigurer" >
+    <bean id="configure" class="com.shihui.openpf.home.util.OpenHomeConfig" >
         <property name="snapshot_url">
             <value>${snapshot_url}</value>
         </property>
