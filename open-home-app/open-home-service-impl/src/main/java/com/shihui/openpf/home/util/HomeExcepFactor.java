@@ -14,14 +14,20 @@ public class HomeExcepFactor extends ExcepFactor {
     public static final HomeExcepFactor Group_Unfound;
 
     public static final HomeExcepFactor Goods_Unfound;
+
+    public static final HomeExcepFactor Category_Unfound;
+
+    public static final HomeExcepFactor Merchant_Unfound;
     protected HomeExcepFactor(HttpStatus httpStatus, int errorCode, String errorMsg, String errorMsgCn) {
         super(29, httpStatus, errorCode, errorMsg, errorMsgCn);
     }
 
     static {
         Service_Close = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 1, "service unserviceable", "服务已经暂停使用");
-        Group_Unfound = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 1, "group id error", "小区暂时无法提供服务");
-        Goods_Unfound = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 1, "can't find goods", "无法提供服务内容");
+        Group_Unfound = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 2, "group id error", "小区暂时无法提供服务");
+        Goods_Unfound = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 3, "can't find goods", "无法提供服务内容");
+        Category_Unfound = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 4, "can't find category", "无法提供服务内容");
+        Merchant_Unfound = new HomeExcepFactor(HttpStatus.BAD_REQUEST, 5, "can't find merchant", "无法提供服务内容");
 
     }
 }

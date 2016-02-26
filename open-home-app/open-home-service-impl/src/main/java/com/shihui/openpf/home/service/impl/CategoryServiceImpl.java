@@ -86,4 +86,13 @@ public class CategoryServiceImpl implements CategoryService {
 		return list;
 	}
 
+	@Override
+	public List<Category> listByCondition(Category category) {
+		return categoryDao.findByCondition(category);
+	}
+
+	@Override
+	public Category findById(Category category) {
+		return categoryDao.findById(category);
+	}
 }
