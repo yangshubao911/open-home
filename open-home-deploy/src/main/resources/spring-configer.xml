@@ -7,9 +7,18 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd"
         >
-    <bean id="configure" class="com.shihui.openpf.home.util.HomeConfigurer" >
-        <property name="test">
-            <value>${test}</value>
+    <bean id="configure" class="com.shihui.openpf.home.util.OpenHomeConfigurer" >
+        <property name="snapshot_url">
+            <value>${snapshot_url}</value>
+        </property>
+        <property name="snapshot_appid">
+            <value>${snapshot_appid}</value>
+        </property>
+        <property name="snapshot_salt">
+            <value>${snapshot_salt}</value>
+        </property>
+        <property name="snapshot_appsn">
+            <value>${snapshot_appsn}</value>
         </property>
     </bean>
 

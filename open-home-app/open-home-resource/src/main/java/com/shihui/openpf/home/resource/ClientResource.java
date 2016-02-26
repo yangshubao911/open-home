@@ -2,7 +2,7 @@ package com.shihui.openpf.home.resource;
 
 
 import com.shihui.openpf.home.service.api.ClientService;
-import com.shihui.openpf.home.util.HomeConfigurer;
+import com.shihui.openpf.home.util.OpenHomeConfigurer;
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
@@ -71,7 +71,7 @@ public class ClientResource {
     @GET
     @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
     public String test(@Context RequestContext rc) {
-        return HomeConfigurer.test;
+        return OpenHomeConfigurer.snapshot_appid;
     }
 
 }
