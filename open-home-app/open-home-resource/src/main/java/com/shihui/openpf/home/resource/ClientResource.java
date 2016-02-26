@@ -67,11 +67,4 @@ public class ClientResource {
         return clientService.orderConfirm(serviceId, userId, groupId, categoryId, goodsId, costSh);
     }
 
-    @Path("/order/test")
-    @GET
-    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
-    public String test(@Context RequestContext rc) {
-        return OpenHomeConfig.snapshot_appid;
-    }
-
 }
