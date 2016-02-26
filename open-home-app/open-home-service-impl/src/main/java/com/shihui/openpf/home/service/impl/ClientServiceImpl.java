@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.shihui.openpf.common.dubbo.api.GroupManage;
 import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
+import com.shihui.openpf.common.dubbo.api.ServiceManage;
 import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
@@ -36,6 +37,8 @@ public class ClientServiceImpl implements ClientService {
     MerchantManage merchantManage;
     @Resource
     MerchantBusinessManage merchantBusinessManage;
+    @Resource
+    ServiceManage serviceManage;
 
     /**
      * 客户端查询商品列表
@@ -45,31 +48,44 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public String listGoods(Integer serviceId, Long userId, Long groupId) {
         JSONObject result = new JSONObject();
+
+        com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
+        if(service.getServiceStatus()!=1){
+            throw new AppException(HomeExcepFactor.Service_Close);
+        }
         Group group = groupManage.getGroupInfoByGid(groupId);
+        if(group==null){
+            throw new AppException(HomeExcepFactor.Group_Unfound);
+        }
         int cityId = group.getCityId();
         List<Goods> goodsList = goodsService.list(serviceId, cityId);
+        if(goodsList==null||goodsList.size()==0){
+            throw new AppException(HomeExcepFactor.Goods_Unfound);
+        }
         JSONArray goods_json = new JSONArray();
-        for(Goods good : goodsList){
+        for(Goods goods : goodsList){
             JSONObject good_json = new JSONObject();
-            good_json.put("serviceId",good.getServiceId());
-            good_json.put("goodsId",good.getGoodsId());
-            good_json.put("categoryId",good.getCategoryId());
-            good_json.put("goodsImage",good.getImageId());
-            good_json.put("goodsVersion",good.getGoodsVersion());
-            good_json.put("goodsName",good.getGoodsName());
-            good_json.put("goodsSubtitle",good.getGoodsSubtitle());
-            //活动计算价格
-            //
-            //活动计算价格
-            good_json.put("originalPrice", good.getPrice());
-            String pay = StringUtil.decimalSub(good.getPrice(),new String[]{good.getShOffSet()});
-            good_json.put("pay",pay);
-            good_json.put("shOffset",good.getShOffSet());
+            if(goods.getGoodsStatus()==1) {
+                good_json.put("serviceId", goods.getServiceId());
+                good_json.put("goodsId", goods.getGoodsId());
+                good_json.put("categoryId", goods.getCategoryId());
+                good_json.put("goodsImage", goods.getImageId());
+                good_json.put("goodsVersion", goods.getGoodsVersion());
+                good_json.put("goodsName", goods.getGoodsName());
+                good_json.put("goodsSubtitle", goods.getGoodsSubtitle());
+                //活动计算价格
+                //
+                //活动计算价格
+                good_json.put("originalPrice", goods.getPrice());
+                String pay = StringUtil.decimalSub(goods.getPrice(), new String[]{goods.getShOffSet()});
+                good_json.put("pay", pay);
+                good_json.put("shOffset", goods.getShOffSet());
 
 
+                good_json.put("sellNum", goodsCache.querySell(goods.getCategoryId()));
+                goods_json.add(good_json);
+            }
 
-            good_json.put("sellNum",goodsCache.querySell(good.getCategoryId()));
-            goods_json.add(good_json);
         }
         result.put("list",goods_json);
         return result.toJSONString();
@@ -82,30 +98,34 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId) {
-
+        JSONObject result = new JSONObject();
         Group group = groupManage.getGroupInfoByGid(groupId);
+        if(group==null){
+            throw new AppException(HomeExcepFactor.Group_Unfound);
+        }
         int cityId = group.getCityId();
-
         MerchantBusiness search = new MerchantBusiness();
         search.setServiceId(serviceId);
         search.setStatus(1);
         List<MerchantBusiness> merchantBusinesses =  merchantBusinessManage.queryList(search);
         List<Integer> searchlist = new ArrayList<>();
-        if(merchantBusinesses==null||merchantBusinesses.size()==0) return null;
-        for(MerchantBusiness merchantBusiness : merchantBusinesses){
-            searchlist.add(merchantBusiness.getMerchantId());
-        }
-        List<Merchant> merchantList =  merchantManage.batchQuery(searchlist);
-        if(merchantList==null||merchantList.size()==0) return null;
-        for(Merchant merchant : merchantList){
+        if(merchantBusinesses!=null&&merchantBusinesses.size()>0) {
+            for (MerchantBusiness merchantBusiness : merchantBusinesses) {
+                searchlist.add(merchantBusiness.getMerchantId());
+            }
 
+            if(searchlist!=null && searchlist.size()>0) {
+                List<Merchant> merchantList = merchantManage.batchQuery(searchlist);
+                if (merchantList != null && merchantList.size() > 0) {
+                    for (Merchant merchant : merchantList) {
+
+                    }
+                }
+            }
         }
+
 
         return null;
     }
 
-    @Override
-    public void test() {
-        throw new AppException(HomeExcepFactor.TEST);
-    }
 }

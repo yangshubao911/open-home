@@ -19,5 +19,4 @@ public interface ClientService {
      */
     public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId);
 
-    void test();
 }

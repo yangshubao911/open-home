@@ -731,11 +731,12 @@ public class OrderManageImpl implements OrderManage {
         title.add("实际用户支付（元）");
         title.add("下单状态");
 
-        List<Object> list = new ArrayList<>();
+
         List<List<Object>> data = new ArrayList<>();
         List<Order> orders = orderService.queryUnusual();
         for (int i = 0; i < orders.size(); i++) {
             Order order = orders.get(i);
+            List<Object> list = new ArrayList<>();
             list.add(i);
             list.add(order.getOrderId());
             list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
@@ -777,6 +778,5 @@ public class OrderManageImpl implements OrderManage {
         response.setCode(code);
         return JSONObject.toJSONString(response);
     }
-
 
 }
