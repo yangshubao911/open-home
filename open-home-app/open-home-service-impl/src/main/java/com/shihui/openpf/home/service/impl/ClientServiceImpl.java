@@ -129,7 +129,7 @@ public class ClientServiceImpl implements ClientService {
         int cityId = group.getCityId();
 
         Category category_search = new Category();
-        category_search.setStatus(categoryId);
+        category_search.setId(categoryId);
         Category categorie = categoryService.findById(category_search);
         if (categorie == null) {
             throw new AppException(HomeExcepFactor.Category_Unfound);
