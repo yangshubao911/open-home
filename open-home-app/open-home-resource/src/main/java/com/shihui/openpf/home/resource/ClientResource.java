@@ -49,6 +49,6 @@ public class ClientResource {
                          @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                          @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
                          @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId) {
-        return clientService.listGoods(serviceId, userId, groupId);
+        return clientService.detail(serviceId, userId, groupId, categoryId , goodsId);
     }
 }
