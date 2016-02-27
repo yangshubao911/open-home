@@ -82,18 +82,9 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	}
 	
 	@Override
-	public HomeResponse getServiceAvailableTime(int serviceType, int goodsId, int gid, String longitude, String latitude) {
-		//查询小区信息
-		Group group = this.groupManage.getGroupInfoByGid(gid);
-		if(group == null){
-			HomeResponse response = new HomeResponse();
-			response.setCode(1004);
-			response.setMsg("小区未开通服务或者小区信息不存在");
-			
-			return response;
-		}
+	public HomeResponse getServiceAvailableTime(int serviceType, int cityId, String longitude, String latitude, List<Merchant> merchants) {
 		//查询供应商信息
-		Map<Merchant, MerchantApi> merchantApiMap = this.merchantManage.getMerchantAvailableTimeApi(serviceType, goodsId, group.getCityId(), group.getDistrictId(), group.getPlateId());
+		Map<Merchant, MerchantApi> merchantApiMap = this.merchantManage.getMerchantAvailableTimeApi(serviceType, merchants);
 		if(merchantApiMap == null || merchantApiMap.size() == 0){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
@@ -118,7 +109,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			//执行请求，非阻塞方式
 			OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(entry.getKey(), resultParser);
 			handlers.add(handler);
-			Map<String, String> param = paramParser.getServiceAvailableTimeParam(entry.getKey(), serviceType, group.getCityId(), longitude, latitude, api.getVersion());
+			Map<String, String> param = paramParser.getServiceAvailableTimeParam(entry.getKey(), serviceType, cityId, longitude, latitude, api.getVersion());
 		    this.executeHttpRequst(api, param, handler, HTTP_GET);
 		}
 		//解析并合并结果

@@ -3,6 +3,8 @@
  */
 package com.shihui.openpf.home.api;
 
+import java.util.List;
+
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.OrderInfo;
@@ -16,13 +18,12 @@ public interface HomeServProviderService {
 	
 	/**
 	 * @param serviceType 上门服务业务类型
-	 * @param goodsId 商品id
-	 * @param gid 小区id 
 	 * @param longitude 高德坐标经度
 	 * @param latitude 高德坐标纬度
+	 * @param merchants
 	 * @return
 	 */
-	public HomeResponse getServiceAvailableTime(int serviceType, int goodsId, int gid, String longitude, String latitude);
+	public HomeResponse getServiceAvailableTime(int serviceType,  int cityId, String longitude, String latitude, List<Merchant> merchants);
 	
 	/**
 	 * @param serviceType 上门服务业务类型
