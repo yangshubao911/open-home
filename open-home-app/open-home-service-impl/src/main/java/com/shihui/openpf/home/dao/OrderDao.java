@@ -1,19 +1,18 @@
 package com.shihui.openpf.home.dao;
 
-import com.shihui.api.common.model.OrderStatusEnum;
-import com.shihui.openpf.home.model.Order;
-import org.joda.time.DateTime;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Transient;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Column;
-import javax.persistence.Transient;
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.shihui.api.common.model.OrderStatusEnum;
+import com.shihui.openpf.home.model.Order;
 
 /**
  * Created by zhoutc on 2016/1/21.
@@ -48,11 +47,11 @@ public class OrderDao extends AbstractDao<Order> {
                 }
 
             }
-            if(startTime!=null||!startTime.equals("")) {
+            if(startTime!=null && !startTime.equals("")) {
                 sql.append("and create_time >= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime));
             }
-            if(endTime!=null||!endTime.equals("")) {
+            if(endTime!=null && !endTime.equals("")) {
                 sql.append("and create_time <= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
