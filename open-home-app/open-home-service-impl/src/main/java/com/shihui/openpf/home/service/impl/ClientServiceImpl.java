@@ -12,10 +12,7 @@ import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.MerchantCategory;
-import com.shihui.openpf.home.service.api.CategoryService;
-import com.shihui.openpf.home.service.api.ClientService;
-import com.shihui.openpf.home.service.api.GoodsService;
-import com.shihui.openpf.home.service.api.MerchantCategoryService;
+import com.shihui.openpf.home.service.api.*;
 import com.shihui.openpf.home.util.HomeExcepFactor;
 import me.weimi.api.app.AppException;
 import org.apache.commons.collections.CollectionUtils;
@@ -48,6 +45,8 @@ public class ClientServiceImpl implements ClientService {
     MerchantAreaManage merchantAreaManage;
     @Resource
     MerchantCategoryService merchantCategoryService;
+    @Resource
+    MerchantGoodsService merchantGoodsService;
 
     /**
      * 客户端查询商品列表
@@ -220,56 +219,52 @@ public class ClientServiceImpl implements ClientService {
         if (category.getStatus() != 1) {
             throw new AppException(HomeExcepFactor.Category_Close);
         }
-        MerchantBusiness merchant_business_search = new MerchantBusiness();
-        merchant_business_search.setServiceId(goods.getServiceId());
-        merchant_business_search.setStatus(1);
-        List<MerchantBusiness> merchantBusinesses = merchantBusinessManage.queryList(merchant_business_search);
 
-        List<Integer> searchlist = new ArrayList<>();
-        if (merchantBusinesses != null && merchantBusinesses.size() > 0) {
-            for (MerchantBusiness merchantBusiness : merchantBusinesses) {
-                searchlist.add(merchantBusiness.getMerchantId());
-            }
+        Group group = groupManage.getGroupInfoByGid(groupId);
+        if (group == null) {
+            throw new AppException(HomeExcepFactor.Group_Unfound);
+        }
+        int cityId = group.getCityId();
+        int districtId = group.getDistrictId();
+        int plateId = group.getPlateId();
 
-            List<Merchant> merchantList = merchantManage.batchQuery(searchlist);
-            if(merchantList==null || merchantList.size() == 0){
-                throw new AppException(HomeExcepFactor.Merchant_Unfound);
-            }
-            Map<Integer,Merchant> merchantMap = new HashMap<>();
-            for(Merchant merchant : merchantList){
-                merchantMap.put(merchant.getMerchantId(),merchant);
-            }
-            Group group = groupManage.getGroupInfoByGid(groupId);
-            if (group == null) {
-                throw new AppException(HomeExcepFactor.Group_Unfound);
-            }
-            int cityId = group.getCityId();
-            int districtId = group.getDistrictId();
-            int plateId = group.getPlateId();
-            Set<Integer> merchantIds = merchantAreaManage.getAvailableMerchant( serviceId,  cityId,  districtId,  plateId);
-            if(merchantIds==null||merchantIds.size()==0){
-                throw new AppException(HomeExcepFactor.Merchant_Unfound);
-            }
-            List<Integer> merchants = new ArrayList<>();
-            for(Integer merchantId : merchantIds){
-                if(merchantMap.get(merchantId)==null){
-                    merchantIds.remove(merchantId);
-                }else {
-                    merchants.add(merchantId);
-                }
-            }
-            if(merchantIds.size()==0){
-                throw new AppException(HomeExcepFactor.Merchant_Unfound);
-            }
-
-            MerchantCategory merchant_category_search = new MerchantCategory();
-            merchant_category_search.setServiceId(goods.getServiceId());
-            merchant_category_search.setCategoryId(goods.getCategoryId());
-            List<MerchantCategory> merchantCategories = merchantCategoryService.queryCategoryList(merchant_category_search);
-
-        } else {
+        Merchant merchant_search = new Merchant();
+        merchant_search.setMerchantStatus(1);
+        List<Merchant> merchantList = merchantManage.getMerchantList(merchant_search);
+        Map<Integer,Merchant> merchantMap = new HashMap<>();
+        for(Merchant merchant : merchantList){
+            merchantMap.put(merchant.getMerchantId(),merchant);
+        }
+        List<Integer> m_s_merchantIds = merchantBusinessManage.queryAvailableMerchant(goods.getServiceId());
+        Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(serviceId, cityId, districtId, plateId);
+        List<Integer> m_c_merchantIds = merchantCategoryService.queryAvailableMerchantId(goods.getCategoryId(), goods.getServiceId());
+        List<Integer> m_g_merchantIds = merchantGoodsService.getAvailableMerchant(goodsId);
+        Collection<Integer> collection_1 =  CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
+        if(collection_1==null||collection_1.size()==0){
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        Collection<Integer> collection_2 =  CollectionUtils.intersection(collection_1, m_c_merchantIds);
+        if(collection_2==null||collection_2.size()==0){
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+        Collection<Integer> collection_3 =  CollectionUtils.intersection(collection_2, m_g_merchantIds);
+        if(collection_3==null||collection_3.size()==0){
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+        List<Merchant> available_merchants = new ArrayList<>();
+        for(Integer merchantId : collection_3){
+            Merchant merchant = merchantMap.get(merchantId);
+            if(merchant!=null){
+                available_merchants.add(merchant);
+            }
+        }
+        if(available_merchants==null||available_merchants.size()==0){
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+
+
+
+
         return null;
     }
 

@@ -107,4 +107,14 @@ public class MerchantGoodsServiceImpl implements MerchantGoodsService{
 		sql = sql + " and a.category_id=?";
 		return merchantGoodsDao.queryForList(sql, merchantId, serviceId, categoryId);
 	}
+
+    /**
+     * 查询商品可提供的商户
+     * @param goodsId
+     * @return
+     */
+    @Override
+    public List<Integer> getAvailableMerchant(int goodsId) {
+        return merchantGoodsDao.getAvailableMerchant(goodsId);
+    }
 }

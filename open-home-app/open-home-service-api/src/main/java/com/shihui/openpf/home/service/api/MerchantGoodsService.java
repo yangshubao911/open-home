@@ -68,4 +68,11 @@ public interface MerchantGoodsService {
 	 */
 	List<MerchantGoods> findByConditions(Integer merchantId, Integer serviceId, Integer categoryId);
 
+	/**
+	 * 查询商品可提供的商户
+	 * @param goodsId
+	 * @return
+	 */
+	List<Integer> getAvailableMerchant(int goodsId);
+
 }

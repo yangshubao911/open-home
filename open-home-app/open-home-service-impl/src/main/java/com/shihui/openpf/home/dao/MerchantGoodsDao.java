@@ -2,11 +2,15 @@ package com.shihui.openpf.home.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.shihui.openpf.home.model.MerchantGoods;
@@ -97,4 +101,28 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
 			throw e;
 		}
 	}
+
+	/**
+	 * 查询商品可提供的商户
+	 * @param goodsId
+	 * @return
+	 */
+	public List<Integer> getAvailableMerchant(int goodsId){
+
+		String sql = "select merchant_id from merchant_goods where goods_id = ? and status = 1";
+		final List<Integer> result= new ArrayList<>();
+		return jdbcTemplate.query(sql, new Object[]{goodsId},new RowMapper<Integer>() {
+			@Override
+			public Integer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
+				Integer merchantId = rs.getInt("merchant_id");
+				if(merchantId!=null) {
+					result.add(merchantId);
+					return merchantId;
+				}
+				return null;
+			}
+		});
+	}
+
+
 }

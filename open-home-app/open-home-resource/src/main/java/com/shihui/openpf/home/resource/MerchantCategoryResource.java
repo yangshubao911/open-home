@@ -115,17 +115,4 @@ public class MerchantCategoryResource {
 		}
         return merchantCategoryService.batchCreate(merchantCategorys);
     }
-
-    @Path("/test")
-    @GET
-    @BaseInfo(desc = "查询商品分类", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
-    @Produces({MediaType.APPLICATION_JSON})
-    public String test(
-            @Context RequestContext rc,
-            @ParamDesc(desc = "服务类型", isRequired = true) @QueryParam("service_id") int service_id,
-            @ParamDesc(desc = "分类id", isRequired = true) @QueryParam("category_id") int category_id
-    ){
-        return JSON.toJSONString(merchantCategoryService.queryAvailableMerchantId(category_id,service_id));
-    }
-
 }
