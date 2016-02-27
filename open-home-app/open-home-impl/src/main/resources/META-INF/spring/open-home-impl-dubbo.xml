@@ -14,5 +14,7 @@
 	<dubbo:reference id="merchantManage"  interface="com.shihui.openpf.common.dubbo.api.MerchantManage" />
 	<!-- 供应商服务关联接口 -->
 	<dubbo:reference id="merchantBusinessManage" interface="com.shihui.openpf.common.dubbo.api.MerchantBusinessManage"/>
+	<!-- 供应商服务区域接口 -->
+	<dubbo:reference id="merchantAreaManage" interface=" com.shihui.openpf.common.dubbo.api.MerchantAreaManage" check="false"/>
 
 </beans>
