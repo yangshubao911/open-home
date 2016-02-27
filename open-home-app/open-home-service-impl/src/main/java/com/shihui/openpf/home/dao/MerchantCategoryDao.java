@@ -51,7 +51,7 @@ public class MerchantCategoryDao extends AbstractDao<MerchantCategory> {
  }
 
 	public List<Integer> queryAvailableMerchantId(int categoryId, int serviceId) {
-		String sql = "select * from merchant_category where category_id = ? and service_id = ?";
+		String sql = "select merchant_id from merchant_category where category_id = ? and service_id = ?";
 		return jdbcTemplate.queryForList(sql, new Object[]{categoryId, serviceId});
 
 	}
