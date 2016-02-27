@@ -2,29 +2,27 @@ package com.shihui.openpf.home.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.shihui.openpf.common.dubbo.api.GroupManage;
-import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
-import com.shihui.openpf.common.dubbo.api.MerchantManage;
-import com.shihui.openpf.common.dubbo.api.ServiceManage;
+import com.shihui.openpf.common.dubbo.api.*;
 import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
+import com.shihui.openpf.common.model.MerchantArea;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.util.StringUtil;
 import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.model.Goods;
+import com.shihui.openpf.home.model.MerchantCategory;
 import com.shihui.openpf.home.service.api.CategoryService;
 import com.shihui.openpf.home.service.api.ClientService;
 import com.shihui.openpf.home.service.api.GoodsService;
+import com.shihui.openpf.home.service.api.MerchantCategoryService;
 import com.shihui.openpf.home.util.HomeExcepFactor;
 import me.weimi.api.app.AppException;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -46,6 +44,10 @@ public class ClientServiceImpl implements ClientService {
     ServiceManage serviceManage;
     @Resource
     CategoryService categoryService;
+    @Resource
+    MerchantAreaManage merchantAreaManage;
+    @Resource
+    MerchantCategoryService merchantCategoryService;
 
     /**
      * 客户端查询商品列表
@@ -127,7 +129,7 @@ public class ClientServiceImpl implements ClientService {
         if (goods == null) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);
         }
-        if(goods.getGoodsStatus()!=1){
+        if (goods.getGoodsStatus() != 1) {
             throw new AppException(HomeExcepFactor.Goods_Close);
         }
         Category category_search = new Category();
@@ -136,7 +138,7 @@ public class ClientServiceImpl implements ClientService {
         if (category == null) {
             throw new AppException(HomeExcepFactor.Category_Unfound);
         }
-        if(category.getStatus()!=1) {
+        if (category.getStatus() != 1) {
             throw new AppException(HomeExcepFactor.Category_Close);
         }
 
@@ -174,15 +176,13 @@ public class ClientServiceImpl implements ClientService {
                 JSONArray merchants = new JSONArray();
                 if (merchantList != null && merchantList.size() > 0) {
                     for (Merchant merchant : merchantList) {
-                        if (merchant.getMerchantStatus() == 1) {
-                            JSONObject merchant_json = new JSONObject();
-                            merchant_json.put("merchantId", merchant.getMerchantId());
-                            merchant_json.put("merchantImage", merchant.getMerchantImage());
-                            merchant_json.put("merchantName", merchant.getMerchantName());
-                            merchant_json.put("merchantDesc", merchant.getMerchantDesc());
-                            merchant_json.put("merchantUrl", merchant.getMerchantLink());
-                            merchants.add(merchant_json);
-                        }
+                        JSONObject merchant_json = new JSONObject();
+                        merchant_json.put("merchantId", merchant.getMerchantId());
+                        merchant_json.put("merchantImage", merchant.getMerchantImage());
+                        merchant_json.put("merchantName", merchant.getMerchantName());
+                        merchant_json.put("merchantDesc", merchant.getMerchantDesc());
+                        merchant_json.put("merchantUrl", merchant.getMerchantLink());
+                        merchants.add(merchant_json);
                     }
                     result.put("merchants", merchants);
                 }
@@ -208,7 +208,7 @@ public class ClientServiceImpl implements ClientService {
         if (goods == null) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);
         }
-        if(goods.getGoodsStatus()!=1){
+        if (goods.getGoodsStatus() != 1) {
             throw new AppException(HomeExcepFactor.Goods_Close);
         }
         Category search = new Category();
@@ -217,16 +217,60 @@ public class ClientServiceImpl implements ClientService {
         if (category == null) {
             throw new AppException(HomeExcepFactor.Category_Unfound);
         }
-        if(category.getStatus()!=1) {
+        if (category.getStatus() != 1) {
             throw new AppException(HomeExcepFactor.Category_Close);
         }
+        MerchantBusiness merchant_business_search = new MerchantBusiness();
+        merchant_business_search.setServiceId(goods.getServiceId());
+        merchant_business_search.setStatus(1);
+        List<MerchantBusiness> merchantBusinesses = merchantBusinessManage.queryList(merchant_business_search);
 
+        List<Integer> searchlist = new ArrayList<>();
+        if (merchantBusinesses != null && merchantBusinesses.size() > 0) {
+            for (MerchantBusiness merchantBusiness : merchantBusinesses) {
+                searchlist.add(merchantBusiness.getMerchantId());
+            }
 
+            List<Merchant> merchantList = merchantManage.batchQuery(searchlist);
+            if(merchantList==null || merchantList.size() == 0){
+                throw new AppException(HomeExcepFactor.Merchant_Unfound);
+            }
+            Map<Integer,Merchant> merchantMap = new HashMap<>();
+            for(Merchant merchant : merchantList){
+                merchantMap.put(merchant.getMerchantId(),merchant);
+            }
+            Group group = groupManage.getGroupInfoByGid(groupId);
+            if (group == null) {
+                throw new AppException(HomeExcepFactor.Group_Unfound);
+            }
+            int cityId = group.getCityId();
+            int districtId = group.getDistrictId();
+            int plateId = group.getPlateId();
+            Set<Integer> merchantIds = merchantAreaManage.getAvailableMerchant( serviceId,  cityId,  districtId,  plateId);
+            if(merchantIds==null||merchantIds.size()==0){
+                throw new AppException(HomeExcepFactor.Merchant_Unfound);
+            }
+            List<Integer> merchants = new ArrayList<>();
+            for(Integer merchantId : merchantIds){
+                if(merchantMap.get(merchantId)==null){
+                    merchantIds.remove(merchantId);
+                }else {
+                    merchants.add(merchantId);
+                }
+            }
+            if(merchantIds.size()==0){
+                throw new AppException(HomeExcepFactor.Merchant_Unfound);
+            }
 
+            MerchantCategory merchant_category_search = new MerchantCategory();
+            merchant_category_search.setServiceId(goods.getServiceId());
+            merchant_category_search.setCategoryId(goods.getCategoryId());
+            List<MerchantCategory> merchantCategories = merchantCategoryService.queryCategoryList(merchant_category_search);
 
-
-
-
+        } else {
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
         return null;
     }
+
 }
