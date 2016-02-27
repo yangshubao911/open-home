@@ -104,57 +104,70 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String queryOrderList(RequestContext rc, Order queryOrder, String startTime, String endTime, int page, int size) {
-        JSONObject result = new JSONObject();
-        JSONArray orders_json = new JSONArray();
-        //  Order queryOrder = JSON.parseObject(json, Order.class);
-        int total = orderService.countQueryOrder(queryOrder, startTime, endTime);
-        result.put("total", total);
-        result.put("page", page);
-        result.put("size", size);
-        if (total <= 0) return result.toJSONString();
-        List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime, page, size);
+      try {
+          JSONObject result = new JSONObject();
+          JSONArray orders_json = new JSONArray();
+          //  Order queryOrder = JSON.parseObject(json, Order.class);
+          int total = orderService.countQueryOrder(queryOrder, startTime, endTime);
+          result.put("total", total);
+          result.put("page", page);
+          result.put("size", size);
+          if (total <= 0) return result.toJSONString();
+          List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime, page, size);
 
-        List<Integer> merchants = new ArrayList<>();
-        for (Order order : orderList) {
-            merchants.add(order.getMerchantId());
-        }
+          List<Integer> merchants = new ArrayList<>();
+          for (Order order : orderList) {
+              merchants.add(order.getMerchantId());
+          }
 
-        for (Order order : orderList) {
-            orders_json.add(buildOrderVo(order));
-        }
-        result.put("orders", orders_json);
-        return result.toJSONString();
+          for (Order order : orderList) {
+              JSONObject order_json = buildOrderVo(order);
+              if (order_json != null)
+                  orders_json.add(order_json);
+          }
+          result.put("orders", orders_json);
+          return result.toJSONString();
+      }catch (Exception e){
+          log.error("OrderManageImpl queryOrderList error!!",e);
+      }
+        return "";
     }
 
     public JSONObject buildOrderVo(Order order) {
-        JSONObject order_json = new JSONObject();
-        order_json.put("orderId", String.valueOf(order.getOrderId()));
-        order_json.put("userId", order.getUserId());
-        order_json.put("phone", order.getPhone());
+        try {
+            JSONObject order_json = new JSONObject();
+            order_json.put("orderId", String.valueOf(order.getOrderId()));
+            order_json.put("userId", order.getUserId());
+            order_json.put("phone", order.getPhone());
 
-        Goods goods = goodsService.findById(order.getGoodsId());
-        order_json.put("price", goods.getPrice());
-        order_json.put("shOffset", goods.getShOffSet());
-        order_json.put("due", new BigDecimal(goods.getPrice()).
-                subtract(new BigDecimal(goods.getShOffSet())).
-                setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            Goods goods = goodsService.findById(order.getGoodsId());
+            order_json.put("price", goods.getPrice());
+            order_json.put("shOffset", goods.getShOffSet());
+            order_json.put("due", new BigDecimal(goods.getPrice()).
+                    subtract(new BigDecimal(goods.getShOffSet())).
+                    setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 
-        order_json.put("merchantId", order.getMerchantId());
-        Merchant merchant = merchantManage.getById(order.getMerchantId());
-        order_json.put("merchantName", merchant.getMerchantName());
+            order_json.put("merchantId", order.getMerchantId());
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            order_json.put("merchantName", merchant.getMerchantName());
 
-        MerchantGoods merchantGoods = new MerchantGoods();
-        merchantGoods.setGoodsId(order.getGoodsId());
-        merchantGoods.setMerchantId(order.getMerchantId());
-        MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+            MerchantGoods merchantGoods = new MerchantGoods();
+            merchantGoods.setGoodsId(order.getGoodsId());
+            merchantGoods.setMerchantId(order.getMerchantId());
+            MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
 
-        order_json.put("settlement", db_merchantGoods.getSettlement());
-        DateTime dateTime = new DateTime(order.getCreateTime());
-        order_json.put("createTime", dateTime.toString("yyyyMMddHHmmss"));
-        order_json.put("pay", order.getPay());
-        order_json.put("status", order.getOrderStatus());
-        order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
-        return order_json;
+            order_json.put("settlement", db_merchantGoods.getSettlement());
+            DateTime dateTime = new DateTime(order.getCreateTime());
+            order_json.put("createTime", dateTime.toString("yyyy-MM-dd HH:mm:ss"));
+            order_json.put("pay", order.getPay());
+            order_json.put("status", order.getOrderStatus());
+            order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
+            return order_json;
+        }catch (Exception e){
+            log.error("OrderManageImpl buildOrderVo error!!",e);
+        }
+
+        return null;
     }
 
     /**
@@ -165,54 +178,63 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String queryOrder(long orderId) {
-        JSONObject result = new JSONObject();
-        Order order = orderService.queryOrder(orderId);
+        try {
+            JSONObject result = new JSONObject();
+            result.put("orderId",orderId);
+            Order order = orderService.queryOrder(orderId);
 
-        if(order==null) return null;
-        PaymentTypeEnum paymentTypeEnum = null;
-        if (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
-            paymentTypeEnum = PaymentTypeEnum.Alipay;
-        if (order.getPaymentType() == PaymentTypeEnum.Wxpay.getValue())
-            paymentTypeEnum = PaymentTypeEnum.Wxpay;
+            if (order == null) return null;
+            PaymentTypeEnum paymentTypeEnum = null;
+            if (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
+                paymentTypeEnum = PaymentTypeEnum.Alipay;
+            if (order.getPaymentType() == PaymentTypeEnum.Wxpay.getValue())
+                paymentTypeEnum = PaymentTypeEnum.Wxpay;
 
-        OrderPaymentMapping orderPaymentMapping = orderDubboService.queryPaymentMapping(orderId, paymentTypeEnum);
-        result.put("payType", order.getPaymentType());
-        if (orderPaymentMapping != null) {
-            result.put("transId", orderPaymentMapping.getTransId());
-            Payment payment = orderDubboService.queryPayMentInfo(orderPaymentMapping.getTransId());
-            if (payment != null) {
-                if (payment.getPaymentTime() != null && !"".equals(payment.getPaymentTime())) {
-                    DateTime date = new DateTime(payment.getPaymentTime().getTime());
-                    result.put("payTime", date.toString("yyyy-MM-dd HH:mm:ss"));
+            OrderPaymentMapping orderPaymentMapping = orderDubboService.queryPaymentMapping(orderId, paymentTypeEnum);
+            result.put("payType", order.getPaymentType());
+            if (orderPaymentMapping != null) {
+                result.put("transId", orderPaymentMapping.getTransId());
+                Payment payment = orderDubboService.queryPayMentInfo(orderPaymentMapping.getTransId());
+                if (payment != null) {
+                    if (payment.getPaymentTime() != null && !"".equals(payment.getPaymentTime())) {
+                        DateTime date = new DateTime(payment.getPaymentTime().getTime());
+                        result.put("payTime", date.toString("yyyy-MM-dd HH:mm:ss"));
+                    }
                 }
+
             }
+            result.put("createTime", new DateTime(order.getCreateTime()).toString("yyyy-MM-dd HH:mm:ss"));
+            result.put("userId", order.getUserId());
+            result.put("phone", order.getPhone());
 
+            Goods goods = goodsService.findById(order.getGoodsId());
+            result.put("price", goods.getPrice());
+
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            result.put("merchantId", order.getMerchantId());
+            result.put("merchantName", merchant.getMerchantName());
+
+            MerchantGoods merchantGoods = new MerchantGoods();
+            merchantGoods.setGoodsId(order.getGoodsId());
+            merchantGoods.setMerchantId(order.getMerchantId());
+            MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
+
+            result.put("settlement", db_merchantGoods.getSettlement());
+            BigDecimal originalPrice = new BigDecimal(order.getPay()).add(new BigDecimal(order.getShOffSet()));
+            result.put("originalPrice", originalPrice.stripTrailingZeros().toPlainString());
+            result.put("pay", order.getPay());
+            result.put("shOffset", order.getShOffSet());
+            result.put("status", order.getOrderStatus());
+            result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
+            result.put("due", new BigDecimal(goods.getPrice()).
+                    subtract(new BigDecimal(goods.getShOffSet())).
+                    setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            return result.toJSONString();
+        }catch (Exception e){
+            log.error("OrderManageImpl queryOrder error!!",e);
         }
-        result.put("createTime", new DateTime(order.getCreateTime()).toString("yyyy-MM-dd HH:mm:ss"));
-        result.put("userId", order.getUserId());
-        result.put("phone", order.getPhone());
 
-        Goods goods = goodsService.findById(order.getGoodsId());
-        result.put("price", goods.getPrice());
-
-        Merchant merchant = merchantManage.getById(order.getMerchantId());
-        result.put("merchantId", order.getMerchantId());
-        result.put("merchantName", merchant.getMerchantName());
-
-        MerchantGoods merchantGoods = new MerchantGoods();
-        merchantGoods.setGoodsId(order.getGoodsId());
-        merchantGoods.setMerchantId(order.getMerchantId());
-        MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
-
-        result.put("settlement", db_merchantGoods.getSettlement());
-        BigDecimal originalPrice = new BigDecimal(order.getPay()).add(new BigDecimal(order.getShOffSet()));
-        result.put("originalPrice", originalPrice.stripTrailingZeros().toPlainString());
-        result.put("pay", order.getPay());
-        result.put("shOffset", order.getShOffSet());
-        result.put("status", order.getOrderStatus());
-        result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
-
-        return result.toJSONString();
+        return "";
     }
 
     /**
@@ -709,11 +731,12 @@ public class OrderManageImpl implements OrderManage {
         title.add("实际用户支付（元）");
         title.add("下单状态");
 
-        List<Object> list = new ArrayList<>();
+
         List<List<Object>> data = new ArrayList<>();
         List<Order> orders = orderService.queryUnusual();
         for (int i = 0; i < orders.size(); i++) {
             Order order = orders.get(i);
+            List<Object> list = new ArrayList<>();
             list.add(i);
             list.add(order.getOrderId());
             list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
@@ -755,6 +778,5 @@ public class OrderManageImpl implements OrderManage {
         response.setCode(code);
         return JSONObject.toJSONString(response);
     }
-
 
 }

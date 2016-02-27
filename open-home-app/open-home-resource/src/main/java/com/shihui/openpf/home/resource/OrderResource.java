@@ -68,7 +68,8 @@ public class OrderResource {
             queryOrder.setPhone(phoneNum);
             if(!StringUtil.isEmpty(userId))
             queryOrder.setUserId(Long.parseLong(userId));
-
+            if(!StringUtil.isEmpty(merchantId))
+            queryOrder.setMerchantId(Integer.parseInt(merchantId));
             return orderManage.queryOrderList(rc,queryOrder,startTime,endTime,cursor,count );
         }catch (Exception e){
 
@@ -177,7 +178,9 @@ public class OrderResource {
         File file = new File(fileName);
         Response.ResponseBuilder response = Response.ok((Object) file);
         response.header("Content-Disposition",
-                "attachment; filename=\"unusualOrder.csv\"");
+                "attachment; filename=\"unusualOrder.xlsx\"");
+        response.header("content-transfer-encoding", "binary");
+
         return response.build();
     }
 

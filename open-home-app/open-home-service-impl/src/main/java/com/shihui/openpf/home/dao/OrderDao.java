@@ -47,17 +47,17 @@ public class OrderDao extends AbstractDao<Order> {
                 }
 
             }
-            if(startTime!=null && !startTime.equals("")) {
+            if(startTime!=null&&!startTime.equals("")) {
                 sql.append("and create_time >= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime));
             }
-            if(endTime!=null && !endTime.equals("")) {
+            if(endTime!=null&&!endTime.equals("")) {
                 sql.append("and create_time <= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
 
-            sql.append("limit ").append(page*size).append(",").append(size);
-            return super.queryForList(sql.toString(), valus.toArray(), Order.class);
+            sql.append("limit ").append((page-1)*size).append(",").append(size);
+            return super.queryForList(sql.toString(), valus.toArray());
         } catch (Exception e) {
             log.error("OrderDao error!!",e);
         }
@@ -110,9 +110,9 @@ public class OrderDao extends AbstractDao<Order> {
      * @return 订单详情
      */
     public Order queryOrder(long orderId){
-        String sql = "select * from `order` where order_id = " + orderId;
+        String sql = "select * from `order` where order_id = ?";
         try {
-            return super.queryForObject(sql, Order.class);
+            return super.queryForObject(sql,orderId);
         }catch (Exception e){
 
         }

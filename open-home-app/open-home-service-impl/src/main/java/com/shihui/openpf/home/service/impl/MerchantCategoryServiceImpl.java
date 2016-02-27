@@ -85,4 +85,16 @@ public class MerchantCategoryServiceImpl implements MerchantCategoryService{
 		String sql = "select a.*,b.`name` as category_name from merchant_category a,category b where a.category_id=b.id and a.merchant_id=? and a.service_id=?";
 		return merchantCategoryDao.queryForList(sql, merchantId, serviceId);
 	}
+
+    /**
+     * 查询业务商品分类开通的商户
+     * @param categoryId
+     * @param serviceId
+     *
+     * @return
+     */
+    @Override
+    public List<Integer> queryAvailableMerchantId(int categoryId, int serviceId) {
+        return merchantCategoryDao.queryAvailableMerchantId(categoryId,serviceId);
+    }
 }

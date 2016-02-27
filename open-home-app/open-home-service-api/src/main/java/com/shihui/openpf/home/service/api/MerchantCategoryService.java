@@ -45,4 +45,13 @@ public interface MerchantCategoryService {
      * @return
      */
     List<MerchantCategory> queryByConditions(int merchantId, int serviceId);
+
+    /**
+     * 查询业务商品分类开通的商户
+     * @param categoryId
+     * @param serviceId
+     *
+     * @return
+     */
+    public List<Integer> queryAvailableMerchantId(int categoryId, int serviceId);
 }

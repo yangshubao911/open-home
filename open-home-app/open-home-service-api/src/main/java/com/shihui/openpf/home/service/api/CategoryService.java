@@ -20,4 +20,7 @@ public interface CategoryService {
 
 	public List<Category> list(int serviceId);
 
+	public List<Category> listByCondition(Category category);
+
+	public Category findById(Category category);
 }
