@@ -14,6 +14,7 @@ import java.util.ServiceLoader;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import com.shihui.openpf.common.service.api.GroupManage;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.shihui.openpf.common.dubbo.api.GroupManage;
+
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;

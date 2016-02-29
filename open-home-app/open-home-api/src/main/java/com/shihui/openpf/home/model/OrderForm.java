@@ -21,28 +21,10 @@ public class OrderForm {
     private String detailAddress;
     private String servicePhone;
     private int payType;
+    private String merchants;
+    private String remark;
 
-    public OrderForm(int serviceId, long groupId, long userId, long goodsId,
-                     int categoryId, int costSh, String actPay,
-                     String actOffset, String serviceTime, String longitude,
-                     String latitude, String contactName, String serviceAddress,
-                     String detailAddress, String servicePhone, int payType) {
-        this.serviceId = serviceId;
-        this.groupId = groupId;
-        this.userId = userId;
-        this.goodsId = goodsId;
-        this.categoryId = categoryId;
-        this.costSh = costSh;
-        this.actPay = actPay;
-        this.actOffset = actOffset;
-        this.serviceTime = serviceTime;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.contactName = contactName;
-        this.serviceAddress = serviceAddress;
-        this.detailAddress = detailAddress;
-        this.servicePhone = servicePhone;
-        this.payType = payType;
+    public OrderForm() {
     }
 
     public int getServiceId() {
@@ -171,5 +153,21 @@ public class OrderForm {
 
     public void setPayType(int payType) {
         this.payType = payType;
+    }
+
+    public String getMerchants() {
+        return merchants;
+    }
+
+    public void setMerchants(String merchants) {
+        this.merchants = merchants;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

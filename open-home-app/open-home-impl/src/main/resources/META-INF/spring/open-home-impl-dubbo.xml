@@ -9,7 +9,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<!-- 小区信息接口 -->
-	<dubbo:reference id="groupManage" interface="com.shihui.openpf.common.dubbo.api.GroupManage" />
+	<dubbo:reference id="groupManage" interface="com.shihui.openpf.common.service.api.GroupManage" />
 	<!-- 供应商地接口 -->
 	<dubbo:reference id="merchantManage"  interface="com.shihui.openpf.common.dubbo.api.MerchantManage" />
 	<!-- 供应商服务关联接口 -->
