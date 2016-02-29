@@ -129,4 +129,9 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> queryUnusual() {
         return orderDao.queryUnusual();
     }
+
+    @Override
+    public String exportUnusual() {
+        return null;
+    }
 }

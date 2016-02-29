@@ -141,7 +141,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			if(handlers.size() == 0)
 				break;
 		}
-		
+		response.setResult(resultArray.toJSONString());
 		return response;
 	}
 

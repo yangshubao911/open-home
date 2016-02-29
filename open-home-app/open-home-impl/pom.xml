@@ -16,14 +16,14 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.shihui.openpf</groupId>
-			<artifactId>open-home-service-impl</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpasyncclient</artifactId>
 			<version>4.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.shihui.openpf</groupId>
+			<artifactId>open-home-service-api</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

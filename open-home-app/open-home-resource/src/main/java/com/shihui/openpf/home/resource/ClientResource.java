@@ -11,10 +11,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -66,5 +63,38 @@ public class ClientResource {
                          @ParamDesc(desc = "是否使用实惠现金", isRequired = true) @QueryParam("costSh") int costSh) {
         return clientService.orderConfirm(serviceId, userId, groupId, categoryId, goodsId, costSh);
     }
+
+    @Path("/area/time")
+    @GET
+    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String queryTime(@Context RequestContext rc,
+                               @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
+                               @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
+                               @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
+                               @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
+                               @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
+                               @ParamDesc(desc = "谷歌经度", isRequired = true) @QueryParam("longitude") String longitude,
+                               @ParamDesc(desc = "谷歌纬度", isRequired = true) @QueryParam("latitude") String latitude) {
+
+        return clientService.queryTime(serviceId, userId, groupId, categoryId, goodsId, longitude, latitude);
+    }
+
+    @Path("/order/create")
+    @POST
+    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String orderCreate(@Context RequestContext rc,
+                            @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
+                            @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
+                            @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
+                            @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
+                            @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
+                            @ParamDesc(desc = "谷歌经度", isRequired = true) @QueryParam("longitude") String longitude,
+                            @ParamDesc(desc = "谷歌纬度", isRequired = true) @QueryParam("latitude") String latitude) {
+
+        return clientService.queryTime(serviceId, userId, groupId, categoryId, goodsId, longitude, latitude);
+    }
+
 
 }

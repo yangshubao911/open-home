@@ -26,4 +26,11 @@ public interface ClientService {
      */
     public String orderConfirm(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, Integer costSh);
 
+    /**
+     * 客户端查询时间接口
+     *
+     * @return 返回时间接口
+     */
+    public String queryTime(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, String longitude, String latitude);
+
 }

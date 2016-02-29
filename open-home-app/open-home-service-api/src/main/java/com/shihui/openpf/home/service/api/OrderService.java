@@ -73,4 +73,10 @@ public interface OrderService {
 	 */
 	List<Order>  queryUnusual();
 
+	/**
+	 * 导出异常订单
+	 * @return 订单列表
+	 */
+	public String exportUnusual();
+
 }

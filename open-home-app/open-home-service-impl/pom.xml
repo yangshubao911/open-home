@@ -24,5 +24,10 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.shihui.openpf</groupId>
+			<artifactId>open-home-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
