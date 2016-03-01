@@ -27,7 +27,7 @@ public class ClientResource {
 
     @Path("/goods/list")
     @GET
-    @BaseInfo(desc = "查询归属城市所有分类商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @BaseInfo(desc = "查询归属城市所有分类商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String list(@Context RequestContext rc,
                        @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
@@ -39,7 +39,7 @@ public class ClientResource {
 
     @Path("/goods/detail")
     @GET
-    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String detail(@Context RequestContext rc,
                          @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
@@ -52,7 +52,7 @@ public class ClientResource {
 
     @Path("/order/confrim")
     @GET
-    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String orderConfirm(@Context RequestContext rc,
                                @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
@@ -66,7 +66,7 @@ public class ClientResource {
 
     @Path("/area/time")
     @GET
-    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String queryTime(@Context RequestContext rc,
                             @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
@@ -82,7 +82,7 @@ public class ClientResource {
 
     @Path("/order/create")
     @POST
-    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String orderCreate(@Context RequestContext rc,
                               @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
