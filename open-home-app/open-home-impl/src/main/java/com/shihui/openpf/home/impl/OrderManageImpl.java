@@ -439,7 +439,7 @@ public class OrderManageImpl implements OrderManage {
             switch (OrderStatusEnum.parse(status)){
 
             }
-            return cancelOrder(order, orderCancelType);
+            return null;
         }catch (Exception e){
             log.error("OrderManageImpl queryThirdOrder error",e);
             return buildHomeResponse(1004,"其他错误");

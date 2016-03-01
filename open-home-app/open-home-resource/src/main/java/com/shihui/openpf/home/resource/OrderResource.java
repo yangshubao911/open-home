@@ -128,9 +128,10 @@ public class OrderResource {
             @ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
             @ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
             @ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
-            @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign
+            @ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign,
+            @ParamDesc(isRequired = true, desc = "订单状态") @QueryParam("status") int status
     ) {
-        return orderManage.cancelThirdOrder(key,serviceType,orderId,version,sign);
+        return orderManage.updateThirdOrder(key, serviceType, orderId, version, sign, status);
     }
 
 

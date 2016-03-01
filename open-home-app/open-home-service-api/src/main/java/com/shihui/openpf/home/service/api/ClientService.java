@@ -1,5 +1,9 @@
 package com.shihui.openpf.home.service.api;
 
+import com.shihui.openpf.home.model.OrderForm;
+
+import java.awt.*;
+
 /**
  * Created by zhoutc on 2016/2/20.
  */
@@ -26,11 +30,19 @@ public interface ClientService {
      */
     public String orderConfirm(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, Integer costSh);
 
-    /**
+      /**
      * 客户端查询时间接口
      *
      * @return 返回时间接口
      */
     public String queryTime(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, String longitude, String latitude);
+
+    /**
+     * 客户端创建订单接口
+     *
+     * @return 返回时间接口
+     */
+    public String orderCreate(OrderForm orderForm);
+
 
 }

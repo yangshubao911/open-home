@@ -20,6 +20,9 @@
         <property name="snapshot_appsn">
             <value>${snapshot_appsn}</value>
         </property>
+        <property name="order_submit_url">
+            <value>${order_submit_url}</value>
+        </property>
     </bean>
 
 

@@ -14,7 +14,9 @@ import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.HomeResponse;
+import com.shihui.openpf.home.model.OrderForm;
 import com.shihui.openpf.home.service.api.*;
+import com.shihui.openpf.home.util.ChoiceMerhantUtil;
 import com.shihui.openpf.home.util.HomeExcepFactor;
 import me.weimi.api.app.AppException;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,6 +59,8 @@ public class ClientServiceImpl implements ClientService {
     CurrencyService currencyService;
     @Resource
     HomeServProviderService homeServProviderService;
+    @Resource
+    OrderSystemService orderSystemService;
 
     /**
      * 客户端查询商品列表
@@ -395,7 +399,7 @@ public class ClientServiceImpl implements ClientService {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
         Set<String> result_days = new HashSet<>();
-        Map<String,Map<String,String>> result_times_map = new HashMap<>();
+        Map<String, Map<String, String>> result_times_map = new HashMap<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             try {
                 JSONObject merchant = jsonArray.getJSONObject(i);
@@ -409,63 +413,197 @@ public class ClientServiceImpl implements ClientService {
                     daySet.add(json_date);
                     String json_timeslot = time.getString("timeslot");
                     Calendar startCalendar = Calendar.getInstance();
-                    startCalendar.set(Calendar.YEAR, Integer.parseInt(json_date.substring(0,4)));
-                    startCalendar.set(Calendar.MONTH, Integer.parseInt(json_date.substring(4,6)));
-                    startCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(json_date.substring(6,8)));
+                    startCalendar.set(Calendar.YEAR, Integer.parseInt(json_date.substring(0, 4)));
+                    startCalendar.set(Calendar.MONTH, Integer.parseInt(json_date.substring(4, 6)));
+                    startCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(json_date.substring(6, 8)));
                     startCalendar.set(Calendar.HOUR_OF_DAY, 0);
                     startCalendar.set(Calendar.MINUTE, 0);
                     startCalendar.set(Calendar.SECOND, 0);
                     startCalendar.set(Calendar.MILLISECOND, 0);
 
-                    for(int k = 0 ; k < 48; k++){
+                    for (int k = 0; k < 48; k++) {
                         startCalendar.add(Calendar.MINUTE, 30);
-                        if(json_timeslot.charAt(k) == '1') {
+                        if (json_timeslot.charAt(k) == '1') {
                             String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar).substring(8);
-                            Map<String,String> times_map = result_times_map.get(json_date);
-                            if(times_map ==null){
+                            Map<String, String> times_map = result_times_map.get(json_date);
+                            if (times_map == null) {
                                 times_map = new HashMap<>();
-                                times_map.put(time_key,String.valueOf(merchant_id));
+                                times_map.put(time_key, String.valueOf(merchant_id));
                                 result_times_map.put(json_date, times_map);
-                            }else{
+                            } else {
                                 String value = times_map.get(time_key) + "," + String.valueOf(merchant_id);
-                                times_map.put(time_key,value);
+                                times_map.put(time_key, value);
                             }
                         }
                     }
 
                 }
 
-            }catch (Exception e){
-                log.error("goodsId:{} parse time error!!",goodsId,e);
+            } catch (Exception e) {
+                log.error("goodsId:{} parse time error!!", goodsId, e);
             }
         }
 
         JSONObject times_json = new JSONObject();
-        for(Map.Entry entry : result_times_map.entrySet()){
-            String key = (String)entry.getKey();
-            Map<String,String> value = (Map<String,String>)entry.getKey();
+        for (Map.Entry entry : result_times_map.entrySet()) {
+            String key = (String) entry.getKey();
+            Map<String, String> value = (Map<String, String>) entry.getKey();
 
             JSONArray times_array = new JSONArray();
-            for(Map.Entry entry1 : value.entrySet()){
+            for (Map.Entry entry1 : value.entrySet()) {
                 JSONObject json = new JSONObject();
-                String times = (String)entry1.getKey();
-                String merchants = (String)entry1.getValue();
-                String client_time = times.substring(0,2) + " " + times.substring(2,4);
-                json.put(client_time,merchants.split(","));
+                String times = (String) entry1.getKey();
+                String merchants = (String) entry1.getValue();
+                String client_time = times.substring(0, 2) + " " + times.substring(2, 4);
+                json.put(client_time, merchants.split(","));
                 times_array.add(json);
             }
 
-            times_json.put(key,times_array);
+            times_json.put(key, times_array);
         }
 
-        result_json.put("status",0);
-        result_json.put("msg","查询时间成功");
-        result_json.put("days",result_days.toArray());
-        result_json.put("times",times_json);
+        result_json.put("status", 0);
+        result_json.put("msg", "查询时间成功");
+        result_json.put("days", result_days.toArray());
+        result_json.put("times", times_json);
         return result_json.toJSONString();
     }
 
+    /**
+     * 客户端创建订单接口
+     *
+     * @return 返回时间接口
+     */
+    @Override
+    public String orderCreate(OrderForm orderForm) {
+        JSONObject result_json = new JSONObject();
+        com.shihui.openpf.common.model.Service service = serviceManage.findById(orderForm.getServiceId());
+        if (service.getServiceStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Service_Close);
+        }
+        Goods goods = goodsService.findById(orderForm.getGoodsId());
+        if (goods == null) {
+            throw new AppException(HomeExcepFactor.Goods_Unfound);
+        }
+        if (goods.getGoodsStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Goods_Close);
+        }
+        Category search = new Category();
+        search.setId(goods.getCategoryId());
+        Category category = categoryService.findById(search);
+        if (category == null) {
+            throw new AppException(HomeExcepFactor.Category_Unfound);
+        }
+        if (category.getStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Category_Close);
+        }
 
-    public static void main(String[] args) {
+        Group group = groupManage.getGroupInfoByGid(orderForm.getGroupId());
+        if (group == null) {
+            throw new AppException(HomeExcepFactor.Group_Unfound);
+        }
+        int cityId = group.getCityId();
+        int districtId = group.getDistrictId();
+        int plateId = group.getPlateId();
+
+        Merchant merchant_search = new Merchant();
+        merchant_search.setMerchantStatus(1);
+        List<Merchant> merchantList = merchantManage.getMerchantList(merchant_search);
+        Map<Integer, Merchant> merchantMap = new HashMap<>();
+        for (Merchant merchant : merchantList) {
+            merchantMap.put(merchant.getMerchantId(), merchant);
+        }
+        List<Integer> m_s_merchantIds = new ArrayList<>();
+        Map<Integer, Integer> mbMap = new HashMap();
+        MerchantBusiness merchantBusiness = new MerchantBusiness();
+        merchantBusiness.setServiceId(orderForm.getServiceId());
+        merchantBusiness.setStatus(1);
+        List<MerchantBusiness> m_s_merchantIdList = merchantBusinessManage.queryList(merchantBusiness);
+        for (MerchantBusiness mb : m_s_merchantIdList) {
+            m_s_merchantIds.add(mb.getMerchantId());
+            mbMap.put(mb.getMerchantId(), mb.getWeight());
+        }
+
+
+        Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(orderForm.getServiceId(), cityId, districtId, plateId);
+        List<Integer> m_c_merchantIds = merchantCategoryService.queryAvailableMerchantId(goods.getCategoryId(), goods.getServiceId());
+        List<Integer> m_g_merchantIds = merchantGoodsService.getAvailableMerchant(orderForm.getGoodsId());
+        Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
+        if (collection_1 == null || collection_1.size() == 0) {
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+        Collection<Integer> collection_2 = CollectionUtils.intersection(collection_1, m_c_merchantIds);
+        if (collection_2 == null || collection_2.size() == 0) {
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+        Collection<Integer> collection_3 = CollectionUtils.intersection(collection_2, m_g_merchantIds);
+        if (collection_3 == null || collection_3.size() == 0) {
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+
+        String[] merchants = orderForm.getMerchants().split(",");
+        Map<Integer, String> map = new HashMap();
+        for (String merchantId : merchants) {
+            map.put(Integer.parseInt(merchantId), "");
+        }
+
+        Map<Integer, Integer> choiceMap = new HashMap<>();
+        List<Merchant> available_merchants = new ArrayList<>();
+        for (Integer merchantId : collection_3) {
+            Merchant merchant = merchantMap.get(merchantId);
+            if (merchant != null) {
+                if (map.get(merchantId) != null) {
+                    available_merchants.add(merchant);
+                    choiceMap.put(merchantId, mbMap.get(merchantId));
+                }
+            }
+        }
+        if (available_merchants == null || available_merchants.size() == 0) {
+            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        }
+
+        long time = System.currentTimeMillis();
+        HomeResponse homeResponse = null;
+        while (choiceMap.size() > 0) {
+            int choice_merchantId = ChoiceMerhantUtil.choiceMerchant(choiceMap);
+
+                    homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
+                    orderForm.getServiceId(), orderForm.getGoodsId(),
+                    orderForm.getGroupId(), orderForm.getLongitude(),
+                    orderForm.getLatitude(), orderForm.getServiceTime());
+
+            if (homeResponse.getCode() != 0) {
+                choiceMap.remove(choice_merchantId);
+            }else{
+                break;
+            }
+
+            if(System.currentTimeMillis()-time>3*1000){
+                break;
+            }
+        }
+        if (homeResponse == null || homeResponse.getCode() != 0) {
+            throw new AppException(HomeExcepFactor.Merchant_Refresh);
+        }
+        long balance = currencyService.getUserBalance(orderForm.getUserId());
+        if (balance == -1) balance = 0;
+        BigDecimal real_offset = null;
+        BigDecimal shoffset = null;
+        BigDecimal actPrice = null;
+        real_offset = orderForm.getCostSh() == 1 &&
+                new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
+                ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
+        shoffset = new BigDecimal(goods.getShOffSet());
+        actPrice = new BigDecimal(goods.getPrice()).subtract(real_offset);
+        if (actPrice.compareTo(new BigDecimal(orderForm.getActPay())) != 0 ||
+                real_offset.compareTo(new BigDecimal(orderForm.getActOffset())) != 0) {
+            throw new AppException(HomeExcepFactor.Price_Wrong);
+        }
+        String json = "";
+        String result = orderSystemService.submitOrder(json);
+
+
+
+        return null;
     }
 }

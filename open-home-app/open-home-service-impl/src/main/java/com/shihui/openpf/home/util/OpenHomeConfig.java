@@ -5,10 +5,11 @@ package com.shihui.openpf.home.util;
  */
 public class OpenHomeConfig {
 
-    public  static String snapshot_url;
-    public  static String snapshot_appid;
-    public  static String snapshot_salt;
-    public  static String snapshot_appsn;
+    public static String snapshot_url;
+    public static String snapshot_appid;
+    public static String snapshot_salt;
+    public static String snapshot_appsn;
+    public static String order_submit_url;
 
 
     public static void setSnapshot_url(String snapshot_url) {
@@ -25,5 +26,9 @@ public class OpenHomeConfig {
 
     public static void setSnapshot_appsn(String snapshot_appsn) {
         OpenHomeConfig.snapshot_appsn = snapshot_appsn;
+    }
+
+    public static void setOrder_submit_url(String order_submit_url) {
+        OpenHomeConfig.order_submit_url = order_submit_url;
     }
 }

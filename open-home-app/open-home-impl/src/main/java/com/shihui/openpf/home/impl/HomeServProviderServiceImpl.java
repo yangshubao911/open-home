@@ -147,7 +147,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	}
 
 	@Override
-	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, int gid, String longitude,
+	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, long gid, String longitude,
 			String latitude, String serviceStartTime) {
 		//查询小区信息
 		Group group = this.groupManage.getGroupInfoByGid(gid);

@@ -33,7 +33,7 @@ public interface HomeServProviderService {
 	 * @param latitude 高德坐标纬度
 	 * @return
 	 */
-	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, int gid, String longitude, String latitude,String serviceStartTime);
+	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, long gid, String longitude, String latitude,String serviceStartTime);
 	
 	/**
 	 * 创建订单

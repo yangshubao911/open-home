@@ -108,8 +108,21 @@ public class ClientResource {
         orderForm.setServiceId(serviceId);
         orderForm.setGroupId(groupId);
         orderForm.setUserId(userId);
-
-        return clientService.queryTime(serviceId, userId, groupId, categoryId, goodsId, longitude, latitude);
+        orderForm.setCategoryId(categoryId);
+        orderForm.setGoodsId(goodsId);
+        orderForm.setLongitude(longitude);
+        orderForm.setLatitude(latitude);
+        orderForm.setCostSh(costSh);
+        orderForm.setActPay(actPay);
+        orderForm.setActOffset(actOffset);
+        orderForm.setServiceTime(serviceTime);
+        orderForm.setContactName(contactName);
+        orderForm.setServiceAddress(serviceAddress);
+        orderForm.setDetailAddress(detailAddress);
+        orderForm.setPayType(payType);
+        orderForm.setMerchants(merchants);
+        orderForm.setRemark(remark);
+        return clientService.orderCreate(orderForm);
     }
 
 
