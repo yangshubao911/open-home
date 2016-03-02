@@ -115,7 +115,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		}
 		//解析并合并结果
 		HomeResponse response = new HomeResponse();
-		response.setCode(1);
+		response.setCode(0);
 		response.setMsg("查询成功");
 		long start = System.currentTimeMillis();
 		JSONArray resultArray = new JSONArray();
