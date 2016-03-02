@@ -21,8 +21,9 @@ public class OrderInfo {
 	private String serviceStartTime;
 	private String contactName;
 	private Integer amount;
-	private Integer goodsId;
+	private Long goodsId;
 	private String remark;
+	private String categoryExtend;
 	private Map<String, Object> extend;
 
 	public Integer getCityId() {
@@ -105,11 +106,11 @@ public class OrderInfo {
 		this.amount = amount;
 	}
 
-	public Integer getGoodsId() {
+	public Long getGoodsId() {
 		return goodsId;
 	}
 
-	public void setGoodsId(Integer goodsId) {
+	public void setGoodsId(Long goodsId) {
 		this.goodsId = goodsId;
 	}
 
@@ -129,4 +130,11 @@ public class OrderInfo {
 		this.extend = extend;
 	}
 
+	public String getCategoryExtend() {
+		return categoryExtend;
+	}
+
+	public void setCategoryExtend(String categoryExtend) {
+		this.categoryExtend = categoryExtend;
+	}
 }

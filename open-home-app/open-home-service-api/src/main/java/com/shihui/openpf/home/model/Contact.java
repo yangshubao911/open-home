@@ -40,7 +40,7 @@ public class Contact implements Serializable {
     private String serviceStartTime;
 
     @Column(name="gid")
-    private String gid;
+    private Long gid;
 
     public Long getOrderId() {
         return orderId;
@@ -106,11 +106,11 @@ public class Contact implements Serializable {
         this.serviceStartTime = serviceStartTime;
     }
 
-    public String getGid() {
+    public Long getGid() {
         return gid;
     }
 
-    public void setGid(String gid) {
+    public void setGid(Long gid) {
         this.gid = gid;
     }
 }

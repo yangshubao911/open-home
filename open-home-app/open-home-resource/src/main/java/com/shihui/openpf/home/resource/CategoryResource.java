@@ -47,6 +47,7 @@ public class CategoryResource {
 			@ParamDesc(desc = "商品类型名称", isRequired = true) @FormParam("name") String name,
 			@ParamDesc(desc = "商品类型图片", isRequired = true) @FormParam("image_id") String image_id,
 			@ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
+			@ParamDesc(desc = "扩展属性", isRequired = true) @FormParam("extend") String extend,
 			@ParamDesc(desc = "商品类型状态", isRequired = true) @FormParam("status") Integer status
 			){
     	Category category = new Category();

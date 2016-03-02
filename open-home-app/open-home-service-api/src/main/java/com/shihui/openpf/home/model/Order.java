@@ -35,7 +35,7 @@ public class Order implements Serializable {
 	private Long gid;
 
 	@Column(name="goods_id")
-	private Integer goodsId;
+	private Long goodsId;
 
 	@Column(name="goods_num")
 	private Integer goodsNum;
@@ -120,13 +120,7 @@ public class Order implements Serializable {
 		this.gid = gid;
 	}
 
-	public Integer getGoodsId() {
-		return goodsId;
-	}
 
-	public void setGoodsId(Integer goodsId) {
-		this.goodsId = goodsId;
-	}
 
 	public Integer getGoodsNum() {
 		return goodsNum;
@@ -230,5 +224,13 @@ public class Order implements Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 }

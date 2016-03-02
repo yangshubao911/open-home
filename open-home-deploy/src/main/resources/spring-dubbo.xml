@@ -26,4 +26,5 @@
     
     <dubbo:reference id="ServiceManage" interface=" com.shihui.openpf.common.dubbo.api.ServiceManage" check="false"/>
 
+    <dubbo:reference id="openService" interface="com.shihui.api.order.service.OpenService" init="true" timeout="15000" retries="0" check="false" />
 </beans>

@@ -1,6 +1,7 @@
 package com.shihui.openpf.home.service.api;
 
 import com.shihui.openpf.home.model.OrderForm;
+import me.weimi.api.commons.context.RequestContext;
 
 import java.awt.*;
 
@@ -42,7 +43,7 @@ public interface ClientService {
      *
      * @return 返回时间接口
      */
-    public String orderCreate(OrderForm orderForm);
+    public String orderCreate(OrderForm orderForm,RequestContext rc);
 
 
 }

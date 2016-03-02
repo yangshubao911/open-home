@@ -6,6 +6,7 @@ package com.shihui.openpf.home.impl;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.util.AlgorithmUtil;
 import com.shihui.openpf.home.api.ParamAssembler;
@@ -77,7 +78,8 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 		param.put("houseNumber", "");
 		param.put("mobile", orderInfo.getPhone());
 		param.put("username", orderInfo.getContactName());
-		param.put("quantity", String.valueOf(orderInfo.getAmount()));
+		JSONObject map = JSONObject.parseObject(orderInfo.getCategoryExtend());
+		param.put("quantity", map.getString("quantity"));
 		param.put("price", orderInfo.getPrice());
 		param.put("comment", orderInfo.getRemark());
 		//基础参数

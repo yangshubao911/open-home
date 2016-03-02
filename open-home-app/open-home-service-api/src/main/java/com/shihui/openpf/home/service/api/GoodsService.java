@@ -20,6 +20,8 @@ public interface GoodsService {
 
     Goods findById(long id);
 
+    Goods findById(Goods goods);
+
     Goods findByCity(int categoryId, int cityId);
 
     List<Goods> list(int categoryId);

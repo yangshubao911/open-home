@@ -27,6 +27,11 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
         </dependency>
         <dependency>
+            <artifactId>order-api</artifactId>
+            <groupId>com.shihui.api</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.shihui.api.oms</groupId>
             <artifactId>oms-api</artifactId>
             <exclusions>

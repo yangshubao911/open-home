@@ -34,13 +34,13 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public boolean createOrder(Order order) {
-        if(orderDao.insert(order)>0) {
+        if(orderDao.save(order)>0) {
             Date date = new Date();
             OrderHistory orderHistory = new OrderHistory();
             orderHistory.setChange_time(date);
             orderHistory.setOrder_id(order.getOrderId());
             orderHistory.setOrder_status(order.getOrderStatus());
-            if (orderHistoryDao.insert(orderHistory) > 0) {
+            if (orderHistoryDao.save(orderHistory) > 0) {
                 return true;
             }
         }

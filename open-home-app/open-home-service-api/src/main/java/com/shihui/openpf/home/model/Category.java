@@ -37,6 +37,10 @@ public class Category implements Serializable {
 	@Column(name = "service_id")
 	private Integer serviceId;
 
+	@JSONField(name = "extend")
+	@Column(name = "extend")
+	private String extend;
+
 	@JSONField(name = "update_time", format = "yyyy-MM-dd HH:mm:ss")
 	@Column(name = "update_time")
 	private Date updateTime;
@@ -108,4 +112,11 @@ public class Category implements Serializable {
 		this.updateTime = updateTime;
 	}
 
+	public String getExtend() {
+		return extend;
+	}
+
+	public void setExtend(String extend) {
+		this.extend = extend;
+	}
 }

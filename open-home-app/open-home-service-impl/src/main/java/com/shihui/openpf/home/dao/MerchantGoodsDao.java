@@ -39,7 +39,7 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
                     ps.setInt(2, mg.getCategoryId());
                     ps.setInt(3, mg.getStatus());
                     ps.setInt(4, mg.getServiceId());
-                    ps.setInt(5, mg.getGoodsId());
+                    ps.setLong(5, mg.getGoodsId());
                     ps.setString(6, mg.getSettlement());
                     
 					ps.addBatch();
@@ -80,7 +80,7 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
                     ps.setString(2, mg.getSettlement());
                     ps.setInt(3, mg.getMerchantId());
                     ps.setInt(4, mg.getServiceId());
-                    ps.setInt(5, mg.getGoodsId());
+                    ps.setLong(5, mg.getGoodsId());
                     
 					ps.addBatch();
 				}

@@ -27,7 +27,7 @@ public interface HomeServProviderService {
 	
 	/**
 	 * @param serviceType 上门服务业务类型
-	 * @param goodsId 商品id
+	 * @param goodsId 商品分类id
 	 * @param gid 小区id 
 	 * @param longitude 高德坐标经度
 	 * @param latitude 高德坐标纬度

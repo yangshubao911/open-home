@@ -8,7 +8,8 @@ public class OrderForm {
     private int serviceId;
     private long groupId;
     private long userId;
-    private int goodsId;
+    private long goodsId;
+    private int goodsVersion;
     private int categoryId;
     private int costSh;
     private String actPay;
@@ -51,11 +52,11 @@ public class OrderForm {
         this.userId = userId;
     }
 
-    public int getGoodsId() {
+    public long getGoodsId() {
         return goodsId;
     }
 
-    public void setGoodsId(int goodsId) {
+    public void setGoodsId(long goodsId) {
         this.goodsId = goodsId;
     }
 
@@ -169,5 +170,13 @@ public class OrderForm {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public int getGoodsVersion() {
+        return goodsVersion;
+    }
+
+    public void setGoodsVersion(int goodsVersion) {
+        this.goodsVersion = goodsVersion;
     }
 }

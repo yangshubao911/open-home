@@ -102,6 +102,7 @@ public class ClientResource {
                               @ParamDesc(desc = "联系电话", isRequired = true) @QueryParam("servicePhone") String servicePhone,
                               @ParamDesc(desc = "支付类型", isRequired = true) @QueryParam("payType") int payType,
                               @ParamDesc(desc = "可选商户", isRequired = true) @QueryParam("merchants") String merchants,
+                              @ParamDesc(desc = "下单商品版本", isRequired = true) @QueryParam("goodsVersion") int goodsVersion,
                               @ParamDesc(desc = "备注信息", isRequired = false) @QueryParam("remark") String remark) {
 
         OrderForm orderForm = new OrderForm();
@@ -122,7 +123,8 @@ public class ClientResource {
         orderForm.setPayType(payType);
         orderForm.setMerchants(merchants);
         orderForm.setRemark(remark);
-        return clientService.orderCreate(orderForm);
+        orderForm.setGoodsVersion(goodsVersion);
+        return clientService.orderCreate(orderForm,rc);
     }
 
 

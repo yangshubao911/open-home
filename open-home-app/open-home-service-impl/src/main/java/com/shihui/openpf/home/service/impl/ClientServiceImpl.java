@@ -3,6 +3,10 @@ package com.shihui.openpf.home.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.shihui.api.order.common.enums.OrderStatusEnum;
+import com.shihui.api.order.common.enums.OrderTypeEnum;
+import com.shihui.api.order.vo.ApiResult;
+import com.shihui.api.order.vo.SingleGoodsCreateOrderParam;
 import com.shihui.openpf.common.dubbo.api.*;
 import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
@@ -11,14 +15,12 @@ import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.common.util.StringUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.cache.GoodsCache;
-import com.shihui.openpf.home.model.Category;
-import com.shihui.openpf.home.model.Goods;
-import com.shihui.openpf.home.model.HomeResponse;
-import com.shihui.openpf.home.model.OrderForm;
+import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
 import com.shihui.openpf.home.util.ChoiceMerhantUtil;
 import com.shihui.openpf.home.util.HomeExcepFactor;
 import me.weimi.api.app.AppException;
+import me.weimi.api.commons.context.RequestContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,12 @@ public class ClientServiceImpl implements ClientService {
     HomeServProviderService homeServProviderService;
     @Resource
     OrderSystemService orderSystemService;
+    @Resource
+    ContactService contactService;
+    @Resource
+    RequestService requestService;
+    @Resource
+    OrderService orderService;
 
     /**
      * 客户端查询商品列表
@@ -451,7 +459,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         JSONObject times_json = new JSONObject();
-        Map  times_map = new TreeMap<>();
+        Map times_map = new TreeMap<>();
         for (Map.Entry entry : result_times_map.entrySet()) {
             String key = (String) entry.getKey();
             Map<String, String> value = (Map<String, String>) entry.getValue();
@@ -482,13 +490,16 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回时间接口
      */
     @Override
-    public String orderCreate(OrderForm orderForm) {
+    public String orderCreate(OrderForm orderForm, RequestContext rc) {
         JSONObject result_json = new JSONObject();
         com.shihui.openpf.common.model.Service service = serviceManage.findById(orderForm.getServiceId());
         if (service.getServiceStatus() != 1) {
             throw new AppException(HomeExcepFactor.Service_Close);
         }
-        Goods goods = goodsService.findById(orderForm.getGoodsId());
+        Goods goods_search = new Goods();
+        goods_search.setGoodsId(orderForm.getGoodsId());
+        goods_search.setGoodsVersion(orderForm.getGoodsVersion());
+        Goods goods = goodsService.findById(goods_search);
         if (goods == null) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);
         }
@@ -534,7 +545,17 @@ public class ClientServiceImpl implements ClientService {
 
         Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(orderForm.getServiceId(), cityId, districtId, plateId);
         List<Integer> m_c_merchantIds = merchantCategoryService.queryAvailableMerchantId(goods.getCategoryId(), goods.getServiceId());
-        List<Integer> m_g_merchantIds = merchantGoodsService.getAvailableMerchant(orderForm.getGoodsId());
+
+        MerchantGoods merchantGoods_search = new MerchantGoods();
+        merchantGoods_search.setGoodsId(orderForm.getGoodsId());
+        List<MerchantGoods> merchantGoodsList = merchantGoodsService.queryMerchantGoodsList(merchantGoods_search);
+        List<Integer> m_g_merchantIds = new ArrayList<>();
+        Map<Integer, String> mgMap = new HashMap();
+        for (MerchantGoods merchantGoods : merchantGoodsList) {
+            m_g_merchantIds.add(merchantGoods.getMerchantId());
+            mgMap.put(merchantGoods.getMerchantId(), merchantGoods.getSettlement());
+        }
+
         Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
         if (collection_1 == null || collection_1.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
@@ -571,17 +592,19 @@ public class ClientServiceImpl implements ClientService {
 
         long time = System.currentTimeMillis();
         HomeResponse homeResponse = null;
+        Integer merchantId = null;
         while (choiceMap.size() > 0) {
             int choice_merchantId = ChoiceMerhantUtil.choiceMerchant(choiceMap);
 
             homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
-                    orderForm.getServiceId(), orderForm.getGoodsId(),
+                    orderForm.getServiceId(), orderForm.getCategoryId(),
                     orderForm.getGroupId(), orderForm.getLongitude(),
                     orderForm.getLatitude(), orderForm.getServiceTime());
 
             if (homeResponse.getCode() != 0) {
                 choiceMap.remove(choice_merchantId);
             } else {
+                merchantId = choice_merchantId;
                 break;
             }
 
@@ -589,7 +612,7 @@ public class ClientServiceImpl implements ClientService {
                 break;
             }
         }
-        if (homeResponse == null || homeResponse.getCode() != 0) {
+        if (merchantId == null || homeResponse == null || homeResponse.getCode() != 0) {
             throw new AppException(HomeExcepFactor.Merchant_Refresh);
         }
         long balance = currencyService.getUserBalance(orderForm.getUserId());
@@ -606,10 +629,102 @@ public class ClientServiceImpl implements ClientService {
                 real_offset.compareTo(new BigDecimal(orderForm.getActOffset())) != 0) {
             throw new AppException(HomeExcepFactor.Price_Wrong);
         }
-        String json = "";
-        String result = orderSystemService.submitOrder(json);
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setAmount(1);
+        orderInfo.setCategoryExtend(category.getExtend());
+        orderInfo.setCityId(cityId);
+        orderInfo.setContactName(orderForm.getContactName());
+        orderInfo.setDetailAddress(orderForm.getDetailAddress());
+        orderInfo.setExtend(null);
+        orderInfo.setGoodsId(orderForm.getGoodsId());
+        orderInfo.setLatitude(orderForm.getLatitude());
+        orderInfo.setLongitude(orderForm.getLongitude());
+        orderInfo.setPhone(orderForm.getServicePhone());
+        orderInfo.setPrice(mgMap.get(merchantId));
+        orderInfo.setRemark(orderForm.getRemark());
+        orderInfo.setServiceAddress(orderForm.getServiceAddress());
+        orderInfo.setServiceStartTime(orderForm.getServiceTime());
 
+        HomeResponse create_third_part = homeServProviderService.createOrder(merchantMap.get(merchantId), goods.getServiceId(), orderInfo);
+        if (create_third_part.getCode() != 0) {
+            throw new AppException(HomeExcepFactor.Third_Order_Fail);
+        }
+        JSONObject third_order = JSONObject.parseObject(create_third_part.getResult());
+        JSONObject third_order_result = third_order.getJSONObject("result");
+        String requestId = third_order_result.getString("orderId");
 
-        return null;
+        Date now = new Date();
+        SingleGoodsCreateOrderParam singleGoodsCreateOrderParam = new SingleGoodsCreateOrderParam();
+        singleGoodsCreateOrderParam.setCampaignId(1);
+        singleGoodsCreateOrderParam.setCityId(cityId);
+        singleGoodsCreateOrderParam.setCommunityId((int) orderForm.getGroupId());
+        singleGoodsCreateOrderParam.setExt("");
+        singleGoodsCreateOrderParam.setOriginPrice(StringUtil.yuan2hao(goods.getPrice()));
+        singleGoodsCreateOrderParam.setIp(rc.getIp());
+        singleGoodsCreateOrderParam.setGoodsVersion(goods.getGoodsVersion());
+        singleGoodsCreateOrderParam.setGoodsId(goods.getGoodsId());
+        singleGoodsCreateOrderParam.setGoodsName(goods.getGoodsName());
+        singleGoodsCreateOrderParam.setUserId(orderForm.getUserId());
+        singleGoodsCreateOrderParam.setOrderType(OrderTypeEnum.DoorTDoor.getValue());
+
+        long overTime = System.currentTimeMillis() + 1000 * 30;
+        singleGoodsCreateOrderParam.setOverdueTime(overTime);
+        singleGoodsCreateOrderParam.setMerchantId(merchantMap.get(merchantId).getMerchantCode());
+        singleGoodsCreateOrderParam.setPrice(StringUtil.yuan2hao(orderForm.getActPay()));
+        singleGoodsCreateOrderParam.setOffset(StringUtil.yuan2hao(orderForm.getActOffset()));
+
+        ApiResult result = orderSystemService.submitOrder(singleGoodsCreateOrderParam);
+
+        if (result.getStatus() != 1) {
+            return result.toJSONString();
+        }
+
+        long orderId = Long.parseLong(result.getOrderId().get(0));
+        Contact contact = new Contact();
+        contact.setOrderId(orderId);
+        contact.setContactName(orderForm.getContactName());
+        contact.setDetailAddress(orderForm.getDetailAddress());
+        contact.setGid(orderForm.getGroupId());
+        contact.setLatitude(orderForm.getLatitude());
+        contact.setLongitude(orderForm.getLongitude());
+        contact.setPhoneNum(orderForm.getServicePhone());
+        contact.setServiceStartTime(orderInfo.getServiceStartTime());
+        contact.setServiceAddress(orderForm.getServiceAddress());
+        boolean create_contact = contactService.create(contact);
+        log.info("CreateOrder -- orderId：{} save contact result：{}", orderId, create_contact);
+        Request request = new Request();
+        request.setRequestId(requestId);
+        request.setServiceId(service.getServiceId());
+        request.setRequestStatus(0);
+        request.setOrderId(orderId);
+        request.setCreateTime(now);
+        request.setMerchantId(merchantId);
+        request.setUpdateTime(now);
+        boolean create_request = requestService.create(request);
+        log.info("CreateOrder -- orderId：{} save requestId:{} result：{}", orderId, requestId, create_request);
+        Order order = new Order();
+        order.setMerchantId(merchantId);
+        order.setOrderId(orderId);
+        order.setPhone(orderForm.getServicePhone());
+        order.setCreateTime(now);
+        order.setCampaignId(1);
+        order.setExtend("");
+        order.setGid(orderForm.getGroupId());
+        order.setGoodsId(orderForm.getGoodsId());
+        order.setGoodsNum(1);
+        order.setGoodsVersion(orderForm.getGoodsVersion());
+        order.setMerchantId(merchantId);
+        order.setOrderStatus((byte) OrderStatusEnum.OrderUnpaid.getValue());
+        order.setPay(orderForm.getActPay());
+        order.setPhone(orderForm.getServicePhone());
+        order.setPrice(goods.getPrice());
+        order.setRemark(orderForm.getRemark());
+        order.setService_id(orderForm.getServiceId());
+        order.setUpdateTime(now);
+        order.setShOffSet(orderForm.getActOffset());
+        order.setUserId(orderForm.getUserId());
+        boolean create_order = orderService.createOrder(order);
+        log.info("CreateOrder -- orderId：{} save order result：{}", orderId, create_order);
+        return result.toJSONString();
     }
 }

@@ -19,7 +19,7 @@ public class MerchantGoods implements Serializable {
     @Id
     @JSONField(name="goods_id")
     @Column(name="goods_id")
-    private Integer goodsId;
+    private Long goodsId;
     
     @Transient
     @JSONField(name="goods_name")
@@ -54,11 +54,11 @@ public class MerchantGoods implements Serializable {
     @JSONField(name="sh_off_set")
     private String shOffSet;
 
-    public Integer getGoodsId() {
+    public Long getGoodsId() {
         return goodsId;
     }
 
-    public void setGoodsId(Integer goodsId) {
+    public void setGoodsId(Long goodsId) {
         this.goodsId = goodsId;
     }
 

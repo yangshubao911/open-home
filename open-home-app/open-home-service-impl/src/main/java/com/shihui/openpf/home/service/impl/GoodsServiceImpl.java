@@ -153,6 +153,12 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
+	public Goods findById(Goods goods) {
+		String sql = "select * from `goods` where goods_id = ? and goods_version = ?";
+		return this.goodsDao.queryForObject(sql,new Object[]{goods.getGoodsId() , goods.getGoodsVersion()});
+	}
+
+	@Override
 	public Goods findByCity(int categoryId, int cityId) {
 		String sql = "select * from goods where category_id=? and city_id=?";
 		return this.goodsDao.queryForObject(sql, categoryId, cityId);

@@ -35,8 +35,8 @@ public class RequestServiceImpl implements RequestService {
         requestHistory.setRequestId(request.getRequestId());
         requestHistory.setRequestStatus(request.getRequestStatus());
 
-        if(requestDao.insert(request)>0){
-            if(requestHistoryDao.insert(requestHistory)>0)
+        if(requestDao.save(request)>0){
+            if(requestHistoryDao.save(requestHistory)>0)
                 return true;
         }
         return false;

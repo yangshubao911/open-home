@@ -23,7 +23,7 @@ public class ContactServiceImpl implements ContactService {
      */
     @Override
     public boolean create(Contact contact) {
-        return contactDao.insert(contact)>0;
+        return contactDao.save(contact)>0;
     }
 
     /**
