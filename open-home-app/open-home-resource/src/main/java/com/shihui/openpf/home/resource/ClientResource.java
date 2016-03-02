@@ -122,6 +122,7 @@ public class ClientResource {
         orderForm.setMerchants(merchants);
         orderForm.setRemark(remark);
         orderForm.setGoodsVersion(goodsVersion);
+        orderForm.setServicePhone(servicePhone);
         return clientService.orderCreate(orderForm,rc);
     }
 
