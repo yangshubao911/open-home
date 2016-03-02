@@ -453,7 +453,7 @@ public class ClientServiceImpl implements ClientService {
         JSONObject times_json = new JSONObject();
         for (Map.Entry entry : result_times_map.entrySet()) {
             String key = (String) entry.getKey();
-            Map<String, String> value = (Map<String, String>) entry.getKey();
+            Map<String, String> value = (Map<String, String>) entry.getValue();
 
             JSONArray times_array = new JSONArray();
             for (Map.Entry entry1 : value.entrySet()) {
