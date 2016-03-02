@@ -11,6 +11,8 @@ import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.util.OpenHomeConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +25,7 @@ import java.util.List;
 @Service
 public class OrderSystemServiceImpl implements OrderSystemService {
 
-
+    private Logger log = LoggerFactory.getLogger(getClass());
     @Resource
     OpenService openService;
 
@@ -37,7 +39,7 @@ public class OrderSystemServiceImpl implements OrderSystemService {
             return openService.createOrder(singleGoodsCreateOrderParam);
 
         }catch (Exception e){
-
+           log.error("OrderSystemServiceImpl userId：{} submitOrder error",singleGoodsCreateOrderParam.getUserId(),e);
         }
         return null;
     }
