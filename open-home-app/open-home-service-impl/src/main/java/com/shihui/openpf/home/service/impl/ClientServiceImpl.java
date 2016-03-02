@@ -408,7 +408,7 @@ public class ClientServiceImpl implements ClientService {
                 JSONArray jsonArray_times = json_rs.getJSONArray("times");
                 Set<String> daySet = new HashSet<>();
                 for (int j = 0; j < jsonArray_times.size(); j++) {
-                    JSONObject time = jsonArray_times.getJSONObject(i);
+                    JSONObject time = jsonArray_times.getJSONObject(j);
                     String json_date = time.getString("date");
                     result_days.add(json_date);
                     daySet.add(json_date);
@@ -422,7 +422,7 @@ public class ClientServiceImpl implements ClientService {
                     startCalendar.set(Calendar.SECOND, 0);
                     startCalendar.set(Calendar.MILLISECOND, 0);
 
-                    for (int k = 0; k < 48; k++) {
+                    for (int k = 0; k < 48 ; k++) {
                         startCalendar.add(Calendar.MINUTE, 30);
                         if (json_timeslot.charAt(k) == '1') {
                             String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar.getTime()).substring(8);
