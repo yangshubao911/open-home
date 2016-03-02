@@ -403,7 +403,7 @@ public class ClientServiceImpl implements ClientService {
         for (int i = 0; i < jsonArray.size(); i++) {
             try {
                 JSONObject results = jsonArray.getJSONObject(i);
-                JSONObject json_rs =  results.getJSONObject("result");
+                JSONObject json_rs = results.getJSONObject("result");
                 Integer merchant_id = results.getInteger("merchant_id");
                 JSONArray jsonArray_times = json_rs.getJSONArray("times");
                 Set<String> daySet = new HashSet<>();
@@ -422,7 +422,7 @@ public class ClientServiceImpl implements ClientService {
                     startCalendar.set(Calendar.SECOND, 0);
                     startCalendar.set(Calendar.MILLISECOND, 0);
 
-                    for (int k = 0; k < 48 ; k++) {
+                    for (int k = 0; k < 48; k++) {
                         startCalendar.add(Calendar.MINUTE, 30);
                         if (json_timeslot.charAt(k) == '1') {
                             String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar.getTime()).substring(8);
@@ -432,7 +432,12 @@ public class ClientServiceImpl implements ClientService {
                                 times_map.put(time_key, String.valueOf(merchant_id));
                                 result_times_map.put(json_date, times_map);
                             } else {
-                                String value = times_map.get(time_key) + "," + String.valueOf(merchant_id);
+                                String time_value = times_map.get(time_key);
+                                String value = "";
+                                if (time_value == null)
+                                    value = String.valueOf(merchant_id);
+                                else
+                                    value = times_map.get(time_key) + "," + String.valueOf(merchant_id);
                                 times_map.put(time_key, value);
                             }
                         }
@@ -568,18 +573,18 @@ public class ClientServiceImpl implements ClientService {
         while (choiceMap.size() > 0) {
             int choice_merchantId = ChoiceMerhantUtil.choiceMerchant(choiceMap);
 
-                    homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
+            homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
                     orderForm.getServiceId(), orderForm.getGoodsId(),
                     orderForm.getGroupId(), orderForm.getLongitude(),
                     orderForm.getLatitude(), orderForm.getServiceTime());
 
             if (homeResponse.getCode() != 0) {
                 choiceMap.remove(choice_merchantId);
-            }else{
+            } else {
                 break;
             }
 
-            if(System.currentTimeMillis()-time>3*1000){
+            if (System.currentTimeMillis() - time > 3 * 1000) {
                 break;
             }
         }
@@ -602,7 +607,6 @@ public class ClientServiceImpl implements ClientService {
         }
         String json = "";
         String result = orderSystemService.submitOrder(json);
-
 
 
         return null;
