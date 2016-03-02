@@ -425,7 +425,7 @@ public class ClientServiceImpl implements ClientService {
                     for (int k = 0; k < 48; k++) {
                         startCalendar.add(Calendar.MINUTE, 30);
                         if (json_timeslot.charAt(k) == '1') {
-                            String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar).substring(8);
+                            String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar.getTime()).substring(8);
                             Map<String, String> times_map = result_times_map.get(json_date);
                             if (times_map == null) {
                                 times_map = new HashMap<>();
