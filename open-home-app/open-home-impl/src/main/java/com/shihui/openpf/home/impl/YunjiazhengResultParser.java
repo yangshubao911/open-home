@@ -3,6 +3,7 @@
  */
 package com.shihui.openpf.home.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.home.api.ResultParser;
@@ -45,7 +46,18 @@ public class YunjiazhengResultParser implements ResultParser {
 			JSONObject resultJo = new JSONObject();
 			JSONObject times = new JSONObject();
 			resultJo.put("result", times);
-			times.put("times", jo.getJSONObject("body").getJSONArray("timeList"));
+
+			JSONArray timelist = jo.getJSONObject("body").getJSONArray("timeList");
+
+			for(int i = 0 ; i < timelist.size() ; i ++){
+				JSONObject jsonObject = timelist.getJSONObject(i);
+				String date = jsonObject.getString("date");
+				date = date.replace("-","");
+				jsonObject.remove("date");
+				jsonObject.put("date",date);
+			}
+
+			times.put("times",timelist);
 			
 			response.setResult(resultJo.toJSONString());
 		}
