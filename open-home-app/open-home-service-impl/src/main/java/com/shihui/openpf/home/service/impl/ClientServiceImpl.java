@@ -675,13 +675,15 @@ public class ClientServiceImpl implements ClientService {
         singleGoodsCreateOrderParam.setPrice(StringUtil.yuan2hao(orderForm.getActPay()));
         singleGoodsCreateOrderParam.setOffset(StringUtil.yuan2hao(orderForm.getActOffset()));
 
-        ApiResult result = orderSystemService.submitOrder(singleGoodsCreateOrderParam);
+       /* ApiResult result = orderSystemService.submitOrder(singleGoodsCreateOrderParam);
 
         if (result.getStatus() != 1) {
             return result.toJSONString();
         }
 
-        long orderId = Long.parseLong(result.getOrderId().get(0));
+        long orderId = Long.parseLong(result.getOrderId().get(0));*/
+        ApiResult result = new ApiResult();
+        long orderId = System.currentTimeMillis();
         Contact contact = new Contact();
         contact.setOrderId(orderId);
         contact.setContactName(orderForm.getContactName());
