@@ -34,8 +34,8 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 			String longitude, String latitude, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("cityId", String.valueOf(cityId));
-		param.put("longitude", longitude);
-		param.put("latitude", latitude);
+		//param.put("longitude", longitude);
+		//param.put("latitude", latitude);
 		//基础参数
 		param.put("methodName", "queryAvailableTimeslots");
 		param.put("pId", merchant.getMerchantKey());
