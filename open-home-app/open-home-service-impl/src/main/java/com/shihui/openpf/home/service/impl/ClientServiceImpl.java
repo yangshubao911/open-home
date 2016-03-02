@@ -402,9 +402,10 @@ public class ClientServiceImpl implements ClientService {
         Map<String, Map<String, String>> result_times_map = new HashMap<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             try {
-                JSONObject merchant = jsonArray.getJSONObject(i);
-                Integer merchant_id = merchant.getInteger("merchant_id");
-                JSONArray jsonArray_times = merchant.getJSONArray("times");
+                JSONObject results = jsonArray.getJSONObject(i);
+                JSONObject json_rs =  results.getJSONObject("result");
+                Integer merchant_id = json_rs.getInteger("merchant_id");
+                JSONArray jsonArray_times = json_rs.getJSONArray("times");
                 Set<String> daySet = new HashSet<>();
                 for (int j = 0; j < jsonArray_times.size(); j++) {
                     JSONObject time = jsonArray_times.getJSONObject(i);
