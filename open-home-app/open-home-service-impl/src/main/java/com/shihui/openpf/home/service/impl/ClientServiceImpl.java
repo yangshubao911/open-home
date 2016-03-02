@@ -399,7 +399,7 @@ public class ClientServiceImpl implements ClientService {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
         Set<String> result_days = new HashSet<>();
-        Map<String, Map<String, String>> result_times_map = new HashMap<>();
+        Map<String, Map<String, String>> result_times_map = new TreeMap<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             try {
                 JSONObject results = jsonArray.getJSONObject(i);
@@ -428,7 +428,7 @@ public class ClientServiceImpl implements ClientService {
                             String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar.getTime()).substring(8);
                             Map<String, String> times_map = result_times_map.get(json_date);
                             if (times_map == null) {
-                                times_map = new HashMap<>();
+                                times_map = new TreeMap<>();
                                 times_map.put(time_key, String.valueOf(merchant_id));
                                 result_times_map.put(json_date, times_map);
                             } else {
