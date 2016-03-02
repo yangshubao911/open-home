@@ -100,7 +100,6 @@ public class ClientResource {
                               @ParamDesc(desc = "服务地址", isRequired = true) @QueryParam("serviceAddress") String serviceAddress,
                               @ParamDesc(desc = "详细地址", isRequired = true) @QueryParam("detailAddress") String detailAddress,
                               @ParamDesc(desc = "联系电话", isRequired = true) @QueryParam("servicePhone") String servicePhone,
-                              @ParamDesc(desc = "支付类型", isRequired = false) @QueryParam("payType") int payType,
                               @ParamDesc(desc = "可选商户", isRequired = true) @QueryParam("merchants") String merchants,
                               @ParamDesc(desc = "下单商品版本", isRequired = true) @QueryParam("goodsVersion") int goodsVersion,
                               @ParamDesc(desc = "备注信息", isRequired = false) @QueryParam("remark") String remark) {
@@ -120,7 +119,6 @@ public class ClientResource {
         orderForm.setContactName(contactName);
         orderForm.setServiceAddress(serviceAddress);
         orderForm.setDetailAddress(detailAddress);
-        orderForm.setPayType(payType);
         orderForm.setMerchants(merchants);
         orderForm.setRemark(remark);
         orderForm.setGoodsVersion(goodsVersion);
