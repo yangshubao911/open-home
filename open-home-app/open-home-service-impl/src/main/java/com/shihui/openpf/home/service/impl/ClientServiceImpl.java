@@ -451,6 +451,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         JSONObject times_json = new JSONObject();
+        Map  times_map = new TreeMap<>();
         for (Map.Entry entry : result_times_map.entrySet()) {
             String key = (String) entry.getKey();
             Map<String, String> value = (Map<String, String>) entry.getValue();
@@ -465,13 +466,13 @@ public class ClientServiceImpl implements ClientService {
                 times_array.add(json);
             }
 
-            times_json.put(key, times_array);
+            times_map.put(key, times_array);
         }
 
         result_json.put("status", 0);
         result_json.put("msg", "查询时间成功");
         result_json.put("days", result_days.toArray());
-        result_json.put("times", times_json);
+        result_json.put("times", times_map);
         return result_json.toJSONString();
     }
 
