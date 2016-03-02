@@ -398,7 +398,7 @@ public class ClientServiceImpl implements ClientService {
         if (jsonArray == null) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
-        Set<String> result_days = new HashSet<>();
+        Set<String> result_days = new TreeSet<>();
         Map<String, Map<String, String>> result_times_map = new TreeMap<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             try {
