@@ -10,7 +10,6 @@
 	<modules>
 		<module>open-home-app</module>
 		<module>open-home-deploy</module>
-		<module>open-home-properties</module>
 	</modules>
 
 	<properties>
