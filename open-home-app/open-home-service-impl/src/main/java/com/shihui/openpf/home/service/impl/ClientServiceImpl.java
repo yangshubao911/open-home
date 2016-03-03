@@ -451,6 +451,7 @@ public class ClientServiceImpl implements ClientService {
                 for (int j = 0; j < jsonArray_times.size(); j++) {
                     JSONObject time = jsonArray_times.getJSONObject(j);
                     String json_date = time.getString("date");
+                    json_date =  json_date.substring(0, 4) + "-" + json_date.substring(4, 6) + "-" + json_date.substring(6, 8);
                     result_days.add(json_date);
                     daySet.add(json_date);
                     String json_timeslot = time.getString("timeslot");
@@ -495,9 +496,7 @@ public class ClientServiceImpl implements ClientService {
         Map times_map = new TreeMap<>();
         for (Map.Entry entry : result_times_map.entrySet()) {
             String key = (String) entry.getKey();
-            key = key.substring(0, 2) + "" + key.substring(0, 4) + "-" + key.substring(4, 6) + "-" + key.substring(6, 8);
             Map<String, String> value = (Map<String, String>) entry.getValue();
-
             JSONArray times_array = new JSONArray();
             for (Map.Entry entry1 : value.entrySet()) {
                 JSONObject json = new JSONObject();
