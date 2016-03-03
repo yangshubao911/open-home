@@ -495,6 +495,7 @@ public class ClientServiceImpl implements ClientService {
         Map times_map = new TreeMap<>();
         for (Map.Entry entry : result_times_map.entrySet()) {
             String key = (String) entry.getKey();
+            key = key.substring(0, 2) + "" + key.substring(0, 4) + "-" + key.substring(4, 6) + "-" + key.substring(6, 8);
             Map<String, String> value = (Map<String, String>) entry.getValue();
 
             JSONArray times_array = new JSONArray();
@@ -502,7 +503,7 @@ public class ClientServiceImpl implements ClientService {
                 JSONObject json = new JSONObject();
                 String times = (String) entry1.getKey();
                 String merchants = (String) entry1.getValue();
-                String client_time = times.substring(0, 2) + " " + times.substring(2, 4);
+                String client_time = times.substring(0, 2) + ":" + times.substring(2, 4);
                 json.put(client_time, merchants.split(","));
                 times_array.add(json);
             }
@@ -556,6 +557,7 @@ public class ClientServiceImpl implements ClientService {
         int cityId = group.getCityId();
         int districtId = group.getDistrictId();
         int plateId = group.getPlateId();
+        int proviceId = group.getProvinceId();
 
         Merchant merchant_search = new Merchant();
         merchant_search.setMerchantStatus(1);
@@ -705,6 +707,22 @@ public class ClientServiceImpl implements ClientService {
         singleGoodsCreateOrderParam.setMerchantId(merchantMap.get(merchantId).getMerchantCode());
         singleGoodsCreateOrderParam.setPrice(StringUtil.yuan2hao(orderForm.getActPay()));
         singleGoodsCreateOrderParam.setOffset(StringUtil.yuan2hao(orderForm.getActOffset()));
+        singleGoodsCreateOrderParam.setProvinceId(proviceId);
+        singleGoodsCreateOrderParam.setDistrictId(districtId);
+        singleGoodsCreateOrderParam.setContactName(orderForm.getContactName());
+        singleGoodsCreateOrderParam.setContactTel(orderForm.getServicePhone());
+        singleGoodsCreateOrderParam.setContactAddress(orderForm.getServiceAddress() + orderForm.getDetailAddress());
+        long startTime = 0;
+        try {
+            Date date = new SimpleDateFormat("yyyyMMddHHmmss").parse(orderForm.getServiceTime() + "00");
+            startTime = date.getTime();
+
+        } catch (Exception e) {
+            log.error("{} parse time error!", orderForm.getServiceTime(), e);
+        }
+        singleGoodsCreateOrderParam.setPlanStartTime(startTime);
+        singleGoodsCreateOrderParam.setPlanEndTime(0);
+        singleGoodsCreateOrderParam.setPlanEndTime(0);
         if (StringUtil.isEmpty(orderForm.getRemark()))
             singleGoodsCreateOrderParam.setUserRemark("");
         else
