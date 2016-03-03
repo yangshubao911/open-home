@@ -50,7 +50,7 @@ public class ClientResource {
         return clientService.detail(serviceId, userId, groupId, categoryId, goodsId);
     }
 
-    @Path("/order/confrim")
+    @Path("/order/confirm")
     @GET
     @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
