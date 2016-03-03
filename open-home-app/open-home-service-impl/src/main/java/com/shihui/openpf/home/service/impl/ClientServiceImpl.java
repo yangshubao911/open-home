@@ -459,8 +459,8 @@ public class ClientServiceImpl implements ClientService {
                     String json_timeslot = time.getString("timeslot");
                     Calendar startCalendar = Calendar.getInstance();
                     startCalendar.set(Calendar.YEAR, Integer.parseInt(json_date.substring(0, 4)));
-                    startCalendar.set(Calendar.MONTH, Integer.parseInt(json_date.substring(4, 6)));
-                    startCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(json_date.substring(6, 8)));
+                    startCalendar.set(Calendar.MONTH, Integer.parseInt(json_date.substring(5, 7)));
+                    startCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(json_date.substring(8, 10)));
                     startCalendar.set(Calendar.HOUR_OF_DAY, 0);
                     startCalendar.set(Calendar.MINUTE, 0);
                     startCalendar.set(Calendar.SECOND, 0);
