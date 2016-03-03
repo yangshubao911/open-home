@@ -2,11 +2,11 @@ package com.shihui.openpf.home.cache;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.common.tools.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.shihui.openpf.common.tools.Constants;
 
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;

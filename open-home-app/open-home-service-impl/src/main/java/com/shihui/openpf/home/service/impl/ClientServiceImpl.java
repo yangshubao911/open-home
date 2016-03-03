@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.common.tools.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,6 @@ import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
-import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Category;

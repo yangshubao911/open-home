@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.common.tools.SignUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -33,7 +34,6 @@ import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
-import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Contact;
@@ -285,7 +285,7 @@ public class OrderManageImpl implements OrderManage {
             param.put("serviceType",String.valueOf(serviceType));
             param.put("orderId",orderId);
             param.put("version",version);
-            String server_sign = SignUtil.genSign(param,merchant.getMd5Key());
+            String server_sign = SignUtil.genSign(param, merchant.getMd5Key());
             if(server_sign.compareTo(sign)!=0){
                 return buildHomeResponse(1002,"签名错误");
             }
