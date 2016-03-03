@@ -37,6 +37,8 @@ public class OrderSystemServiceImpl implements OrderSystemService {
 
         try{
             ApiResult result =  openService.createOrder(singleGoodsCreateOrderParam);
+            String json = result.toJSONString();
+            log.info(json);
             return  result;
         }catch (Exception e){
            log.error("OrderSystemServiceImpl userId：{} submitOrder error",singleGoodsCreateOrderParam.getUserId(),e);
