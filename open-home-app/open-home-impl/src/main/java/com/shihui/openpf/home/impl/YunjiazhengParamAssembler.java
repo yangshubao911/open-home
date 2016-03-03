@@ -3,15 +3,21 @@
  */
 package com.shihui.openpf.home.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.tools.AlgorithmUtil;
+import com.shihui.openpf.common.tools.Coordinates;
+import com.shihui.openpf.common.tools.LocalCoordConvertUtil;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.ParamAssembler;
 import com.shihui.openpf.home.model.OrderInfo;
+
+import scala.annotation.meta.param;
 
 /**
  * @author zhouqisheng
@@ -19,6 +25,14 @@ import com.shihui.openpf.home.model.OrderInfo;
  *
  */
 public class YunjiazhengParamAssembler implements ParamAssembler {
+	private Map<Integer, Integer> cityMap;
+	
+	@SuppressWarnings("unchecked")
+	public YunjiazhengParamAssembler(){
+		//初始化城市对应信息
+		String text = "{1:1,2:2,5:187,6:350,7:188,8:310,9:44,10:147,11:289,23:164,25:355,27:189,29:19}";
+		cityMap = JSON.parseObject(text, HashMap.class);
+	}
 
 	/* (non-Javadoc)
 	 * @see com.shihui.openpf.home.api.ParamAssembler#getAdapterName()
@@ -35,7 +49,8 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 	public Map<String, String> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId,
 			String longitude, String latitude, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
-		param.put("cityId", String.valueOf(cityId));
+		
+		param.put("cityId", String.valueOf(getYJCityId(cityId)));
 		//param.put("longitude", longitude);
 		//param.put("latitude", latitude);
 		//基础参数
@@ -51,9 +66,13 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 	public Map<String, String> isServiceAvailableParam(Merchant merchant, int serviceType, int cityId, String longitude,
 			String latitude, String serviceStartTime, String version) {
 		TreeMap<String, String> param = new TreeMap<>();
-		param.put("cityId", String.valueOf(cityId));
-		param.put("longitude", longitude);
-		param.put("latitude", latitude);
+		//转为云家政城市码
+		param.put("cityId", String.valueOf(getYJCityId(cityId)));
+		//坐标系转换，云家政使用百度坐标系
+		Coordinates co = new Coordinates(Double.parseDouble(longitude), Double.parseDouble(latitude));
+		co = LocalCoordConvertUtil.google2baidu(co);
+		param.put("longitude", String.valueOf(co.getLongitude()));
+		param.put("latitude", String.valueOf(co.getLatitude()));
 		param.put("serviceTime", serviceStartTime);
 		//基础参数
 		param.put("methodName", "canService");
@@ -71,9 +90,13 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 	public Map<String, String> createOrderParam(Merchant merchant, int serviceType, OrderInfo orderInfo,
 			String version) {
 		TreeMap<String, String> param = new TreeMap<>();
-		param.put("cityId", String.valueOf(orderInfo.getCityId()));
-		param.put("longitude", orderInfo.getLongitude());
-		param.put("latitude", orderInfo.getLatitude());
+		//转为云家政城市码
+		param.put("cityId", String.valueOf(getYJCityId(orderInfo.getCityId())));
+		//坐标系转换，云家政使用百度坐标系
+		Coordinates co = new Coordinates(Double.parseDouble(orderInfo.getLongitude()), Double.parseDouble(orderInfo.getLatitude()));
+		co = LocalCoordConvertUtil.google2baidu(co);
+		param.put("longitude", String.valueOf(co.getLongitude()));
+		param.put("latitude", String.valueOf(co.getLatitude()));
 		param.put("serviceTime", orderInfo.getServiceStartTime());
 		param.put("serviceAddress", orderInfo.getServiceAddress());
 		param.put("houseNumber", "");
@@ -158,6 +181,18 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
         temp.append(md5Key);
         String sign = AlgorithmUtil.MD5(temp.toString());
         return sign;
+    }
+    
+    /**
+     * 获得云家政城市码
+     * @param cityId
+     * @return
+     */
+    private int getYJCityId(int cityId){
+    	Integer yjCityId = cityMap.get(cityId);
+		if(yjCityId == null)
+			yjCityId = -1;
+		return yjCityId;
     }
 
 }
