@@ -341,8 +341,10 @@ public class ClientServiceImpl implements ClientService {
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
         shoffset = new BigDecimal(goods.getShOffSet());
 
-        //showButton 0余额不够不能抵扣  1余额够抵扣  2配置抵扣价格为0
+        //showButton 0不使用实惠现金或者实惠现金不够抵用  1使用实惠现金并且实惠现金够抵用
         int showButton = 1;
+        if(balance==0) showButton=0;
+        if(shoffset.compareTo(new BigDecimal("0"))==0)showButton=0;
         if (new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(shoffset) < 0)
             showButton = 0;
 
