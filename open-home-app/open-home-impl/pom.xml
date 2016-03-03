@@ -17,6 +17,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.shihui.openpf</groupId>
+			<artifactId>open-common-tools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.shihui.openpf</groupId>
 			<artifactId>open-common-service-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>

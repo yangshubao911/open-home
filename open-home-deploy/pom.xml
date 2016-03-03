@@ -35,13 +35,13 @@
 
         <resources>
             <resource>
-                <directory>../open-home-properties/src/main/resources/${properties.dir}</directory>
+                <directory>src/main/resources/${properties.dir}</directory>
             </resource>
             <resource>
-                <directory>../open-home-properties/src/main/resources/${properties.dir}_base</directory>
+                <directory>src/main/resources/${properties.dir}_base</directory>
             </resource>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>src/main/resources/common</directory>
             </resource>
         </resources>
         <plugins>
