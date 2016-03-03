@@ -679,7 +679,7 @@ public class ClientServiceImpl implements ClientService {
         ApiResult result = orderSystemService.submitOrder(singleGoodsCreateOrderParam);
 
         if (result.getStatus() != 1) {
-            return result.toJSONString();
+            return JSON.toJSONString(result);
         }
 
         long orderId = Long.parseLong(result.getOrderId().get(0));
@@ -729,6 +729,6 @@ public class ClientServiceImpl implements ClientService {
         order.setUserId(orderForm.getUserId());
         boolean create_order = orderService.createOrder(order);
         log.info("CreateOrder -- orderId：{} save order result：{}", orderId, create_order);
-        return result.toJSONString();
+        return JSON.toJSONString(result);
     }
 }

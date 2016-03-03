@@ -1,5 +1,6 @@
 package com.shihui.openpf.home.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.shihui.api.order.service.OpenService;
 import com.shihui.api.order.vo.ApiResult;
 import com.shihui.api.order.vo.SingleGoodsCreateOrderParam;
@@ -37,7 +38,7 @@ public class OrderSystemServiceImpl implements OrderSystemService {
 
         try{
             ApiResult result =  openService.createOrder(singleGoodsCreateOrderParam);
-            String json = result.toJSONString();
+            String json = JSON.toJSONString(result);
             log.info(json);
             return  result;
         }catch (Exception e){
