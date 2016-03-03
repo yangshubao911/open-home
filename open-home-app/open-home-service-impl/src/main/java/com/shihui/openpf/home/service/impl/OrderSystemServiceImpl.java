@@ -36,8 +36,8 @@ public class OrderSystemServiceImpl implements OrderSystemService {
         List<HttpCallbackHandler<String>> rs = new ArrayList<>();
 
         try{
-            return openService.createOrder(singleGoodsCreateOrderParam);
-
+            ApiResult result =  openService.createOrder(singleGoodsCreateOrderParam);
+            return  result;
         }catch (Exception e){
            log.error("OrderSystemServiceImpl userId：{} submitOrder error",singleGoodsCreateOrderParam.getUserId(),e);
         }
