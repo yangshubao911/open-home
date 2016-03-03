@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd" default-lazy-init ="false">
+
+    <!-- 扫描文件 -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.shihui"></context:component-scan>
+
+    <bean id="exchangeMQProducer" class="com.shihui.commons.mq.RocketProducer">
+        <constructor-arg index="0" value="ExchangeProducer"/>
+        <constructor-arg index="1" value="${mq.exchange.producer.nameserver}"/>
+    </bean>
+
+    <bean id="orderMQProducer" class="com.shihui.commons.mq.RocketProducer">
+        <constructor-arg index="0" value="OrderProducer"/>
+        <constructor-arg index="1" value="${mq.exchange.producer.nameserver}"/>
+    </bean>
+
+    <bean id="paymentMQProducer" class="com.shihui.commons.mq.RocketProducer">
+        <constructor-arg index="0" value="PaymentProducer"/>
+        <constructor-arg index="1" value="${mq.payment.producer.nameserver}"/>
+    </bean>
+
+    <bean id="consumerMQMain" class="com.shihui.commons.mq.ConsumerMain">
+        <constructor-arg index="0">
+            <list>
+                <!--<ref bean="exchangeSuccessConsumer"></ref>-->
+                <!--<ref bean="orderAutoConsumeConsumer"></ref>-->
+                <!--<ref bean="orderCloseOfTimeOutConsumer"></ref>-->
+                <!--<ref bean="orderStatusUpdateConsumer"></ref>-->
+                <!--<ref bean="searchOrderCreateConsumer"></ref>-->
+                <!--<ref bean="searchOrderUpdateStatusConsumer"></ref>-->
+                <!--<ref bean="paymentSuccessConsumer"></ref>-->
+                <!--<ref bean="orderCreateConsumer"></ref>-->
+                <!--<ref bean="orderUpdateStatusConsumer"></ref>-->
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="${mq.all.consumer.nameserver}"/>
+    </bean>
+
+</beans>

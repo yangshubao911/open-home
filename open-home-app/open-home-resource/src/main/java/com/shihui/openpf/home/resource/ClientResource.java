@@ -32,7 +32,8 @@ public class ClientResource {
     public String list(@Context RequestContext rc,
                        @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
                        @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
-                       @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId) {
+                       @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
+                       @ParamDesc(desc = "服务社Id", isRequired = true) @QueryParam("mid") long mid) {
         return clientService.listGoods(serviceId, userId, groupId);
     }
 
@@ -46,7 +47,8 @@ public class ClientResource {
                          @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
                          @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                          @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
-                         @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId) {
+                         @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
+                         @ParamDesc(desc = "服务社Id", isRequired = true) @QueryParam("mid") long mid) {
         return clientService.detail(serviceId, userId, groupId, categoryId, goodsId);
     }
 
@@ -60,7 +62,8 @@ public class ClientResource {
                                @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                                @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
                                @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
-                               @ParamDesc(desc = "是否使用实惠现金", isRequired = true) @QueryParam("costSh") int costSh) {
+                               @ParamDesc(desc = "是否使用实惠现金", isRequired = true) @QueryParam("costSh") int costSh,
+                               @ParamDesc(desc = "服务社Id", isRequired = true) @QueryParam("mid") long mid) {
         return clientService.orderConfirm(serviceId, userId, groupId, categoryId, goodsId, costSh);
     }
 
@@ -75,7 +78,8 @@ public class ClientResource {
                             @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
                             @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
                             @ParamDesc(desc = "谷歌经度", isRequired = true) @QueryParam("longitude") String longitude,
-                            @ParamDesc(desc = "谷歌纬度", isRequired = true) @QueryParam("latitude") String latitude) {
+                            @ParamDesc(desc = "谷歌纬度", isRequired = true) @QueryParam("latitude") String latitude,
+                            @ParamDesc(desc = "服务社Id", isRequired = true) @QueryParam("mid") long mid) {
 
         return clientService.queryTime(serviceId, userId, groupId, categoryId, goodsId, longitude, latitude);
     }
@@ -102,7 +106,8 @@ public class ClientResource {
                               @ParamDesc(desc = "联系电话", isRequired = true) @QueryParam("servicePhone") String servicePhone,
                               @ParamDesc(desc = "可选商户", isRequired = true) @QueryParam("merchants") String merchants,
                               @ParamDesc(desc = "下单商品版本", isRequired = true) @QueryParam("goodsVersion") int goodsVersion,
-                              @ParamDesc(desc = "备注信息", isRequired = false) @QueryParam("remark") String remark) {
+                              @ParamDesc(desc = "备注信息", isRequired = false) @QueryParam("remark") String remark,
+                              @ParamDesc(desc = "服务社Id", isRequired = true) @QueryParam("mid") long mid) {
 
         OrderForm orderForm = new OrderForm();
         orderForm.setServiceId(serviceId);

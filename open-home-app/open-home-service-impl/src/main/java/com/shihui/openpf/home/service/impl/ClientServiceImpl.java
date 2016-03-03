@@ -329,7 +329,7 @@ public class ClientServiceImpl implements ClientService {
         goods_json.put("goodsDesc", goods.getGoodsDesc());
         goods_json.put("originalPrice", goods.getPrice());
         goods_json.put("sellNum", goodsCache.querySell(goods.getCategoryId()));
-
+        goods_json.put("shOffset",goods.getShOffSet());
         result.put("goods", goods_json);
         result.put("balance", balance);
 
