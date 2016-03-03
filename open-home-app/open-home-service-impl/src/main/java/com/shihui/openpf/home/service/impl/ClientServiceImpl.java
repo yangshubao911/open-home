@@ -674,7 +674,10 @@ public class ClientServiceImpl implements ClientService {
         singleGoodsCreateOrderParam.setMerchantId(merchantMap.get(merchantId).getMerchantCode());
         singleGoodsCreateOrderParam.setPrice(StringUtil.yuan2hao(orderForm.getActPay()));
         singleGoodsCreateOrderParam.setOffset(StringUtil.yuan2hao(orderForm.getActOffset()));
-
+        if (StringUtil.isEmpty(orderForm.getRemark()))
+            singleGoodsCreateOrderParam.setUserRemark("");
+        else
+            singleGoodsCreateOrderParam.setUserRemark(orderForm.getRemark());
         ApiResult result = orderSystemService.submitOrder(singleGoodsCreateOrderParam);
 
         if (result.getStatus() != 1) {
