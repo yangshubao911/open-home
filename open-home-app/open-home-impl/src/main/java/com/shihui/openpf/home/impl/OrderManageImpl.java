@@ -380,8 +380,8 @@ public class OrderManageImpl implements OrderManage {
             OrderCancelType orderCancelType = null;
 
             Integer status = order.getOrderStatus();
-            switch (OrderStatusEnum.parse(status)){
-            //TODO 未完成
+            switch (OrderStatusEnum.parse(status)) {
+                //TODO 未完成
             }
             return cancelOrder(order, orderCancelType);
         } catch (Exception e) {
@@ -565,7 +565,7 @@ public class OrderManageImpl implements OrderManage {
         return result.toJSONString();
     }
 
-    private String NonPaymentCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
+    private String NonPaymentCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnpaid.getValue()) {
@@ -581,7 +581,7 @@ public class OrderManageImpl implements OrderManage {
         return "";
     }
 
-    private String PaymentCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
+    private String PaymentCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderDistribute.getValue()) {
@@ -597,7 +597,7 @@ public class OrderManageImpl implements OrderManage {
         return "";
     }
 
-    private String MerchantCancel(Order order,com.shihui.api.order.po.Order  orderDetailVo) {
+    private String MerchantCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
@@ -612,7 +612,7 @@ public class OrderManageImpl implements OrderManage {
         return "";
     }
 
-    private String OutOfTimeCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
+    private String OutOfTimeCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnpaid.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
@@ -626,7 +626,7 @@ public class OrderManageImpl implements OrderManage {
         return buildHomeResponse(0, "取消订单成功");
     }
 
-    private String MerchantOutOfTimeCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
+    private String MerchantOutOfTimeCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
@@ -640,7 +640,7 @@ public class OrderManageImpl implements OrderManage {
         return buildHomeResponse(0, "取消订单成功");
     }
 
-    private String PhpCloseCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
+    private String PhpCloseCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
@@ -655,7 +655,7 @@ public class OrderManageImpl implements OrderManage {
             return buildHomeResponse(3101, "取消订单失败");
     }
 
-    private String RefundPartial(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
+    private String RefundPartial(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderDistribute.getValue() ||
                 order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
@@ -803,8 +803,7 @@ public class OrderManageImpl implements OrderManage {
 
             switch (statusEnum) {
                 case OrderConfirmed:
-                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderUnConfirm.getValue() ||
-                            statusEnum.getValue() != YjzOrderStatusEnum.OrderConfirmed.getValue()) {
+                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderUnConfirm.getValue()) {
                         return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
                     }
                     boolean updateRequest = updateRequest(orderId, statusEnum.getServerValue());
@@ -823,8 +822,7 @@ public class OrderManageImpl implements OrderManage {
                         return JSONObject.toJSONString(new YjzUpdateResult(1, "更新失败", new String[0]));
                     }
                 case OrderComplete:
-                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderConfirmed.getValue() ||
-                            statusEnum.getValue() != YjzOrderStatusEnum.OrderConfirmed.getValue()) {
+                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderConfirmed.getValue()) {
                         return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getServerValue());
@@ -844,29 +842,39 @@ public class OrderManageImpl implements OrderManage {
 
                 case OrderCancel:
                     long refundsPrice = StringUtil.yuan2hao(order.getPay());
-                    boolean cancel = openService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), refundsPrice, status);
-                    if (cancel) {
-                        Request request1 = new Request();
-                        request1.setRequestId(orderId);
-                        request1.setRequestStatus(statusEnum.getServerValue());
-                        boolean update_status = requestService.updateStatus(request1);
-                        if (update_status) {
-                            return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
-                        } else {
-                            return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
-                        }
 
-                    } else {
-                        return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                    switch (db_statusEnum) {
+                        case UnPay:
+                            //取消订单
+                        case OrderUnConfirm:
+                            //商户取消订单流程
+                            boolean cancel = openService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), refundsPrice, status);
+                            if (cancel) {
+                                Request request1 = new Request();
+                                request1.setRequestId(orderId);
+                                request1.setRequestStatus(statusEnum.getServerValue());
+                                boolean update_status = requestService.updateStatus(request1);
+                                if (update_status) {
+                                    return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                                } else {
+                                    return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                                }
+
+                            } else {
+                                return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                            }
+                        case OrderConfirmed:
+                            //不允许取消
+                        case OrderComplete:
+                            //不允许取消
                     }
-
                 default:
                     return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
             }
 
 
         } catch (Exception e) {
-
+            log.error("yjzConverter -- orderId:{} update status error!!!", e);
         }
 
         return JSONObject.toJSONString(new YjzUpdateResult(6, "状态码错误", new String[0]));
@@ -894,6 +902,7 @@ public class OrderManageImpl implements OrderManage {
 
     /**
      * 计算签名
+     *
      * @param param
      * @return
      */
