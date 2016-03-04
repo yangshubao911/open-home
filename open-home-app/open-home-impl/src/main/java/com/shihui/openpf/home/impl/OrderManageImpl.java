@@ -18,6 +18,7 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.model.*;
+import com.shihui.openpf.home.service.api.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -38,11 +39,6 @@ import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
-import com.shihui.openpf.home.service.api.ContactService;
-import com.shihui.openpf.home.service.api.GoodsService;
-import com.shihui.openpf.home.service.api.MerchantGoodsService;
-import com.shihui.openpf.home.service.api.OrderService;
-import com.shihui.openpf.home.service.api.RequestService;
 
 import me.weimi.api.commons.context.RequestContext;
 
@@ -52,7 +48,7 @@ import me.weimi.api.commons.context.RequestContext;
 @Service
 public class OrderManageImpl implements OrderManage {
 
-    @Resource
+    @Resource(name="openOrderService")
     OrderService orderService;
 
     @Resource
@@ -84,6 +80,9 @@ public class OrderManageImpl implements OrderManage {
 
     @Resource
     OpenService openService;
+
+    @Resource
+    OrderSystemService orderSystemService;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -440,13 +439,91 @@ public class OrderManageImpl implements OrderManage {
             if (order == null) {
                 return buildHomeResponse(3001, "未查询到订单");
             }
+
+            MerchantGoods merchantGoods_search = new MerchantGoods();
+            merchantGoods_search.setMerchantId(order.getMerchantId());
+            merchantGoods_search.setGoodsId(order.getGoodsId());
+            MerchantGoods merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods_search);
+
             OrderCancelType orderCancelType = null;
             Integer order_status = order.getOrderStatus();
+            HomeOrderStatusEnum db_statusEnum = HomeOrderStatusEnum.parse(order_status);
+            HomeOrderStatusEnum statusEnum = HomeOrderStatusEnum.parse(status);
+            switch (statusEnum) {
 
-            switch (OrderStatusEnum.parse(status)) {
+                case OrderConfirmed:
+                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderUnConfirm.getValue()) {
+                        return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
+                    }
+                    boolean updateRequest = updateRequest(orderId, statusEnum.getValue());
+
+                    if (updateRequest) {
+                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
+                                StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderUnStockOut.getValue());
+
+                        if (success) {
+                            return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                        } else {
+                            return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                        }
+
+                    } else {
+                        return JSONObject.toJSONString(new YjzUpdateResult(1, "更新失败", new String[0]));
+                    }
+                case OrderComplete:
+                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderConfirmed.getValue()) {
+                        return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
+                    }
+                    boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
+                    if (updateRequest1) {
+                        boolean success = openService.complete(order.getOrderId(), merchantGoods.getSettlement(),
+                                OrderStatusEnum.OrderHadReceived.getValue());
+
+                        if (success) {
+                            return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                        } else {
+                            return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                        }
+
+                    } else {
+                        return JSONObject.toJSONString(new YjzUpdateResult(1, "更新失败", new String[0]));
+                    }
+
+                case OrderCancel:
+                    long refundsPrice = StringUtil.yuan2hao(order.getPay());
+
+                    switch (db_statusEnum) {
+                        case UnPay:
+                            //取消订单
+
+
+                        case OrderUnConfirm:
+                            //商户取消订单流程
+                            boolean cancel = openService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), refundsPrice, status);
+                            if (cancel) {
+                                Request request1 = new Request();
+                                request1.setRequestId(orderId);
+                                request1.setRequestStatus(statusEnum.getValue());
+                                boolean update_status = requestService.updateStatus(request1);
+                                if (update_status) {
+                                    return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                                } else {
+                                    return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                                }
+
+                            } else {
+                                return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                            }
+                        case OrderConfirmed:
+                            //不允许取消
+                        case OrderComplete:
+                            //不允许取消
+                    }
+                default:
+                    return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
+
 
             }
-            return null;
         } catch (Exception e) {
             log.error("OrderManageImpl queryThirdOrder error", e);
             return buildHomeResponse(1004, "其他错误");
@@ -846,6 +923,8 @@ public class OrderManageImpl implements OrderManage {
                     switch (db_statusEnum) {
                         case UnPay:
                             //取消订单
+
+
                         case OrderUnConfirm:
                             //商户取消订单流程
                             boolean cancel = openService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), refundsPrice, status);
@@ -865,8 +944,12 @@ public class OrderManageImpl implements OrderManage {
                             }
                         case OrderConfirmed:
                             //不允许取消
+                            return JSONObject.toJSONString(new YjzUpdateResult(3, "当前状态不允许取消订单" + statusEnum.getValue(), new String[0]));
+
                         case OrderComplete:
                             //不允许取消
+                            return JSONObject.toJSONString(new YjzUpdateResult(3, "当前状态不允许取消订单" + statusEnum.getValue(), new String[0]));
+
                     }
                 default:
                     return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
