@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.common.enums.OrderTypeEnum;
 import com.shihui.api.order.service.OpenService;
+import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
@@ -27,10 +28,6 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.shihui.api.oms.sale.model.OrderPaymentMapping;
-import com.shihui.api.oms.sale.model.SimpleResult;
-import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
-import com.shihui.api.payment.model.Payment;
 import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.dubbo.api.ServiceManage;
@@ -39,13 +36,11 @@ import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.common.tools.DataExportUtils;
-import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.service.api.ContactService;
 import com.shihui.openpf.home.service.api.GoodsService;
 import com.shihui.openpf.home.service.api.MerchantGoodsService;
-import com.shihui.openpf.home.service.api.OrderDubboService;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.RequestService;
 
@@ -186,7 +181,7 @@ public class OrderManageImpl implements OrderManage {
      * @param orderId 订单ID
      * @return 返回订单详情
      */
-    /*
+
     @Override
     public String queryOrder(long orderId) {
         try {
@@ -383,8 +378,6 @@ public class OrderManageImpl implements OrderManage {
                 return buildHomeResponse(3001, "未查询到订单");
             }
             OrderCancelType orderCancelType = null;
-            Byte status = order.getOrderStatus();
-            switch (OrderStatusEnum.parse(status)) {
 
             Integer status = order.getOrderStatus();
             switch (OrderStatusEnum.parse(status)){
@@ -448,7 +441,7 @@ public class OrderManageImpl implements OrderManage {
                 return buildHomeResponse(3001, "未查询到订单");
             }
             OrderCancelType orderCancelType = null;
-            Byte order_status = order.getOrderStatus();
+            Integer order_status = order.getOrderStatus();
 
             switch (OrderStatusEnum.parse(status)) {
 
@@ -572,10 +565,10 @@ public class OrderManageImpl implements OrderManage {
         return result.toJSONString();
     }
 
-    private String NonPaymentCancel(Order order, OrderDetailVo orderDetailVo) {
+    private String NonPaymentCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnpaid.getValue()) {
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnpaid.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
 
@@ -588,10 +581,10 @@ public class OrderManageImpl implements OrderManage {
         return "";
     }
 
-    private String PaymentCancel(Order order, OrderDetailVo orderDetailVo) {
+    private String PaymentCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderDistribute.getValue()) {
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderDistribute.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderDistribute.getName());
         }
 
@@ -604,9 +597,9 @@ public class OrderManageImpl implements OrderManage {
         return "";
     }
 
-    private String MerchantCancel(Order order, OrderDetailVo orderDetailVo) {
+    private String MerchantCancel(Order order,com.shihui.api.order.po.Order  orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
@@ -619,9 +612,9 @@ public class OrderManageImpl implements OrderManage {
         return "";
     }
 
-    private String OutOfTimeCancel(Order order, OrderDetailVo orderDetailVo) {
+    private String OutOfTimeCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnpaid.getValue()) {
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnpaid.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
         //1.取消第三方订单
@@ -633,9 +626,9 @@ public class OrderManageImpl implements OrderManage {
         return buildHomeResponse(0, "取消订单成功");
     }
 
-    private String MerchantOutOfTimeCancel(Order order, OrderDetailVo orderDetailVo) {
+    private String MerchantOutOfTimeCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
@@ -647,7 +640,7 @@ public class OrderManageImpl implements OrderManage {
         return buildHomeResponse(0, "取消订单成功");
     }
 
-    private String PhpCloseCancel(Order order, OrderDetailVo orderDetailVo) {
+    private String PhpCloseCancel(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
@@ -662,11 +655,11 @@ public class OrderManageImpl implements OrderManage {
             return buildHomeResponse(3101, "取消订单失败");
     }
 
-    private String RefundPartial(Order order, OrderDetailVo orderDetailVo) {
+    private String RefundPartial(Order order, com.shihui.api.order.po.Order  orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderDistribute.getValue() ||
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderDistribute.getValue() ||
                 order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
-                Integer.parseInt(orderDetailVo.getOrders().get(0).getStatus()) != OrderStatusEnum.OrderUnConfirm.getValue()) {
+                orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
             return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName() + "或" + OrderStatusEnum.OrderDistribute.getName());
         }
 
@@ -897,6 +890,21 @@ public class OrderManageImpl implements OrderManage {
         response.setMsg(msg);
         response.setCode(code);
         return JSONObject.toJSONString(response);
+    }
+
+    /**
+     * 计算签名
+     * @param param
+     * @return
+     */
+    private String genSign(TreeMap<String, String> param, String md5Key) {
+        StringBuilder temp = new StringBuilder();
+        for (Map.Entry<String, String> entry : param.entrySet()) {
+            temp.append(entry.getKey()).append(entry.getValue());
+        }
+        temp.append(md5Key);
+        String sign = AlgorithmUtil.MD5(temp.toString());
+        return sign;
     }
 
 }
