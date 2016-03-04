@@ -11,23 +11,16 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.shihui.api.order.common.enums.OrderStatusEnum;
-import com.shihui.openpf.home.dao.OrderDao;
-import com.shihui.openpf.home.dao.OrderHistoryDao;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
-import com.shihui.openpf.home.model.OrderHistory;
 import com.shihui.openpf.home.service.api.OrderService;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+
 
 /**
  * Created by zhoutc on 2016/1/25.
  */
-@Service
+@Service("openOrderService")
 public class OrderServiceImpl implements OrderService {
 
     @Resource

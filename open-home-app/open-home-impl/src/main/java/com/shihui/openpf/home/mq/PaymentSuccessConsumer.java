@@ -35,7 +35,7 @@ public class PaymentSuccessConsumer implements Consumer {
 	@Resource(name = "openHomeMQProducer")
 	private RocketProducer openHomeMQProducer;
 
-	@Resource
+	@Resource(name="openOrderService")
 	private OrderService orderService;
 	
 	@Resource

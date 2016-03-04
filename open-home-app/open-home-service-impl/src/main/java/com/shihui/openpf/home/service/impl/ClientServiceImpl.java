@@ -99,7 +99,7 @@ public class ClientServiceImpl implements ClientService {
     ContactService contactService;
     @Resource
     RequestService requestService;
-    @Resource
+    @Resource(name="openOrderService")
     OrderService orderService;
 
     /**

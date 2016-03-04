@@ -48,7 +48,7 @@ import me.weimi.api.commons.context.RequestContext;
 @Service
 public class OrderManageImpl implements OrderManage {
 
-    @Resource
+    @Resource(name="openOrderService")
     OrderService orderService;
 
     @Resource
