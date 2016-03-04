@@ -29,8 +29,6 @@ public class OrderSystemServiceImpl implements OrderSystemService {
     @Resource
     OpenService openService;
 
-    @Resource
-    OrderService orderService;
 
     @Override
     public ApiResult submitOrder(SingleGoodsCreateOrderParam singleGoodsCreateOrderParam) {
@@ -51,7 +49,7 @@ public class OrderSystemServiceImpl implements OrderSystemService {
 
     @Override
     public boolean merchantCancelOrder(long orderId , OrderStatusEnum orderStatus , int operatorId) {
-        try {
+/*        try {
             JSONObject jsonObject = orderService.internalMerchantCancleOrder( orderId,  orderStatus,  operatorId);
 
             if(jsonObject.getInteger("result_status")==1){
@@ -60,7 +58,7 @@ public class OrderSystemServiceImpl implements OrderSystemService {
 
         }catch (Exception e){
              log.error("merchantCancelOrder -- orderId:{} cancel error!!!",orderId,e);
-        }
+        }*/
         return false;
     }
 }
