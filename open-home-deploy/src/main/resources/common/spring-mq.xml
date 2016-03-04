@@ -14,20 +14,12 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.shihui"></context:component-scan>
 
-    <bean id="exchangeMQProducer" class="com.shihui.commons.mq.RocketProducer">
+    <bean id="openHomeMQProducer" class="com.shihui.commons.mq.RocketProducer">
         <constructor-arg index="0" value="ExchangeProducer"/>
-        <constructor-arg index="1" value="${mq.exchange.producer.nameserver}"/>
+        <constructor-arg index="1" value="${mq.open.home.producer.nameserver}"/>
     </bean>
 
-    <bean id="orderMQProducer" class="com.shihui.commons.mq.RocketProducer">
-        <constructor-arg index="0" value="OrderProducer"/>
-        <constructor-arg index="1" value="${mq.exchange.producer.nameserver}"/>
-    </bean>
 
-    <bean id="paymentMQProducer" class="com.shihui.commons.mq.RocketProducer">
-        <constructor-arg index="0" value="PaymentProducer"/>
-        <constructor-arg index="1" value="${mq.payment.producer.nameserver}"/>
-    </bean>
 
     <bean id="consumerMQMain" class="com.shihui.commons.mq.ConsumerMain">
         <constructor-arg index="0">
