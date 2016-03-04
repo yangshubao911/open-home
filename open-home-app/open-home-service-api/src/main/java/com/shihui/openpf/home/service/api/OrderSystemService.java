@@ -1,5 +1,6 @@
 package com.shihui.openpf.home.service.api;
 
+import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.vo.ApiResult;
 import com.shihui.api.order.vo.SingleGoodsCreateOrderParam;
 
@@ -9,4 +10,6 @@ import com.shihui.api.order.vo.SingleGoodsCreateOrderParam;
 public interface OrderSystemService {
 
     public ApiResult submitOrder(SingleGoodsCreateOrderParam singleGoodsCreateOrderParam);
+
+    public boolean merchantCancelOrder(long orderId , OrderStatusEnum orderStatus , int operatorId);
 }
