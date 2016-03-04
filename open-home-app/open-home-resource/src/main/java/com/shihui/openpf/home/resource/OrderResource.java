@@ -4,6 +4,9 @@
 package com.shihui.openpf.home.resource;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.ws.rs.DefaultValue;
@@ -17,7 +20,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
+import com.shihui.openpf.common.tools.AlgorithmUtil;
+import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
+import me.weimi.api.commons.json.JSONObject;
 import org.springframework.stereotype.Controller;
 
 import com.shihui.openpf.home.api.OrderManage;
@@ -185,6 +191,27 @@ public class OrderResource {
 
         return response.build();
     }
+
+    @POST
+    @Path("/yjz/updateOrderStatus")
+    @Produces(MediaType.TEXT_HTML)
+    @BaseInfo(desc = "云家政更新订单状态接口", status = ApiStatus.PUBLIC, needAuth = AuthType.OPTION, crossDomain = true)
+    public String updateOrderStatus(
+            @Context RequestContext rc,
+            @ParamDesc(desc = "第三方订单Id", isRequired = true) @QueryParam("orderId") String orderId,
+            @ParamDesc(desc = "第三方订单状态", isRequired = true) @QueryParam("status") int status,
+            @ParamDesc(desc = "pid", isRequired = false) @QueryParam("pId") String pId,
+            @ParamDesc(desc = "接口版本", isRequired = false) @QueryParam("version") String version,
+            @ParamDesc(desc = "请求方法", isRequired = false) @QueryParam("methodName") String methodName,
+            @ParamDesc(desc = "签名", isRequired = true) @QueryParam("sign") String sign
+
+
+    ) {
+
+        return orderManage.yjzConverter(orderId,status,pId,version,methodName,sign);
+    }
+
+
 
 
 

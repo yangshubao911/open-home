@@ -1,6 +1,6 @@
 package com.shihui.openpf.home.service.api;
 
-import com.shihui.api.common.model.OrderStatusEnum;
+import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
 

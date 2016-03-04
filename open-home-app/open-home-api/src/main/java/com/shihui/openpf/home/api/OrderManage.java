@@ -86,4 +86,10 @@ public interface OrderManage {
      * @return 订单列表
      */
     public String exportUnusual();
+
+    /**
+     * 导出异常订单
+     * @return 订单列表
+     */
+    public String yjzConverter(String orderId,int status,String pId, String version,String methodName, String sign);
 }

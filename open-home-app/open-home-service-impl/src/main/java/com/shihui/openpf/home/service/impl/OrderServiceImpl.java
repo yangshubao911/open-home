@@ -1,6 +1,6 @@
 package com.shihui.openpf.home.service.impl;
 
-import com.shihui.api.common.model.OrderStatusEnum;
+import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.openpf.home.dao.OrderDao;
 import com.shihui.openpf.home.dao.OrderHistoryDao;
 import com.shihui.openpf.home.model.OrderHistory;
