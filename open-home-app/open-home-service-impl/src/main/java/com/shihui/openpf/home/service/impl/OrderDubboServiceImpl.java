@@ -1,25 +1,16 @@
 package com.shihui.openpf.home.service.impl;
 
 
-import com.shihui.api.clearing.dubbo.ClearingDubbo;
-import com.shihui.api.common.model.PaymentTypeEnum;
-import com.shihui.api.common.model.SettleMethodEnum;
-import com.shihui.api.common.model.UserTypeEnum;
-import com.shihui.api.oms.sale.dubbo.OrderDubbo;
-import com.shihui.api.oms.sale.dubbo.OrderPaymentMappingDubbo;
-import com.shihui.api.oms.sale.dubbo.QueryOrderDubbo;
-import com.shihui.api.oms.sale.model.OrderPaymentMapping;
-import com.shihui.api.oms.sale.model.SimpleResult;
-import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
-import com.shihui.api.payment.dubbo.PaymentDubbo;
-import com.shihui.api.payment.model.OriginalRefundResult;
-import com.shihui.api.payment.model.Payment;
-import com.shihui.openpf.home.service.api.OrderDubboService;
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import com.shihui.api.order.common.enums.PaymentTypeEnum;
+import com.shihui.api.order.po.OrderPaymentMapping;
+import com.shihui.api.order.vo.SimpleResult;
+import com.shihui.openpf.home.service.api.OrderDubboService;
 
 /**
  * Created by zhoutc on 2016/1/29.

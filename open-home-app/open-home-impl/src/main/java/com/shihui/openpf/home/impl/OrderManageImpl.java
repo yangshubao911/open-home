@@ -8,7 +8,6 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
-import com.shihui.openpf.common.tools.SignUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -19,14 +18,10 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.shihui.api.common.model.OrderStatusEnum;
-import com.shihui.api.common.model.PaymentTypeEnum;
-import com.shihui.api.common.model.SettleMethodEnum;
-import com.shihui.api.common.model.UserTypeEnum;
-import com.shihui.api.oms.sale.model.OrderPaymentMapping;
-import com.shihui.api.oms.sale.model.SimpleResult;
-import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
-import com.shihui.api.payment.model.Payment;
+import com.shihui.api.order.common.enums.OrderStatusEnum;
+import com.shihui.api.order.common.enums.PaymentTypeEnum;
+import com.shihui.api.order.po.OrderPaymentMapping;
+import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.dubbo.api.ServiceManage;
@@ -34,6 +29,8 @@ import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
+import com.shihui.openpf.common.tools.DataExportUtils;
+import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Contact;
@@ -50,7 +47,6 @@ import com.shihui.openpf.home.service.api.MerchantGoodsService;
 import com.shihui.openpf.home.service.api.OrderDubboService;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.RequestService;
-import com.shihui.openpf.home.util.DataExportUtils;
 
 import me.weimi.api.commons.context.RequestContext;
 
@@ -189,6 +185,7 @@ public class OrderManageImpl implements OrderManage {
      * @param orderId 订单ID
      * @return 返回订单详情
      */
+    /*
     @Override
     public String queryOrder(long orderId) {
         try {
@@ -249,6 +246,7 @@ public class OrderManageImpl implements OrderManage {
 
         return "";
     }
+    */
 
     /**
      * 查询第三方订单
@@ -385,9 +383,9 @@ public class OrderManageImpl implements OrderManage {
                 return buildHomeResponse(3001,"未查询到订单");
             }
             OrderCancelType orderCancelType = null;
-            Byte status = order.getOrderStatus();
+            Integer status = order.getOrderStatus();
             switch (OrderStatusEnum.parse(status)){
-
+            //TODO 未完成
             }
             return cancelOrder(order, orderCancelType);
         }catch (Exception e){
@@ -447,10 +445,10 @@ public class OrderManageImpl implements OrderManage {
                 return buildHomeResponse(3001,"未查询到订单");
             }
             OrderCancelType orderCancelType = null;
-            Byte order_status = order.getOrderStatus();
+            Integer order_status = order.getOrderStatus();
 
-            switch (OrderStatusEnum.parse(status)){
-
+            switch (OrderStatusEnum.parse(order_status)){
+            //TODO 未完成
             }
             return null;
         }catch (Exception e){
@@ -488,13 +486,10 @@ public class OrderManageImpl implements OrderManage {
         if (order == null || orderDetailVo == null)
             return buildHomeResponse(3001, "未查询到订单");
 
-        if (order.getOrderStatus() == OrderStatusEnum.OrderBackClose.getValue() ||
-                order.getOrderStatus() == OrderStatusEnum.OrderCloseByMerchant.getValue() ||
-                order.getOrderStatus() == OrderStatusEnum.OrderCloseByManual.getValue() ||
-                order.getOrderStatus() == OrderStatusEnum.OrderCloseOfOutTime.getValue() ||
-                order.getOrderStatus() == OrderStatusEnum.OrderHadRefund.getValue() ||
-                order.getOrderStatus() == OrderStatusEnum.OrderMrchantClose.getValue() ||
-                order.getOrderStatus() == OrderStatusEnum.OrderRefunding.getValue()) {
+        if (order.getOrderStatus() == OrderStatusEnum.BackClose.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderCancelByCustom.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderCancelStockOut.getValue() ||
+                order.getOrderStatus() == OrderStatusEnum.OrderCloseByOutTime.getValue()){
             return buildHomeResponse(3101, "取消订单失败");
         }
 
@@ -666,7 +661,7 @@ public class OrderManageImpl implements OrderManage {
             return buildHomeResponse(3101, "取消第三方订单失败");
         }
         //2.更新订单表
-        boolean update = orderService.updateOrder(order.getOrderId(), OrderStatusEnum.OrderBackClose);
+        boolean update = orderService.updateOrder(order.getOrderId(), OrderStatusEnum.BackClose);
         if (update)
             return buildHomeResponse(0, "取消订单成功");
         else

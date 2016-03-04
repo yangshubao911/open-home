@@ -128,7 +128,7 @@ public class ClientResource {
         orderForm.setRemark(remark);
         orderForm.setGoodsVersion(goodsVersion);
         orderForm.setServicePhone(servicePhone);
-        return clientService.orderCreate(orderForm,rc);
+        return clientService.orderCreate(orderForm,rc.getIp());
     }
 
 

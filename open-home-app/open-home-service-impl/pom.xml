@@ -15,7 +15,7 @@
 			<artifactId>mq</artifactId>
 			<groupId>com.shihui.commons</groupId>
 			<version>2.0.1-SNAPSHOT</version>
-	    </dependency>
+		</dependency>
 		<dependency>
 			<groupId>com.shihui.openpf</groupId>
 			<artifactId>open-home-service-api</artifactId>
@@ -31,18 +31,9 @@
 			<artifactId>frame-parent</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.shihui.openpf</groupId>
 			<artifactId>open-home-api</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<artifactId>order-api</artifactId>
-			<groupId>com.shihui.api</groupId>
-			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -1,11 +1,7 @@
 package com.shihui.openpf.home.service.api;
 
-import com.shihui.api.common.model.PaymentTypeEnum;
-import com.shihui.api.common.model.SettleMethodEnum;
-import com.shihui.api.common.model.UserTypeEnum;
-import com.shihui.api.oms.sale.model.OrderPaymentMapping;
-import com.shihui.api.oms.sale.model.vo.OrderDetailVo;
-import com.shihui.api.payment.model.Payment;
+import com.shihui.api.order.common.enums.PaymentTypeEnum;
+import com.shihui.api.order.po.OrderPaymentMapping;
 
 /**
  * Created by zhoutc on 2016/1/29.
