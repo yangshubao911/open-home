@@ -16,7 +16,9 @@ import com.shihui.commons.mq.api.Topic;
 import com.shihui.openpf.common.model.MerchantApiName;
 import com.shihui.openpf.home.model.HomeMQMsg;
 import com.shihui.openpf.home.model.Order;
+import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.service.api.OrderService;
+import com.shihui.openpf.home.service.api.RequestService;
 
 /**
  * Created by zhoutc on 2016/3/3.
@@ -31,10 +33,13 @@ public class PaymentSuccessConsumer implements Consumer {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Resource(name = "openHomeMQProducer")
-	RocketProducer openHomeMQProducer;
+	private RocketProducer openHomeMQProducer;
 
 	@Resource
-	OrderService orderService;
+	private OrderService orderService;
+	
+	@Resource
+	private RequestService requestService;
 
 	@Override
 	public boolean doit(String topic, String tags, String key, String msg) {
@@ -52,6 +57,7 @@ public class PaymentSuccessConsumer implements Consumer {
 			if (order == null) {
 				return true;
 			} else {
+				Request request = requestService.queryOrderRequest(orderId);
 				// 更新订单状态
 				orderService.updateOrder(orderId, status);
 				
@@ -64,6 +70,7 @@ public class PaymentSuccessConsumer implements Consumer {
 					homeMsg.setPrice(order.getPrice());
 					homeMsg.setServiceId(order.getService_id());
 					homeMsg.setMerchantApiName(MerchantApiName.CANCEL_ORDER);
+					homeMsg.setThirdOrderId(request.getRequestId());
 					
 					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId), JSON.toJSONString(homeMsg));
                     
@@ -75,6 +82,7 @@ public class PaymentSuccessConsumer implements Consumer {
 					homeMsg.setPrice(order.getPrice());
 					homeMsg.setServiceId(order.getService_id());
 					homeMsg.setMerchantApiName(MerchantApiName.PAY_NOTICE);
+					homeMsg.setThirdOrderId(request.getRequestId());
 					
 					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId), JSON.toJSONString(homeMsg));
 				} else {

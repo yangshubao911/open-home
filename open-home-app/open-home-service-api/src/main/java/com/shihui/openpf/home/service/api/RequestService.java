@@ -22,14 +22,14 @@ public interface RequestService {
     public boolean updateStatus(Request request);
 
     /**
-     * 更新第三方订单状态
+     * 查询第三方订单状态
      * @param request 第三方订单ID
      * @return 更新结果
      */
     public Request queryById(Request request);
 
     /**
-     * 更新第三方订单状态
+     * 查询第三方订单状态
      * @param orderId 订单Id
      * @return 更新结果
      */
