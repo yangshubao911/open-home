@@ -4,6 +4,7 @@
 package com.shihui.openpf.home.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.shihui.openpf.common.model.MerchantApiName;
 
@@ -20,8 +21,10 @@ public class HomeMQMsg implements Serializable {
 	private Long goodsId;
 	private String price;
 	private Long orderId;
+	private String thirdOrderId;
 	private Integer serviceId;
 	private MerchantApiName merchantApiName;//商户接口名称
+	private Date timestamp;
 
 	public Integer getMerchantId() {
 		return merchantId;
@@ -55,6 +58,14 @@ public class HomeMQMsg implements Serializable {
 		this.orderId = orderId;
 	}
 
+	public String getThirdOrderId() {
+		return thirdOrderId;
+	}
+
+	public void setThirdOrderId(String thirdOrderId) {
+		this.thirdOrderId = thirdOrderId;
+	}
+
 	public Integer getServiceId() {
 		return serviceId;
 	}
@@ -69,6 +80,14 @@ public class HomeMQMsg implements Serializable {
 
 	public void setMerchantApiName(MerchantApiName merchantApiName) {
 		this.merchantApiName = merchantApiName;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

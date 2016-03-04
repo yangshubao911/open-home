@@ -1,0 +1,79 @@
+/**
+ * 
+ */
+package com.shihui.openpf.home.mq;
+
+import java.util.Date;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
+import com.shihui.commons.mq.RocketProducer;
+import com.shihui.commons.mq.annotation.ConsumerConfig;
+import com.shihui.commons.mq.api.Consumer;
+import com.shihui.commons.mq.api.Topic;
+import com.shihui.openpf.common.dubbo.api.MerchantManage;
+import com.shihui.openpf.common.model.Merchant;
+import com.shihui.openpf.common.model.MerchantApiName;
+import com.shihui.openpf.home.api.HomeServProviderService;
+import com.shihui.openpf.home.model.HomeMQMsg;
+import com.shihui.openpf.home.model.HomeResponse;
+
+/**
+ * @author zhouqisheng
+ * @date 2016年3月4日 下午5:54:36
+ *
+ */
+@Component("homeMsgConsumer")
+@ConsumerConfig(consumerName = "homeMsgConsumer", topic = Topic.Open_Home_Pay_Notice)
+public class HomeMsgConsumer implements Consumer {
+	private Logger log = LoggerFactory.getLogger(getClass());
+	@Resource
+	private HomeServProviderService homeServProviderService;
+	@Resource(name = "openHomeMQProducer")
+	private RocketProducer openHomeMQProducer;
+	@Resource
+	private MerchantManage merchantManage;
+
+	/* (non-Javadoc)
+	 * @see com.shihui.commons.mq.api.Consumer#doit(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public boolean doit(String topic, String tags, String key, String msg) {
+		HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
+		HomeResponse response = null;
+		try {
+			Merchant merchant = merchantManage.getById(homeMsg.getMerchantId());
+			if(homeMsg.getMerchantApiName() == MerchantApiName.CANCEL_ORDER){
+				response = homeServProviderService.cancelOrder(merchant, homeMsg.getServiceId(), homeMsg.getThirdOrderId());
+			}else if(homeMsg.getMerchantApiName() == MerchantApiName.PAY_NOTICE){
+				response = homeServProviderService.payNotice(merchant, homeMsg.getServiceId(), homeMsg.getThirdOrderId(), homeMsg.getPrice());
+			}else{
+				log.warn("MQ消息没有对应处理方式，消息队列名称：{}，消息：{}", Topic.Open_Home_Pay_Notice.getValue(), msg);
+				return false;
+			}
+			
+			if(response != null){
+				if(response.getCode() == 0){
+					log.info("订单取消调用第三方接口成功，order_id={}, merchant_id={}", homeMsg.getOrderId(), homeMsg.getMerchantId());
+					return true;
+				}else{
+					log.warn("订单取消调用第三方接口失败，order_id={}, merchant_id={}, 返回信息：{}", homeMsg.getOrderId(), homeMsg.getMerchantId(), response.getMsg());
+					//加入重试队列重试
+					Date now = new Date();
+					
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			log.error("MQ消息处理异常，消息队列名称：{}，消息：{}", Topic.Open_Home_Pay_Notice.getValue(), msg, e);
+			return false;
+		}
+		return false;
+	}
+
+}
