@@ -14,16 +14,6 @@
 
     <dubbo:reference id="currencyRpcAccountService" interface="com.shihui.currency.api.rpc.CurrencyRpcAccountService" check="false"/>
 
-    <dubbo:reference id="orderDubbo" interface="com.shihui.api.oms.sale.dubbo.OrderDubbo" check="false"/>
-
-    <dubbo:reference id="clearingDubbo" interface=" com.shihui.api.clearing.dubbo.ClearingDubbo" timeout="10000" check="false"/>
-
-    <dubbo:reference id="orderPaymentMappingDubbo" interface=" com.shihui.api.oms.sale.dubbo.OrderPaymentMappingDubbo"  check="false"/>
-
-    <dubbo:reference id="paymentDubbo" interface=" com.shihui.api.payment.dubbo.PaymentDubbo"  timeout="10000" check="false"/>
-
-    <dubbo:reference id="queryOrderDubbo" interface=" com.shihui.api.oms.sale.dubbo.QueryOrderDubbo" check="false"/>
-    
     <dubbo:reference id="ServiceManage" interface=" com.shihui.openpf.common.dubbo.api.ServiceManage" check="false"/>
 
     <dubbo:reference id="openService" interface="com.shihui.api.order.service.OpenService" init="true" timeout="15000" retries="0" check="false" />
