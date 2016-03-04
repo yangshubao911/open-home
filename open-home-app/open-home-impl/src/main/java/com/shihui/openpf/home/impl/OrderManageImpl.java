@@ -38,6 +38,8 @@ import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
+import com.shihui.openpf.common.tools.DataExportUtils;
+import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.service.api.ContactService;
@@ -46,7 +48,6 @@ import com.shihui.openpf.home.service.api.MerchantGoodsService;
 import com.shihui.openpf.home.service.api.OrderDubboService;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.RequestService;
-import com.shihui.openpf.home.util.DataExportUtils;
 
 import me.weimi.api.commons.context.RequestContext;
 
@@ -185,6 +186,7 @@ public class OrderManageImpl implements OrderManage {
      * @param orderId 订单ID
      * @return 返回订单详情
      */
+    /*
     @Override
     public String queryOrder(long orderId) {
         try {
@@ -384,6 +386,9 @@ public class OrderManageImpl implements OrderManage {
             Byte status = order.getOrderStatus();
             switch (OrderStatusEnum.parse(status)) {
 
+            Integer status = order.getOrderStatus();
+            switch (OrderStatusEnum.parse(status)){
+            //TODO 未完成
             }
             return cancelOrder(order, orderCancelType);
         } catch (Exception e) {
@@ -894,19 +899,4 @@ public class OrderManageImpl implements OrderManage {
         return JSONObject.toJSONString(response);
     }
 
-    /**
-     * 计算签名
-     *
-     * @param param
-     * @return
-     */
-    private String genSign(TreeMap<String, String> param, String md5Key) {
-        StringBuilder temp = new StringBuilder();
-        for (Map.Entry<String, String> entry : param.entrySet()) {
-            temp.append(entry.getKey()).append(entry.getValue());
-        }
-        temp.append(md5Key);
-        String sign = AlgorithmUtil.MD5(temp.toString());
-        return sign;
-    }
 }

@@ -16,7 +16,6 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
-import com.shihui.openpf.common.tools.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,7 @@ import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
+import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.model.Category;
@@ -62,7 +62,6 @@ import com.shihui.openpf.home.util.ChoiceMerhantUtil;
 import com.shihui.openpf.home.util.HomeExcepFactor;
 
 import me.weimi.api.app.AppException;
-import me.weimi.api.commons.context.RequestContext;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -525,7 +524,7 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回时间接口
      */
     @Override
-    public String orderCreate(OrderForm orderForm, RequestContext rc) {
+    public String orderCreate(OrderForm orderForm, String ip) {
         JSONObject result_json = new JSONObject();
         com.shihui.openpf.common.model.Service service = serviceManage.findById(orderForm.getServiceId());
         if (service.getServiceStatus() != 1) {
@@ -680,8 +679,10 @@ public class ClientServiceImpl implements ClientService {
         orderInfo.setRemark(orderForm.getRemark());
         orderInfo.setServiceAddress(orderForm.getServiceAddress());
         orderInfo.setServiceStartTime(orderForm.getServiceTime());
+        
+        Merchant selectedMer = merchantMap.get(merchantId);
 
-        HomeResponse create_third_part = homeServProviderService.createOrder(merchantMap.get(merchantId), goods.getServiceId(), orderInfo);
+        HomeResponse create_third_part = homeServProviderService.createOrder(selectedMer, goods.getServiceId(), orderInfo);
         if (create_third_part.getCode() != 0) {
             throw new AppException(HomeExcepFactor.Third_Order_Fail);
         }
@@ -694,9 +695,15 @@ public class ClientServiceImpl implements ClientService {
         singleGoodsCreateOrderParam.setCampaignId(1);
         singleGoodsCreateOrderParam.setCityId(cityId);
         singleGoodsCreateOrderParam.setCommunityId((int) orderForm.getGroupId());
-        singleGoodsCreateOrderParam.setExt("");
+        //添加扩展字段
+        JSONObject jo = new JSONObject();
+        jo.put("service_id", service.getServiceId());
+        jo.put("merchant_id", selectedMer.getMerchantId());
+        
+        singleGoodsCreateOrderParam.setExt(jo.toJSONString());
+        
         singleGoodsCreateOrderParam.setOriginPrice(StringUtil.yuan2hao(goods.getPrice()));
-        singleGoodsCreateOrderParam.setIp(rc.getIp());
+        singleGoodsCreateOrderParam.setIp(ip);
         singleGoodsCreateOrderParam.setGoodsVersion(goods.getGoodsVersion());
         singleGoodsCreateOrderParam.setGoodsId(goods.getGoodsId());
         singleGoodsCreateOrderParam.setGoodsName(goods.getGoodsName());
@@ -705,7 +712,7 @@ public class ClientServiceImpl implements ClientService {
 
         long overTime = System.currentTimeMillis() + 1000 * 30;
         singleGoodsCreateOrderParam.setOverdueTime(overTime);
-        singleGoodsCreateOrderParam.setMerchantId(merchantMap.get(merchantId).getMerchantCode());
+        singleGoodsCreateOrderParam.setMerchantId(selectedMer.getMerchantCode());
         singleGoodsCreateOrderParam.setPrice(StringUtil.yuan2hao(orderForm.getActPay()));
         singleGoodsCreateOrderParam.setOffset(StringUtil.yuan2hao(orderForm.getActOffset()));
         singleGoodsCreateOrderParam.setProvinceId(proviceId);
@@ -770,7 +777,7 @@ public class ClientServiceImpl implements ClientService {
         order.setGoodsNum(1);
         order.setGoodsVersion(orderForm.getGoodsVersion());
         order.setMerchantId(merchantId);
-        order.setOrderStatus((byte) OrderStatusEnum.OrderUnpaid.getValue());
+        order.setOrderStatus(OrderStatusEnum.OrderUnpaid.getValue());
         order.setPay(orderForm.getActPay());
         order.setPhone(orderForm.getServicePhone());
         order.setPrice(goods.getPrice());

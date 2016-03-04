@@ -4,10 +4,19 @@ import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.openpf.home.dao.OrderDao;
 import com.shihui.openpf.home.dao.OrderHistoryDao;
 import com.shihui.openpf.home.model.OrderHistory;
+import java.util.Date;
+import java.util.List;
 
+import javax.annotation.Resource;
 
+import org.springframework.stereotype.Service;
+
+import com.shihui.api.order.common.enums.OrderStatusEnum;
+import com.shihui.openpf.home.dao.OrderDao;
+import com.shihui.openpf.home.dao.OrderHistoryDao;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
+import com.shihui.openpf.home.model.OrderHistory;
 import com.shihui.openpf.home.service.api.OrderService;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
     public boolean updateOrder(long orderId, OrderStatusEnum orderStatus) {
         Order order = new Order();
         order.setOrderId(orderId);
-        order.setOrderStatus((byte)orderStatus.getValue());
+        order.setOrderStatus(orderStatus.getValue());
         if(orderDao.update(order)>0) {
             Date date = new Date();
             OrderHistory orderHistory = new OrderHistory();

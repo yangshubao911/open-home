@@ -47,7 +47,7 @@ public class Order implements Serializable {
 	private Integer merchantId;
 
 	@Column(name="order_status")
-	private Byte orderStatus;
+	private Integer orderStatus;
 
 	@Column(name="pay")
 	private String pay;
@@ -146,11 +146,11 @@ public class Order implements Serializable {
 		this.merchantId = merchantId;
 	}
 
-	public Byte getOrderStatus() {
+	public Integer getOrderStatus() {
 		return orderStatus;
 	}
 
-	public void setOrderStatus(Byte orderStatus) {
+	public void setOrderStatus(Integer orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 

@@ -70,7 +70,7 @@ public class OrderResource {
             if(!StringUtil.isEmpty(orderId))
             queryOrder.setOrderId(Long.parseLong(orderId));
             if(!StringUtil.isEmpty(status))
-            queryOrder.setOrderStatus(Byte.valueOf(status));
+            queryOrder.setOrderStatus(Integer.parseInt(status));
             if(!StringUtil.isEmpty(phoneNum))
             queryOrder.setPhone(phoneNum);
             if(!StringUtil.isEmpty(userId))

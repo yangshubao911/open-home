@@ -24,15 +24,7 @@
     <bean id="consumerMQMain" class="com.shihui.commons.mq.ConsumerMain">
         <constructor-arg index="0">
             <list>
-                <!--<ref bean="exchangeSuccessConsumer"></ref>-->
-                <!--<ref bean="orderAutoConsumeConsumer"></ref>-->
-                <!--<ref bean="orderCloseOfTimeOutConsumer"></ref>-->
-                <!--<ref bean="orderStatusUpdateConsumer"></ref>-->
-                <!--<ref bean="searchOrderCreateConsumer"></ref>-->
-                <!--<ref bean="searchOrderUpdateStatusConsumer"></ref>-->
-                <!--<ref bean="paymentSuccessConsumer"></ref>-->
-                <!--<ref bean="orderCreateConsumer"></ref>-->
-                <!--<ref bean="orderUpdateStatusConsumer"></ref>-->
+            <ref bean="paymentSuccessConsumer"/>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="${mq.all.consumer.nameserver}"/>

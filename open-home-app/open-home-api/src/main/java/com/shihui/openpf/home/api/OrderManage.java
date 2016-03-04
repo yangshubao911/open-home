@@ -32,7 +32,7 @@ public interface OrderManage {
      *
      * @return 返回订单详情
      */
-    public String queryOrder(long orderId);
+//    public String queryOrder(long orderId);
 
     /**
      * 查询第三方订单详情
