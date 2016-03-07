@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.home.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +40,6 @@ import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.cache.GoodsCache;
-import com.shihui.openpf.home.model.Category;
-import com.shihui.openpf.home.model.Contact;
-import com.shihui.openpf.home.model.Goods;
-import com.shihui.openpf.home.model.HomeResponse;
-import com.shihui.openpf.home.model.MerchantGoods;
-import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.OrderForm;
-import com.shihui.openpf.home.model.OrderInfo;
-import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.service.api.CategoryService;
 import com.shihui.openpf.home.service.api.ClientService;
 import com.shihui.openpf.home.service.api.ContactService;
@@ -758,7 +750,7 @@ public class ClientServiceImpl implements ClientService {
         Request request = new Request();
         request.setRequestId(requestId);
         request.setServiceId(service.getServiceId());
-        request.setRequestStatus(0);
+        request.setRequestStatus(HomeOrderStatusEnum.UnPay.getValue());
         request.setOrderId(orderId);
         request.setCreateTime(now);
         request.setMerchantId(merchantId);
