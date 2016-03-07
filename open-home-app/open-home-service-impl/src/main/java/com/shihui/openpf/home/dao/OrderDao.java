@@ -126,7 +126,7 @@ public class OrderDao extends AbstractDao<Order> {
      */
     public int countUnusual(){
         String sql = "select count(*) from `order` where order_status = ?";
-        return super.queryCount(sql, "8");
+        return super.queryCount(sql, new Object[]{8});
     }
 
     /**
@@ -136,7 +136,7 @@ public class OrderDao extends AbstractDao<Order> {
      */
     public List<Order> queryUnusual(){
         String sql = "select * from `order` where order_status = ?";
-        return super.queryForList(sql, "8");
+        return super.queryForList(sql, new Object[]{8});
     }
 
 }
