@@ -457,9 +457,15 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest = updateRequest(orderId, statusEnum.getValue());
 
+                    JSONObject settlementJson = new JSONObject();
+                    settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
+                    settlementJson.put("settleMerchantId", merchant.getMerchantCode());
+
+
+
                     if (updateRequest) {
                         boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
-                                StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderDistribute.getValue());
+                                settlementJson.toString(), OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
                             return buildHomeResponse(0, "success");
@@ -520,7 +526,7 @@ public class OrderManageImpl implements OrderManage {
                             //不允许取消
                     }
                 default:
-                    return buildHomeResponse(1,"状态流转错误");
+                    return buildHomeResponse(1, "状态流转错误");
 
             }
         } catch (Exception e) {
