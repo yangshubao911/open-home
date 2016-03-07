@@ -83,7 +83,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	}
 	
 	@Override
-	public HomeResponse getServiceAvailableTime(int serviceType, int cityId, String longitude, String latitude, List<Merchant> merchants) {
+	public HomeResponse getServiceAvailableTime(int serviceType, int cityId, String longitude, String latitude, List<Merchant> merchants, int categoryId , int amount) {
 		//查询供应商信息
 		Map<Merchant, MerchantApi> merchantApiMap = this.merchantManage.getMerchantAvailableTimeApi(serviceType, merchants);
 		if(merchantApiMap == null || merchantApiMap.size() == 0){
@@ -110,7 +110,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			//执行请求，非阻塞方式
 			OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(entry.getKey(), resultParser);
 			handlers.add(handler);
-			Map<String, String> param = paramParser.getServiceAvailableTimeParam(entry.getKey(), serviceType, cityId, longitude, latitude, api.getVersion());
+			Map<String, String> param = paramParser.getServiceAvailableTimeParam(entry.getKey(), serviceType, cityId, longitude, latitude, api.getVersion(),categoryId,amount);
 		    this.executeHttpRequst(api, param, handler, HTTP_GET);
 		}
 		//解析并合并结果
@@ -148,7 +148,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 
 	@Override
 	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, long gid, String longitude,
-			String latitude, String serviceStartTime) {
+			String latitude, String serviceStartTime, int categoryId , int amount) {
 		//查询小区信息
 		Group group = this.groupManage.getGroupInfoByGid(gid);
 		if(group == null){
@@ -178,7 +178,8 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		}
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
-		Map<String, String> param = paramParser.isServiceAvailableParam(merchant, serviceType, group.getCityId(), longitude, latitude, serviceStartTime, api.getVersion());
+		Map<String, String> param = paramParser.isServiceAvailableParam(merchant, serviceType, group.getCityId(), longitude, latitude,
+				serviceStartTime, api.getVersion(), categoryId , amount);
 		this.executeHttpRequst(api, param, handler, HTTP_GET);
 		String content = handler.get();
 		if(content == null || content.isEmpty()){

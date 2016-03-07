@@ -23,7 +23,7 @@ public interface HomeServProviderService {
 	 * @param merchants
 	 * @return
 	 */
-	public HomeResponse getServiceAvailableTime(int serviceType,  int cityId, String longitude, String latitude, List<Merchant> merchants);
+	public HomeResponse getServiceAvailableTime(int serviceType,  int cityId, String longitude, String latitude, List<Merchant> merchants, int categoryId , int amount);
 	
 	/**
 	 * @param serviceType 上门服务业务类型
@@ -33,7 +33,7 @@ public interface HomeServProviderService {
 	 * @param latitude 高德坐标纬度
 	 * @return
 	 */
-	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, long gid, String longitude, String latitude,String serviceStartTime);
+	public HomeResponse isServiceAvailable(Merchant merchant, int serviceType, int goodsId, long gid, String longitude, String latitude,String serviceStartTime, int categoryId , int amount);
 	
 	/**
 	 * 创建订单

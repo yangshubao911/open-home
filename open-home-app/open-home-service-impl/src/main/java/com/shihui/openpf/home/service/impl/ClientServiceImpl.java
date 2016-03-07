@@ -421,7 +421,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         HomeResponse homeResponse = homeServProviderService.getServiceAvailableTime(serviceId, cityId,
-                longitude, latitude, available_merchants);
+                longitude, latitude, available_merchants,goods.getCategoryId(),1);
 
         if (homeResponse.getCode() != 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
@@ -626,7 +626,7 @@ public class ClientServiceImpl implements ClientService {
             homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
                     orderForm.getServiceId(), orderForm.getCategoryId(),
                     orderForm.getGroupId(), orderForm.getLongitude(),
-                    orderForm.getLatitude(), orderForm.getServiceTime());
+                    orderForm.getLatitude(), orderForm.getServiceTime(),goods.getCategoryId(),1);
 
             if (homeResponse.getCode() != 0) {
                 choiceMap.remove(choice_merchantId);
