@@ -452,8 +452,8 @@ public class OrderManageImpl implements OrderManage {
             switch (statusEnum) {
 
                 case OrderConfirmed:
-                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderUnConfirm.getValue()) {
-                        return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
+                    if (db_statusEnum.getValue() != HomeOrderStatusEnum.OrderUnConfirm.getValue()) {
+                        return buildHomeResponse(1, "状态流转错误");
                     }
                     boolean updateRequest = updateRequest(orderId, statusEnum.getValue());
 
@@ -462,17 +462,17 @@ public class OrderManageImpl implements OrderManage {
                                 StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
-                            return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                            return buildHomeResponse(0, "success");
                         } else {
-                            return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                            return buildHomeResponse(1, "更新失败");
                         }
 
                     } else {
-                        return JSONObject.toJSONString(new YjzUpdateResult(1, "更新失败", new String[0]));
+                        return buildHomeResponse(1,"更新失败");
                     }
                 case OrderComplete:
-                    if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderConfirmed.getValue()) {
-                        return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
+                    if (db_statusEnum.getValue() != HomeOrderStatusEnum.OrderConfirmed.getValue()) {
+                       return buildHomeResponse(1, "状态流转错误");
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
                     if (updateRequest1) {
@@ -480,13 +480,13 @@ public class OrderManageImpl implements OrderManage {
                                 OrderStatusEnum.OrderHadReceived.getValue());
 
                         if (success) {
-                            return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                            return buildHomeResponse(0, "success");
                         } else {
-                            return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                            return buildHomeResponse(1, "更新订单失败");
                         }
 
                     } else {
-                        return JSONObject.toJSONString(new YjzUpdateResult(1, "更新失败", new String[0]));
+                        return buildHomeResponse(1,"更新订单失败");
                     }
 
                 case OrderCancel:
@@ -506,13 +506,13 @@ public class OrderManageImpl implements OrderManage {
                                 request1.setRequestStatus(statusEnum.getValue());
                                 boolean update_status = requestService.updateStatus(request1);
                                 if (update_status) {
-                                    return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
+                                    return buildHomeResponse(0,"success");
                                 } else {
-                                    return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                                    return buildHomeResponse(1,"更新订单失败");
                                 }
 
                             } else {
-                                return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
+                                return buildHomeResponse(1,"更新订单失败");
                             }
                         case OrderConfirmed:
                             //不允许取消
@@ -520,8 +520,7 @@ public class OrderManageImpl implements OrderManage {
                             //不允许取消
                     }
                 default:
-                    return JSONObject.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
-
+                    return buildHomeResponse(1,"状态流转错误");
 
             }
         } catch (Exception e) {
