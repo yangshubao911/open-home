@@ -48,12 +48,14 @@ public class HomeMsgRetryConsumer implements Consumer {
 	 */
 	@Override
 	public boolean doit(String topic, String tags, String key, String msg) {
-		HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
-		if(System.currentTimeMillis() - homeMsg.getTimestamp().getTime() < waitTime * 1000)//若间隔时间未到不执行请求
-			return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
-		
 		HomeResponse response = null;
+		
 		try {
+			HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
+			if(System.currentTimeMillis() - homeMsg.getTimestamp().getTime() < waitTime * 1000)//若间隔时间未到不执行请求
+				return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
+			
+			
 			Merchant merchant = merchantManage.getById(homeMsg.getMerchantId());
 			if(homeMsg.getMerchantApiName() == MerchantApiName.CANCEL_ORDER){
 				response = homeServProviderService.cancelOrder(merchant, homeMsg.getServiceId(), homeMsg.getThirdOrderId());
@@ -75,6 +77,8 @@ public class HomeMsgRetryConsumer implements Consumer {
 					homeMsg.setTimestamp(now);
 					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
 				}
+			} else {
+				log.error("订单处理调用第三方接口失败，未返回信息，order_id={}, merchant_id={}, merchant_api_name={}", homeMsg.getOrderId(), homeMsg.getMerchantId(), homeMsg.getMerchantApiName().name());
 			}
 		} catch (Exception e) {
 			log.error("MQ消息处理异常，消息队列名称：{}，消息：{}", Topic.Open_Home_Pay_Notice.getValue(), msg, e);
