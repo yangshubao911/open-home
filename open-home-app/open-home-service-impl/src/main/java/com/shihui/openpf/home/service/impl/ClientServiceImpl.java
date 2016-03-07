@@ -437,9 +437,9 @@ public class ClientServiceImpl implements ClientService {
         for (int i = 0; i < jsonArray.size(); i++) {
             try {
                 JSONObject results = jsonArray.getJSONObject(i);
-                JSONObject json_rs = results.getJSONObject("result");
+
                 Integer merchant_id = results.getInteger("merchant_id");
-                JSONArray jsonArray_times = json_rs.getJSONArray("times");
+                JSONArray jsonArray_times = results.getJSONArray("times");
                 Set<String> daySet = new HashSet<>();
                 for (int j = 0; j < jsonArray_times.size(); j++) {
                     JSONObject time = jsonArray_times.getJSONObject(j);

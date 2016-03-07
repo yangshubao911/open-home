@@ -43,9 +43,9 @@ public class YunjiazhengResultParser implements ResultParser {
 		response.setMsg(jo.getString("msg"));
 		
 		if(code == 0){
-			JSONObject resultJo = new JSONObject();
+			//JSONArray resultJo = new JSONArray();
 			JSONObject times = new JSONObject();
-			resultJo.put("result", times);
+			/*resultJo.put("result", times);*/
 
 			JSONArray timelist = jo.getJSONObject("body").getJSONArray("timeList");
 
@@ -55,11 +55,13 @@ public class YunjiazhengResultParser implements ResultParser {
 				date = date.replace("-","");
 				jsonObject.remove("date");
 				jsonObject.put("date",date);
+
+
 			}
 
-			times.put("times",timelist);
+			times.put("times", timelist);
 			
-			response.setResult(resultJo.toJSONString());
+			response.setResult(times.toJSONString());
 		}
 		return response;
 	}
