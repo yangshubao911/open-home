@@ -459,7 +459,7 @@ public class OrderManageImpl implements OrderManage {
 
                     if (updateRequest) {
                         boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
-                                StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderUnStockOut.getValue());
+                                StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
                             return buildHomeResponse(0, "success");
