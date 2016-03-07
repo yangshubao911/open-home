@@ -25,14 +25,14 @@ public class GoodsCache {
     /**
      * 增加商品分类销售数量
      *
-     * @param categoryId 分类ID
+     * @param goodsId 商品Id
      * @return
      */
-    public Long increaseSell(int categoryId) {
+    public Long increaseSell(long goodsId) {
         ShardedJedis jedis = null;
         try {
             String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
-                    Constants.REDIS_KEY_SEPARATOR + categoryId;
+                    Constants.REDIS_KEY_SEPARATOR + goodsId;
             jedis = jedisPool.getResource();
             return jedis.incr(key);
         } catch (Exception e) {
@@ -48,16 +48,18 @@ public class GoodsCache {
     /**
      * 查询商品分类销售数量
      *
-     * @param categoryId 分类ID
+     * @param goodsId 商品Id
      * @return
      */
-    public Long querySell(int categoryId) {
+    public Long querySell(long goodsId) {
         ShardedJedis jedis = null;
         try {
             String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
-                    Constants.REDIS_KEY_SEPARATOR + categoryId;
+                    Constants.REDIS_KEY_SEPARATOR + goodsId;
             jedis = jedisPool.getResource();
-            return Long.parseLong(jedis.get(key));
+            String value = jedis.get(key);
+            if(value==null) return 0l;
+            return Long.parseLong(value);
         } catch (Exception e) {
             log.error("GoodsCache querySell error!!", e);
         } finally {
