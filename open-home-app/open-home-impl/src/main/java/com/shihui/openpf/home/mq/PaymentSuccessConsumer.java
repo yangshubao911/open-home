@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.common.enums.OrderTypeEnum;
 import com.shihui.commons.mq.RocketProducer;
@@ -35,24 +36,30 @@ public class PaymentSuccessConsumer implements Consumer {
 	@Resource(name = "openHomeMQProducer")
 	private RocketProducer openHomeMQProducer;
 
-	@Resource(name="openOrderService")
+	@Resource(name = "openOrderService")
 	private OrderService orderService;
-	
+
 	@Resource
 	private RequestService requestService;
 
 	@Override
 	public boolean doit(String topic, String tags, String key, String msg) {
-
-		com.shihui.api.order.po.Order order_vo = JSON.parseObject(msg, com.shihui.api.order.po.Order.class);
-		long orderId = order_vo.getOrderId();
-		OrderStatusEnum status = order_vo.getOrderStatus();
-		OrderTypeEnum orderTypeEnum = order_vo.getOrderType();
-		if (orderTypeEnum.compareTo(OrderTypeEnum.DoorTDoor) != 0) {
-			return true;
-		}
-
 		try {
+			JSONObject jo = JSONObject.parseObject(msg);
+			JSONObject orderJo = jo.getJSONObject("order");
+			if (orderJo == null) {
+				log.warn("订单消息无法处理，msg={}", msg);
+				return true;
+			}
+
+			com.shihui.api.order.po.Order order_vo = jo.getObject("order", com.shihui.api.order.po.Order.class);
+			long orderId = order_vo.getOrderId();
+			OrderStatusEnum status = order_vo.getOrderStatus();
+			OrderTypeEnum orderTypeEnum = order_vo.getOrderType();
+			if (orderTypeEnum.compareTo(OrderTypeEnum.DoorTDoor) != 0) {
+				return true;
+			}
+
 			Order order = orderService.queryOrder(orderId);
 			if (order == null) {
 				return true;
@@ -60,9 +67,9 @@ public class PaymentSuccessConsumer implements Consumer {
 				Request request = requestService.queryOrderRequest(orderId);
 				// 更新订单状态
 				orderService.updateOrder(orderId, status);
-				
+
 				if (status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.OrderCloseByOutTime
-						|| status == OrderStatusEnum.BackClose) {//取消订单
+						|| status == OrderStatusEnum.BackClose) {// 取消订单
 					HomeMQMsg homeMsg = new HomeMQMsg();
 					homeMsg.setGoodsId(order.getGoodsId());
 					homeMsg.setMerchantId(order.getMerchantId());
@@ -71,10 +78,11 @@ public class PaymentSuccessConsumer implements Consumer {
 					homeMsg.setServiceId(order.getService_id());
 					homeMsg.setMerchantApiName(MerchantApiName.CANCEL_ORDER);
 					homeMsg.setThirdOrderId(request.getRequestId());
-					
-					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId), JSON.toJSONString(homeMsg));
-                    
-				} else if(status == OrderStatusEnum.OrderUnStockOut) {//支付通知
+
+					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId),
+							JSON.toJSONString(homeMsg));
+
+				} else if (status == OrderStatusEnum.OrderUnStockOut) {// 支付通知
 					HomeMQMsg homeMsg = new HomeMQMsg();
 					homeMsg.setGoodsId(order.getGoodsId());
 					homeMsg.setMerchantId(order.getMerchantId());
@@ -83,10 +91,11 @@ public class PaymentSuccessConsumer implements Consumer {
 					homeMsg.setServiceId(order.getService_id());
 					homeMsg.setMerchantApiName(MerchantApiName.PAY_NOTICE);
 					homeMsg.setThirdOrderId(request.getRequestId());
-					
-					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId), JSON.toJSONString(homeMsg));
+
+					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId),
+							JSON.toJSONString(homeMsg));
 				} else {
-					return true;//默认消息正确处理
+					return true;// 默认消息正确处理
 				}
 			}
 		} catch (Exception e) {

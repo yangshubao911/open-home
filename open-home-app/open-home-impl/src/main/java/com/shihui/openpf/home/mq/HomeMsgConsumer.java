@@ -44,9 +44,10 @@ public class HomeMsgConsumer implements Consumer {
 	 */
 	@Override
 	public boolean doit(String topic, String tags, String key, String msg) {
-		HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
 		HomeResponse response = null;
 		try {
+			HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
+			
 			Merchant merchant = merchantManage.getById(homeMsg.getMerchantId());
 			if(homeMsg.getMerchantApiName() == MerchantApiName.CANCEL_ORDER){
 				response = homeServProviderService.cancelOrder(merchant, homeMsg.getServiceId(), homeMsg.getThirdOrderId());
