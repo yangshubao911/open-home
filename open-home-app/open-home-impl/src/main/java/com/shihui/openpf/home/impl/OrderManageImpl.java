@@ -447,7 +447,7 @@ public class OrderManageImpl implements OrderManage {
 
             OrderCancelType orderCancelType = null;
             Integer order_status = order.getOrderStatus();
-            HomeOrderStatusEnum db_statusEnum = HomeOrderStatusEnum.parse(order_status);
+            HomeOrderStatusEnum db_statusEnum = HomeOrderStatusEnum.parse(db_request.getRequestStatus());
             HomeOrderStatusEnum statusEnum = HomeOrderStatusEnum.parse(status);
             switch (statusEnum) {
 
