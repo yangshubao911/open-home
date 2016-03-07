@@ -449,6 +449,10 @@ public class OrderManageImpl implements OrderManage {
             Integer order_status = order.getOrderStatus();
             HomeOrderStatusEnum db_statusEnum = HomeOrderStatusEnum.parse(db_request.getRequestStatus());
             HomeOrderStatusEnum statusEnum = HomeOrderStatusEnum.parse(status);
+            JSONObject settlementJson = new JSONObject();
+            settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
+            settlementJson.put("settleMerchantId", merchant.getMerchantCode());
+
             switch (statusEnum) {
 
                 case OrderConfirmed:
@@ -457,9 +461,6 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest = updateRequest(orderId, statusEnum.getValue());
 
-                    JSONObject settlementJson = new JSONObject();
-                    settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
-                    settlementJson.put("settleMerchantId", merchant.getMerchantCode());
 
 
 
@@ -482,7 +483,7 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
                     if (updateRequest1) {
-                        boolean success = openService.complete(order.getOrderId(), merchantGoods.getSettlement(),
+                        boolean success = openService.complete(order.getOrderId(), settlementJson.toString(),
                                 OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
