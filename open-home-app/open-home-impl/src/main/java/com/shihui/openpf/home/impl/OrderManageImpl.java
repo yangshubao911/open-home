@@ -465,7 +465,7 @@ public class OrderManageImpl implements OrderManage {
 
                     if (updateRequest) {
                         boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
-                                settlementJson.toString(), OrderStatusEnum.OrderDistribute.getValue());
+                                settlementJson.toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
                             return buildHomeResponse(0, "success");
@@ -483,7 +483,7 @@ public class OrderManageImpl implements OrderManage {
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
                     if (updateRequest1) {
                         boolean success = openService.complete(order.getOrderId(), merchantGoods.getSettlement(),
-                                OrderStatusEnum.OrderHadReceived.getValue());
+                                OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
                             return buildHomeResponse(0, "success");
