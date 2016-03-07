@@ -75,7 +75,7 @@ public class HomeMsgRetryConsumer implements Consumer {
 					log.info("订单处理调用第三方接口成功，order_id={}, merchant_id={}, merchant_api_name={}", homeMsg.getOrderId(), homeMsg.getMerchantId(), homeMsg.getMerchantApiName().name());
 					return true;
 				}else{
-					log.warn("订单处理调用第三方接口失败，order_id={}, merchant_id={}, merchant_api_name={}, 返回信息：{}", homeMsg.getOrderId(), homeMsg.getMerchantId(), homeMsg.getMerchantApiName().name(), response.getMsg());
+					log.warn("订单处理调用第三方接口失败，order_id={}, merchant_id={}, merchant_api_name={}, 返回信息：{}", homeMsg.getOrderId(), homeMsg.getMerchantId(), homeMsg.getMerchantApiName().name(), response);
 					//加入重试队列重试
 					Date now = new Date();
 					homeMsg.setTimestamp(now);
