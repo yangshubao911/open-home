@@ -465,7 +465,7 @@ public class OrderManageImpl implements OrderManage {
 
 
                     if (updateRequest) {
-                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
+                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),order.getGoodsId(),
                                 settlementJson.toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
@@ -483,7 +483,7 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
                     if (updateRequest1) {
-                        boolean success = openService.complete(order.getOrderId(), settlementJson.toString(),
+                        boolean success = openService.complete(order.getOrderId(), order.getGoodsId(), settlementJson.toString(),
                                 OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
@@ -892,7 +892,7 @@ public class OrderManageImpl implements OrderManage {
                     boolean updateRequest = updateRequest(orderId, statusEnum.getServerValue());
 
                     if (updateRequest) {
-                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
+                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), order.getGoodsId(),
                                 StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
@@ -910,7 +910,7 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getServerValue());
                     if (updateRequest1) {
-                        boolean success = openService.complete(order.getOrderId(), merchantGoods.getSettlement(),
+                        boolean success = openService.complete(order.getOrderId(),order.getGoodsId(), merchantGoods.getSettlement(),
                                 OrderStatusEnum.OrderHadReceived.getValue());
 
                         if (success) {
