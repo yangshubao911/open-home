@@ -53,20 +53,20 @@ public class HomeMsgConsumer implements Consumer {
 			}else if(homeMsg.getMerchantApiName() == MerchantApiName.PAY_NOTICE){
 				response = homeServProviderService.payNotice(merchant, homeMsg.getServiceId(), homeMsg.getThirdOrderId(), homeMsg.getPrice());
 			}else{
-				log.warn("MQ消息没有对应处理方式，消息队列名称：{}，消息：{}", Topic.Open_Home_Pay_Notice.getValue(), msg);
+				log.warn("MQ消息没有对应处理方式，消息队列名称：{}，消息：{}", Topic.Open_Home_Pay_Notice.name(), msg);
 				return false;
 			}
 			
 			if(response != null){
 				if(response.getCode() == 0){
-					log.info("订单取消调用第三方接口成功，order_id={}, merchant_id={}", homeMsg.getOrderId(), homeMsg.getMerchantId());
+					log.info("订单处理调用第三方接口成功，order_id={}, merchant_id={}, merchant_api_name={}", homeMsg.getOrderId(), homeMsg.getMerchantId(), homeMsg.getMerchantApiName().name());
 					return true;
 				}else{
-					log.warn("订单取消调用第三方接口失败，order_id={}, merchant_id={}, 返回信息：{}", homeMsg.getOrderId(), homeMsg.getMerchantId(), response.getMsg());
+					log.warn("订单处理调用第三方接口失败，order_id={}, merchant_id={}, merchant_api_name={}, 返回信息：{}", homeMsg.getOrderId(), homeMsg.getMerchantId(), homeMsg.getMerchantApiName().name(), response.getMsg());
 					//加入重试队列重试
 					Date now = new Date();
-					
-					return true;
+					homeMsg.setTimestamp(now);
+					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
 				}
 			}
 		} catch (Exception e) {
