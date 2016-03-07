@@ -4,6 +4,7 @@
 package com.shihui.openpf.home.mq;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -52,8 +53,11 @@ public class HomeMsgRetryConsumer implements Consumer {
 		
 		try {
 			HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
-			if(System.currentTimeMillis() - homeMsg.getTimestamp().getTime() < waitTime * 1000)//若间隔时间未到不执行请求
+			if(System.currentTimeMillis() - homeMsg.getTimestamp().getTime() < waitTime * 1000){
+				//若间隔时间未到不执行请求
+				TimeUnit.MILLISECONDS.sleep(1000);
 				return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
+			}
 			
 			
 			Merchant merchant = merchantManage.getById(homeMsg.getMerchantId());

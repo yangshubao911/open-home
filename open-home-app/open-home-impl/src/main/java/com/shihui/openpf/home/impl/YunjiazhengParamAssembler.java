@@ -17,8 +17,6 @@ import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.ParamAssembler;
 import com.shihui.openpf.home.model.OrderInfo;
 
-import scala.annotation.meta.param;
-
 /**
  * @author zhouqisheng
  * @date 2016年2月22日 下午4:19:02
