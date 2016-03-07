@@ -435,7 +435,7 @@ public class OrderManageImpl implements OrderManage {
             if (db_request == null) {
                 return buildHomeResponse(3001, "未查询到订单");
             }
-            Order order = orderService.queryOrder(request.getOrderId());
+            Order order = orderService.queryOrder(db_request.getOrderId());
             if (order == null) {
                 return buildHomeResponse(3001, "未查询到订单");
             }
