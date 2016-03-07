@@ -6,6 +6,7 @@ import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.service.OpenService;
 import com.shihui.api.order.service.OrderService;
 import com.shihui.api.order.vo.ApiResult;
+import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.api.order.vo.SingleGoodsCreateOrderParam;
 import com.shihui.openpf.home.http.FastHttpUtils;
 import com.shihui.openpf.home.http.HttpCallbackHandler;
@@ -29,7 +30,7 @@ public class OrderSystemServiceImpl implements OrderSystemService {
     @Resource
     OpenService openService;
 
-    @Resource(name="omsOrderService")
+    @Resource(name = "omsOrderService")
     OrderService orderService;
 
     @Override
@@ -38,29 +39,73 @@ public class OrderSystemServiceImpl implements OrderSystemService {
         CloseableHttpAsyncClient client = FastHttpUtils.defaultHttpAsyncClient();
         List<HttpCallbackHandler<String>> rs = new ArrayList<>();
 
-        try{
-            ApiResult result =  openService.createOrder(singleGoodsCreateOrderParam);
+        try {
+            ApiResult result = openService.createOrder(singleGoodsCreateOrderParam);
             String json = JSON.toJSONString(result);
             log.info(json);
-            return  result;
-        }catch (Exception e){
-           log.error("OrderSystemServiceImpl userId：{} submitOrder error",singleGoodsCreateOrderParam.getUserId(),e);
+            return result;
+        } catch (Exception e) {
+            log.error("OrderSystemServiceImpl userId：{} submitOrder error", singleGoodsCreateOrderParam.getUserId(), e);
         }
         return null;
     }
 
     @Override
-    public boolean merchantCancelOrder(long orderId , OrderStatusEnum orderStatus , int operatorId) {
+    public boolean merchantCancelOrder(long orderId, OrderStatusEnum orderStatus, int operatorId) {
         try {
-            JSONObject jsonObject = orderService.internalMerchantCancleOrder( orderId,  orderStatus,  operatorId);
+            JSONObject jsonObject = orderService.internalMerchantCancleOrder(orderId, orderStatus, operatorId);
 
-            if(jsonObject.getInteger("result_status")==1){
+            if (jsonObject.getInteger("result_status") == 1) {
                 return true;
             }
 
-        }catch (Exception e){
-             log.error("merchantCancelOrder -- orderId:{} cancel error!!!",orderId,e);
+        } catch (Exception e) {
+            log.error("merchantCancelOrder -- orderId:{} cancel error!!!", orderId, e);
         }
         return false;
+    }
+
+    @Override
+    public boolean success(int orderType, long orderId, long goodsId, String settlementInfo, int nowStatus) {
+        try {
+            boolean result = openService.success(orderType, orderId, goodsId, settlementInfo, nowStatus);
+            return result;
+        } catch (Exception e) {
+            log.error("success exception !!!", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean complete(long orderId, long goodsId, String settlementInfo, int nowStatus) {
+        try {
+            boolean result = openService.complete(orderId, goodsId, settlementInfo, nowStatus);
+            return result;
+        } catch (Exception e) {
+            log.error("complete exception !!!", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean fail(int orderType , long orderId, long goodsId, long merchantCode,long refundsPrice,int nowStatus, String reason) {
+        try {
+            boolean result = openService.fail(orderType, orderId, goodsId ,merchantCode, refundsPrice, nowStatus, reason);
+            return result;
+        } catch (Exception e) {
+            log.error("complete exception !!!", e);
+        }
+        return false;
+    }
+
+    @Override
+    public SimpleResult backendOrderDetail(long orderId) {
+        try {
+            SimpleResult simpleResult = openService.backendOrderDetail(orderId);
+            return simpleResult;
+        } catch (Exception e) {
+            log.error("backendOrderDetail exception !!!", e);
+        }
+        return null;
     }
 }

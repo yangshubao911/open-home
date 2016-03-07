@@ -78,8 +78,6 @@ public class OrderManageImpl implements OrderManage {
     @Resource
     GroupManage groupManage;
 
-    @Resource
-    OpenService openService;
 
     @Resource
     OrderSystemService orderSystemService;
@@ -461,11 +459,8 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest = updateRequest(orderId, statusEnum.getValue());
 
-
-
-
                     if (updateRequest) {
-                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),order.getGoodsId(),
+                        boolean success = orderSystemService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),order.getGoodsId(),
                                 settlementJson.toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
@@ -483,7 +478,7 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
                     if (updateRequest1) {
-                        boolean success = openService.complete(order.getOrderId(), order.getGoodsId(), settlementJson.toString(),
+                        boolean success = orderSystemService.complete(order.getOrderId(), order.getGoodsId(), settlementJson.toString(),
                                 OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
@@ -506,7 +501,8 @@ public class OrderManageImpl implements OrderManage {
 
                         case OrderUnConfirm:
                             //商户取消订单流程
-                            boolean cancel = openService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), refundsPrice, status);
+                            boolean cancel = orderSystemService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), order.getGoodsId(),
+                                    merchant.getMerchantCode(),refundsPrice, status, "商户发起取消");
                             if (cancel) {
                                 Request request1 = new Request();
                                 request1.setRequestId(orderId);
@@ -561,7 +557,7 @@ public class OrderManageImpl implements OrderManage {
         if (orderCancelType == null) return buildHomeResponse(1004, "其他错误");
         //Order order = orderService.queryOrder(orderId);
         long orderId = order.getOrderId();
-        com.shihui.api.order.vo.SimpleResult orderDetailVo = openService.backendOrderDetail(orderId);
+        com.shihui.api.order.vo.SimpleResult orderDetailVo = orderSystemService.backendOrderDetail(orderId);
         if (order == null || orderDetailVo == null)
             return buildHomeResponse(3001, "未查询到订单");
 
@@ -884,6 +880,11 @@ public class OrderManageImpl implements OrderManage {
             YjzOrderStatusEnum db_statusEnum = YjzOrderStatusEnum.parseServerValues(request.getRequestStatus());
             YjzOrderStatusEnum statusEnum = YjzOrderStatusEnum.parse(status);
 
+
+            JSONObject settlementJson = new JSONObject();
+            settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
+            settlementJson.put("settleMerchantId", merchant.getMerchantCode());
+
             switch (statusEnum) {
                 case OrderConfirmed:
                     if (db_statusEnum.getValue() != YjzOrderStatusEnum.OrderUnConfirm.getValue()) {
@@ -892,8 +893,8 @@ public class OrderManageImpl implements OrderManage {
                     boolean updateRequest = updateRequest(orderId, statusEnum.getServerValue());
 
                     if (updateRequest) {
-                        boolean success = openService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), order.getGoodsId(),
-                                StringUtil.yuan2hao(merchantGoods.getSettlement()).toString(), OrderStatusEnum.OrderUnStockOut.getValue());
+                        boolean success = orderSystemService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), order.getGoodsId(),
+                                settlementJson.toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
                             return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
@@ -910,7 +911,7 @@ public class OrderManageImpl implements OrderManage {
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getServerValue());
                     if (updateRequest1) {
-                        boolean success = openService.complete(order.getOrderId(),order.getGoodsId(), merchantGoods.getSettlement(),
+                        boolean success = orderSystemService.complete(order.getOrderId(),order.getGoodsId(), settlementJson.toJSONString(),
                                 OrderStatusEnum.OrderHadReceived.getValue());
 
                         if (success) {
@@ -933,7 +934,8 @@ public class OrderManageImpl implements OrderManage {
 
                         case OrderUnConfirm:
                             //商户取消订单流程
-                            boolean cancel = openService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), refundsPrice, status);
+                            boolean cancel = orderSystemService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(), order.getGoodsId(),
+                                    merchant.getMerchantCode(),refundsPrice, status, "商户发起取消");
                             if (cancel) {
                                 Request request1 = new Request();
                                 request1.setRequestId(orderId);
