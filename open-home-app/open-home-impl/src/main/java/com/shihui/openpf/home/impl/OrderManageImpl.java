@@ -414,8 +414,8 @@ public class OrderManageImpl implements OrderManage {
             if (merchantBusiness == null) {
                 return buildHomeResponse(2003, "服务类型不支持");
             }
-            if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != -1 ||
-                    merchantBusiness.getStatus() != -1) {
+            if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1 ||
+                    merchantBusiness.getStatus() != 1) {
                 return buildHomeResponse(2003, "服务类型不支持");
             }
 
