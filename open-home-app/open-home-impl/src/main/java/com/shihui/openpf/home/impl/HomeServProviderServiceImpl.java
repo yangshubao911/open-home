@@ -52,7 +52,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	
 	private static final int HTTP_GET = 1;
 	
-	private Logger log = LoggerFactory.getLogger("thirdapi");
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private CloseableHttpAsyncClient httpClient;
 	private Map<String,ParamAssembler> paramAssemblerMap = new HashMap<>();
 	private Map<String,ResultParser> resultParserMap = new HashMap<>();
