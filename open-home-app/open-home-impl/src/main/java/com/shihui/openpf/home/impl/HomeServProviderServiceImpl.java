@@ -99,6 +99,11 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			MerchantApi api = entry.getValue();
 			ParamAssembler paramParser = null;
 			ResultParser resultParser = null;
+
+			if(api==null) {
+				log.info("merchant:{} can't find api info!!!" + entry.getKey().getMerchantId());
+				continue;
+			}
 			//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
 			if(api.getAdapterName() == null || api.getAdapterName().isEmpty()){
 				paramParser = this.paramAssemblerMap.get(DEFAULT_ADAPTER);
