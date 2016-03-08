@@ -69,12 +69,12 @@ public class PaymentSuccessConsumer implements Consumer {
 				orderService.updateOrder(orderId, status);
 
 				Request request_update =new Request();
-				request.setRequestId(request.getRequestId());
-				request.setMerchantId(request.getMerchantId());
+				request_update.setRequestId(request.getRequestId());
+				request_update.setMerchantId(request.getMerchantId());
 
 				int third_status = OrderMappingEnum.parse(status.getValue()).getHomeValue();
 				if(third_status == HomeOrderStatusEnum.OrderUnConfirm.getValue()) {
-					request.setRequestStatus(third_status);
+					request_update.setRequestStatus(third_status);
 					requestService.updateStatus(request_update);
 				}
 
