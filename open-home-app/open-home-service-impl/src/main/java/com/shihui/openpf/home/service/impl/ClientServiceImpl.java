@@ -666,7 +666,8 @@ public class ClientServiceImpl implements ClientService {
         orderInfo.setCityId(cityId);
         orderInfo.setContactName(orderForm.getContactName());
         orderInfo.setDetailAddress(orderForm.getDetailAddress());
-        orderInfo.setExtend(null);
+        Map<String,Object> extMap = new HashMap<>();
+        orderInfo.setExtend(extMap);
         orderInfo.setGoodsId(orderForm.getGoodsId());
         orderInfo.setLatitude(orderForm.getLatitude());
         orderInfo.setLongitude(orderForm.getLongitude());
@@ -675,7 +676,7 @@ public class ClientServiceImpl implements ClientService {
         orderInfo.setRemark(orderForm.getRemark());
         orderInfo.setServiceAddress(orderForm.getServiceAddress());
         orderInfo.setServiceStartTime(orderForm.getServiceTime());
-        
+
         Merchant selectedMer = merchantMap.get(merchantId);
 
         HomeResponse create_third_part = homeServProviderService.createOrder(selectedMer, goods.getServiceId(), orderInfo);
