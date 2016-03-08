@@ -620,12 +620,14 @@ public class ClientServiceImpl implements ClientService {
         long time = System.currentTimeMillis();
         HomeResponse homeResponse = null;
         Integer merchantId = null;
+
+        String serviceStartTime = orderForm.getServiceTime().substring(0,4) + "-" + orderForm.getServiceTime().substring(4,6) +
+                "-" + orderForm.getServiceTime().substring(6,8) + " " + orderForm.getServiceTime().substring(8,10)
+                + ":" + orderForm.getServiceTime().substring(10,12) + ":00";
         while (choiceMap.size() > 0) {
             int choice_merchantId = ChoiceMerhantUtil.choiceMerchant(choiceMap);
 
-            String serviceStartTime = orderForm.getServiceTime().substring(0,4) + "-" + orderForm.getServiceTime().substring(4,6) +
-            "-" + orderForm.getServiceTime().substring(6,8) + " " + orderForm.getServiceTime().substring(8,10)
-                    + ":" + orderForm.getServiceTime().substring(10,12) + ":00";
+
 
             homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
                     orderForm.getServiceId(), orderForm.getCategoryId(),
@@ -678,7 +680,7 @@ public class ClientServiceImpl implements ClientService {
         else
             orderInfo.setRemark(orderForm.getRemark());
         orderInfo.setServiceAddress(orderForm.getServiceAddress());
-        orderInfo.setServiceStartTime(orderForm.getServiceTime());
+        orderInfo.setServiceStartTime(serviceStartTime);
 
         Merchant selectedMer = merchantMap.get(merchantId);
 
