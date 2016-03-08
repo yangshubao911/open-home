@@ -21,6 +21,8 @@ public enum  OrderMappingEnum {
     private String name;
     private Integer homeValue;
 
+
+
     OrderMappingEnum(Integer value,  Integer homeValue, String name) {
         this.value = value;
         this.name = name;
@@ -28,6 +30,12 @@ public enum  OrderMappingEnum {
     }
 
     private static Map<Integer, OrderMappingEnum> values = new HashMap<>();
+
+    static{
+        for(OrderMappingEnum orderMappingEnum: OrderMappingEnum.values()){
+            values.put(orderMappingEnum.value,orderMappingEnum);
+        }
+    }
 
     public Integer getValue(){return value;}
     public String getName(){return name;}
