@@ -477,7 +477,8 @@ public class ClientServiceImpl implements ClientService {
                             }
                         }
                     }
-
+                    Map<String, String> times_map =  result_times_map.get(json_date);
+                    if(times_map==null || times_map.size()==0) result_days.remove(json_date);
                 }
 
             } catch (Exception e) {
