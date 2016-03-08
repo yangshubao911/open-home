@@ -670,7 +670,7 @@ public class ClientServiceImpl implements ClientService {
         orderInfo.setDetailAddress(orderForm.getDetailAddress());
         Map<String,Object> extMap = new HashMap<>();
         orderInfo.setExtend(extMap);
-        orderInfo.setGoodsId(orderForm.getGoodsId());
+        orderInfo.setGoodsId(orderForm.getCategoryId());
         orderInfo.setLatitude(orderForm.getLatitude());
         orderInfo.setLongitude(orderForm.getLongitude());
         orderInfo.setPhone(orderForm.getServicePhone());

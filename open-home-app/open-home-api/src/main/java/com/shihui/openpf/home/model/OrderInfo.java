@@ -21,7 +21,7 @@ public class OrderInfo {
 	private String serviceStartTime;
 	private String contactName;
 	private Integer amount;
-	private Long goodsId;
+	private Integer goodsId;
 	private String remark;
 	private String categoryExtend;
 	private Map<String, Object> extend;
@@ -106,11 +106,11 @@ public class OrderInfo {
 		this.amount = amount;
 	}
 
-	public Long getGoodsId() {
+	public Integer getGoodsId() {
 		return goodsId;
 	}
 
-	public void setGoodsId(Long goodsId) {
+	public void setGoodsId(Integer goodsId) {
 		this.goodsId = goodsId;
 	}
 
