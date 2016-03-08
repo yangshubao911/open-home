@@ -3,6 +3,7 @@
  */
 package com.shihui.openpf.home.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -71,7 +72,8 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 		co = LocalCoordConvertUtil.google2baidu(co);
 		param.put("longitude", String.valueOf(co.getLongitude()));
 		param.put("latitude", String.valueOf(co.getLatitude()));
-		param.put("serviceTime", serviceStartTime);
+		String serviceStartTime_formate = new SimpleDateFormat("yyyyMMddHHmm").format(serviceStartTime);
+		param.put("serviceTime", serviceStartTime_formate);
 		//基础参数
 		param.put("methodName", "canService");
 		param.put("pId", merchant.getMerchantKey());

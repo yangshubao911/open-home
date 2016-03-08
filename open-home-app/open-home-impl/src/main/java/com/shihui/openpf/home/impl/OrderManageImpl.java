@@ -12,7 +12,6 @@ import javax.annotation.Resource;
 
 import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.common.enums.OrderTypeEnum;
-import com.shihui.api.order.service.OpenService;
 import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.SignUtil;

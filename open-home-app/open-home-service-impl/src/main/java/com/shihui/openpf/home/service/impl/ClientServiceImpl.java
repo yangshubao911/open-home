@@ -623,10 +623,11 @@ public class ClientServiceImpl implements ClientService {
         while (choiceMap.size() > 0) {
             int choice_merchantId = ChoiceMerhantUtil.choiceMerchant(choiceMap);
 
+            String serviceStartTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderForm.getServiceTime()+"00");
             homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
                     orderForm.getServiceId(), orderForm.getCategoryId(),
                     orderForm.getGroupId(), orderForm.getLongitude(),
-                    orderForm.getLatitude(), orderForm.getServiceTime(),goods.getCategoryId(),1);
+                    orderForm.getLatitude(),serviceStartTime,goods.getCategoryId(),1);
 
             if (homeResponse.getCode() != 0) {
                 choiceMap.remove(choice_merchantId);
@@ -721,7 +722,6 @@ public class ClientServiceImpl implements ClientService {
             log.error("{} parse time error!", orderForm.getServiceTime(), e);
         }
         singleGoodsCreateOrderParam.setPlanStartTime(startTime);
-        singleGoodsCreateOrderParam.setPlanEndTime(0);
         singleGoodsCreateOrderParam.setPlanEndTime(0);
         if (StringUtil.isEmpty(orderForm.getRemark()))
             singleGoodsCreateOrderParam.setUserRemark("");
