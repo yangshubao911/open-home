@@ -83,6 +83,7 @@ public class DefaultParamAssembler implements ParamAssembler {
 		for(Entry<Object, Object> entry : set){
 			param.put(entry.getKey().toString(), entry.getValue().toString());
 		}
+		param.remove("class");
 		param.put("version", version);
 		//计算签名，必须最后计算
 		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
