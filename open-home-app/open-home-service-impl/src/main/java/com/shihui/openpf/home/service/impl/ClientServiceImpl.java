@@ -623,7 +623,10 @@ public class ClientServiceImpl implements ClientService {
         while (choiceMap.size() > 0) {
             int choice_merchantId = ChoiceMerhantUtil.choiceMerchant(choiceMap);
 
-            String serviceStartTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderForm.getServiceTime()+"00");
+            String serviceStartTime = orderForm.getServiceTime().substring(0,4) + "-" + orderForm.getServiceTime().substring(4,6) +
+            "-" + orderForm.getServiceTime().substring(6,8) + " " + orderForm.getServiceTime().substring(8,10)
+                    + ":" + orderForm.getServiceTime().substring(10,12) + ":00";
+
             homeResponse = homeServProviderService.isServiceAvailable(merchantMap.get(choice_merchantId),
                     orderForm.getServiceId(), orderForm.getCategoryId(),
                     orderForm.getGroupId(), orderForm.getLongitude(),
