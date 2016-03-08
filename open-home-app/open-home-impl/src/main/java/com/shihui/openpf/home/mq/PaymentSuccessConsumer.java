@@ -2,6 +2,7 @@ package com.shihui.openpf.home.mq;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.home.model.HomeOrderStatusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -65,8 +66,16 @@ public class PaymentSuccessConsumer implements Consumer {
 				return true;
 			} else {
 				Request request = requestService.queryOrderRequest(orderId);
+
+
 				// 更新订单状态
 				orderService.updateOrder(orderId, status);
+
+				Request request_update =new Request();
+				request.setRequestId(request.getRequestId());
+				request.setMerchantId(request.getMerchantId());
+				request.setRequestStatus(HomeOrderStatusEnum.OrderUnConfirm.getValue());
+				requestService.updateStatus(request);
 
 				if (status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.OrderCloseByOutTime
 						|| status == OrderStatusEnum.BackClose) {// 取消订单
