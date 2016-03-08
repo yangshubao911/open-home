@@ -2,7 +2,7 @@ package com.shihui.openpf.home.mq;
 
 import javax.annotation.Resource;
 
-import com.shihui.openpf.home.model.HomeOrderStatusEnum;
+import com.shihui.openpf.home.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,9 +16,6 @@ import com.shihui.commons.mq.annotation.ConsumerConfig;
 import com.shihui.commons.mq.api.Consumer;
 import com.shihui.commons.mq.api.Topic;
 import com.shihui.openpf.common.model.MerchantApiName;
-import com.shihui.openpf.home.model.HomeMQMsg;
-import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.RequestService;
 
@@ -71,11 +68,13 @@ public class PaymentSuccessConsumer implements Consumer {
 				// 更新订单状态
 				orderService.updateOrder(orderId, status);
 
-				Request request_update =new Request();
+				/*Request request_update =new Request();
 				request.setRequestId(request.getRequestId());
 				request.setMerchantId(request.getMerchantId());
-				request.setRequestStatus(HomeOrderStatusEnum.OrderUnConfirm.getValue());
-				requestService.updateStatus(request);
+
+				int third_status = OrderMappingEnum.parse(status.getValue()).getValue();
+				request.setRequestStatus(third_status);
+				requestService.updateStatus(request_update);*/
 
 				if (status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.OrderCloseByOutTime
 						|| status == OrderStatusEnum.BackClose) {// 取消订单
