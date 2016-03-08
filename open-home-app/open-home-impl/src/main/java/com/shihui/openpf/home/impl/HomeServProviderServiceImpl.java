@@ -3,6 +3,7 @@
  */
 package com.shihui.openpf.home.impl;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,7 +15,6 @@ import java.util.ServiceLoader;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import com.shihui.openpf.common.service.api.GroupManage;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -24,12 +24,12 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantApi;
 import com.shihui.openpf.common.model.MerchantApiName;
+import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.ParamAssembler;
 import com.shihui.openpf.home.api.ResultParser;
@@ -350,18 +350,19 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			httpMethod = defaultMethod;
 		}
 		if(httpMethod == HTTP_GET){//http get
-			StringBuilder url = new StringBuilder(api.getApiUrl());
-			if(url.indexOf("?") <0){
-				url.append("?");
-			}
-			for(Entry<String, String> entry2 : param.entrySet()){
-				url.append(entry2.getKey()).append("=").append(entry2.getValue()).append("&");
-			}
-			if(url.length() > 0){
-				url.deleteCharAt(url.length() - 1);
-			}
-			HttpGet httpGet = new HttpGet(url.toString());
 			try {
+				StringBuilder url = new StringBuilder(api.getApiUrl());
+				if(url.indexOf("?") <0){
+					url.append("?");
+				}
+				for(Entry<String, String> entry2 : param.entrySet()){
+					url.append(URLEncoder.encode(entry2.getKey(), "utf-8")).append("=").append(URLEncoder.encode(entry2.getValue(), "utf-8")).append("&");
+				}
+				if(url.length() > 0){
+					url.deleteCharAt(url.length() - 1);
+				}
+				HttpGet httpGet = new HttpGet(url.toString());
+			
 				FastHttpUtils.executeHttpGetReturnString(httpClient, httpGet, DEFAULT_ENCODING, handler, false);
 			} catch (Exception e) {
 				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
