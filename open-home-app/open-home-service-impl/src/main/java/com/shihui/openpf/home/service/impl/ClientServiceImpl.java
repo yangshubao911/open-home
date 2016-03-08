@@ -670,7 +670,7 @@ public class ClientServiceImpl implements ClientService {
         orderInfo.setDetailAddress(orderForm.getDetailAddress());
         Map<String,Object> extMap = new HashMap<>();
         orderInfo.setExtend(extMap);
-        orderInfo.setGoodsId(orderForm.getGoodsId());
+        orderInfo.setGoodsId(orderForm.getCategoryId());
         orderInfo.setLatitude(orderForm.getLatitude());
         orderInfo.setLongitude(orderForm.getLongitude());
         orderInfo.setPhone(orderForm.getServicePhone());
@@ -689,8 +689,8 @@ public class ClientServiceImpl implements ClientService {
             throw new AppException(HomeExcepFactor.Third_Order_Fail);
         }
         JSONObject third_order = JSONObject.parseObject(create_third_part.getResult());
-        JSONObject third_order_result = third_order.getJSONObject("result");
-        String requestId = third_order_result.getString("orderId");
+        //JSONObject third_order_result = third_order.getJSONObject("result");
+        String requestId = third_order.getString("orderId");
 
         Date now = new Date();
         SingleGoodsCreateOrderParam singleGoodsCreateOrderParam = new SingleGoodsCreateOrderParam();

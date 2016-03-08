@@ -84,9 +84,9 @@ public class YunjiazhengResultParser implements ResultParser {
 		HomeResponse response = new HomeResponse();
 		response.setCode(jo.getIntValue("code"));
 		response.setMsg(jo.getString("msg"));
-		JSONObject resultJo = new JSONObject();
-		resultJo.put("result", jo.getJSONObject("body"));
-		response.setResult(resultJo.toJSONString());
+		//JSONObject resultJo = new JSONObject();
+		//resultJo.put("result", jo.getJSONObject("body"));
+		response.setResult( jo.getJSONObject("body").toJSONString());
 		return response;
 	}
 
