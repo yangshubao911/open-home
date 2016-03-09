@@ -18,7 +18,6 @@ import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
-import netscape.javascript.JSObject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
