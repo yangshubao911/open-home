@@ -133,7 +133,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 					//处理请求结果
 					String content = handler.get();
 					HomeResponse responseTmp = handler.getResultParser().getServiceAvailableTimeResult(handler.getMerchant(), content);
-					log.info("请求服务时间接口完成, response={}", response);
+					log.info("请求服务时间接口完成, response={}", responseTmp);
 					if(responseTmp.getCode() == 0){
 						JSONObject result = JSONObject.parseObject(responseTmp.getResult());
 						//加入商户id以便区分
