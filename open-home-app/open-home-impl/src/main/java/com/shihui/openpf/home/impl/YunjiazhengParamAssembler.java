@@ -109,8 +109,7 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 		param.put("houseNumber", "");
 		param.put("mobile", orderInfo.getPhone());
 		param.put("username", orderInfo.getContactName());
-		JSONObject map = JSONObject.parseObject(orderInfo.getCategoryExtend());
-		param.put("quantity", map.getString("quantity"));
+		param.put("quantity", String.valueOf(orderInfo.getAmount()));
 		param.put("price", orderInfo.getPrice());
 		if(!StringUtil.isEmpty(orderInfo.getRemark()))
 			param.put("comment", orderInfo.getRemark());

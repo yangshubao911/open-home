@@ -664,8 +664,8 @@ public class ClientServiceImpl implements ClientService {
             throw new AppException(HomeExcepFactor.Price_Wrong);
         }
         OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setAmount(1);
-        orderInfo.setCategoryExtend(category.getExtend());
+        orderInfo.setAmount(category.getAmount());
+        orderInfo.setProductId(category.getProductId());
         orderInfo.setCityId(cityId);
         orderInfo.setContactName(orderForm.getContactName());
         orderInfo.setDetailAddress(orderForm.getDetailAddress());

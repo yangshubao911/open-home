@@ -23,7 +23,7 @@ public class OrderInfo {
 	private Integer amount;
 	private Integer goodsId;
 	private String remark;
-	private String categoryExtend;
+	private String productId;
 	private Map<String, Object> extend;
 
 	public Integer getCityId() {
@@ -130,11 +130,11 @@ public class OrderInfo {
 		this.extend = extend;
 	}
 
-	public String getCategoryExtend() {
-		return categoryExtend;
+	public String getProductId() {
+		return productId;
 	}
 
-	public void setCategoryExtend(String categoryExtend) {
-		this.categoryExtend = categoryExtend;
+	public void setProductId(String productId) {
+		this.productId = productId;
 	}
 }

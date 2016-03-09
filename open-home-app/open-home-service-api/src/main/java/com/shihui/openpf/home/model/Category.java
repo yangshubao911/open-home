@@ -43,18 +43,15 @@ public class Category implements Serializable {
 	@JSONField(name = "product_id")
 	@Column(name = "product_id")
 	private String productId;
-	
+
+	@JSONField(name = "amount")
+	@Column(name="amount")
 	private Integer amount;
 
 	@JSONField(name = "update_time", format = "yyyy-MM-dd HH:mm:ss")
 	@Column(name = "update_time")
 	private Date updateTime;
 
-	@Column(name="productId")
-	private Integer productId;
-
-	@Column(name="amount")
-	private Integer amount;
 
 	public Category() {
 	}
