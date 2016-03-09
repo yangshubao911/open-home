@@ -4,6 +4,7 @@
 package com.shihui.openpf.home.resource;
 
 import javax.annotation.Resource;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -47,7 +48,8 @@ public class CategoryResource {
 			@ParamDesc(desc = "商品类型名称", isRequired = true) @FormParam("name") String name,
 			@ParamDesc(desc = "商品类型图片", isRequired = true) @FormParam("image_id") String image_id,
 			@ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
-			@ParamDesc(desc = "扩展属性", isRequired = false) @FormParam("extend") String extend,
+			@ParamDesc(desc = "数量", isRequired = false) @FormParam("amount") @DefaultValue("1") Integer amount,
+			@ParamDesc(desc = "产品编号", isRequired = true) @FormParam("product_id") String productId,
 			@ParamDesc(desc = "商品类型状态", isRequired = true) @FormParam("status") Integer status
 			){
     	Category category = new Category();
@@ -56,6 +58,8 @@ public class CategoryResource {
     	category.setName(name);
     	category.setServiceId(service_id);
     	category.setStatus(status);
+    	category.setAmount(amount);
+    	category.setProductId(productId);
 		return CategoryService.create(category);
     }
     
@@ -69,6 +73,8 @@ public class CategoryResource {
 			@ParamDesc(desc = "商品类型名称", isRequired = false) @FormParam("name") String name,
 			@ParamDesc(desc = "商品类型图片", isRequired = false) @FormParam("image_id") String image_id,
 			@ParamDesc(desc = "商品类型id", isRequired = true) @FormParam("id") Integer id,
+			@ParamDesc(desc = "数量", isRequired = false) @FormParam("amount") Integer amount,
+			@ParamDesc(desc = "产品编号", isRequired = false) @FormParam("product_id") String productId,
 			@ParamDesc(desc = "服务类型状态", isRequired = false) @FormParam("status") Integer status
 			){
     	Category category = new Category();
