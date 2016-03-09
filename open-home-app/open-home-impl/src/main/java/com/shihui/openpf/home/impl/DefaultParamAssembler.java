@@ -83,7 +83,7 @@ public class DefaultParamAssembler implements ParamAssembler {
 		@SuppressWarnings("unchecked")
 		Set<Entry<Object, Object>> set = beanmap.entrySet();
 		for(Entry<Object, Object> entry : set){
-			param.put(entry.getKey().toString(), entry.getValue().toString());
+			param.put(entry.getKey().toString(), entry.getValue() == null ? "" : entry.getValue().toString());
 		}
 		param.remove("class");
 		param.put("version", version);
