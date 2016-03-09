@@ -294,8 +294,10 @@ public class OrderManageImpl implements OrderManage {
                 return buildHomeResponse(1004, "其他错误");
             }
             Contact contact = contactService.queryByOrderId(db_request.getOrderId());
-            response.setCode(0);
-            response.setMsg("查询成功");
+
+            JSONObject result = new JSONObject();
+            result.put("code", 0);
+            result.put("msg", "查询成功");
 
             JSONObject order_json = new JSONObject();
             order_json.put("orderId", orderId);
@@ -315,8 +317,8 @@ public class OrderManageImpl implements OrderManage {
             order_json.put("serviceStartTime", contact.getServiceStartTime());
             order_json.put("remark", order.getRemark());
             order_json.put("extend", order.getExtend());
-            response.setResult(order_json.toString());
-            return JSON.toJSONString(response);
+            result.put("result", order_json);
+            return result.toJSONString();
         } catch (Exception e) {
             log.error("OrderManageImpl queryThirdOrder error", e);
             return buildHomeResponse(1004, "其他错误");
