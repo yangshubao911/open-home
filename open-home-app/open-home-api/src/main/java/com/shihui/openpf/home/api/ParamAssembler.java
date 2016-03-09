@@ -42,7 +42,7 @@ public interface ParamAssembler {
 	 * @return
 	 */
 	Map<String, String> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId, String longitude,
-			String latitude, String version, int categoryId , int amount);
+			String latitude, String version, int categoryId , int amount ,String productId);
 
 	/**
 	 * 服务是否可用
@@ -56,7 +56,7 @@ public interface ParamAssembler {
 	 * @return
 	 */
 	Map<String, String> isServiceAvailableParam(Merchant merchant, int serviceType, int cityId, String longitude,
-			String latitude, String serviceStartTime, String version, int categoryId , int amount);
+			String latitude, String serviceStartTime, String version, int categoryId , int amount , String productId);
 
 	/**
 	 * 创建订单

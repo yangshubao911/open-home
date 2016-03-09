@@ -31,7 +31,7 @@ public class DefaultParamAssembler implements ParamAssembler {
 	 */
 	@Override
 	public Map<String, String> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId,
-			String longitude, String latitude, String version , int categoryId , int amount) {
+			String longitude, String latitude, String version , int categoryId , int amount , String productId) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("cityId", String.valueOf(cityId));
@@ -41,13 +41,14 @@ public class DefaultParamAssembler implements ParamAssembler {
 		param.put("version", version);
 		param.put("goodsId", String.valueOf(categoryId));
 		param.put("amount", String.valueOf(amount));
+		param.put("productId", productId);
 		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
 		return param;
 	}
 
 	@Override
 	public Map<String, String> isServiceAvailableParam(Merchant merchant, int serviceType, int cityId,
-			String longitude, String latitude, String serviceStartTime, String version,int categoryId , int amount) {
+			String longitude, String latitude, String serviceStartTime, String version,int categoryId , int amount, String productId) {
 		TreeMap<String, String> param = new TreeMap<>();
 		param.put("key", merchant.getMerchantKey());
 		param.put("cityId", String.valueOf(cityId));
@@ -57,6 +58,7 @@ public class DefaultParamAssembler implements ParamAssembler {
 		param.put("version", version);
 		param.put("goodsId", String.valueOf(categoryId));
 		param.put("amount", String.valueOf(amount));
+		param.put("productId", productId);
 		param.put("serviceStartTime", serviceStartTime);
 		//计算签名，必须最后计算
 		param.put("sign", SignUtil.genSign(param, merchant.getMd5Key()));
