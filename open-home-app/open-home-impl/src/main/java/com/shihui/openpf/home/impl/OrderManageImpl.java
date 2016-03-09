@@ -284,7 +284,7 @@ public class OrderManageImpl implements OrderManage {
             if (db_request == null) {
                 return buildHomeResponse(3001, "未查询到订单");
             }
-            Order order = orderService.queryOrder(request.getOrderId());
+            Order order = orderService.queryOrder(db_request.getOrderId());
             if (order == null) {
                 return buildHomeResponse(3001, "未查询到订单");
             }
@@ -293,7 +293,7 @@ public class OrderManageImpl implements OrderManage {
             if (goods == null) {
                 return buildHomeResponse(1004, "其他错误");
             }
-            Contact contact = contactService.queryByOrderId(request.getOrderId());
+            Contact contact = contactService.queryByOrderId(db_request.getOrderId());
             response.setCode(0);
             response.setMsg("查询成功");
 
