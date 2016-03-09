@@ -315,8 +315,8 @@ public class OrderManageImpl implements OrderManage {
             order_json.put("serviceStartTime", contact.getServiceStartTime());
             order_json.put("remark", order.getRemark());
             order_json.put("extend", order.getExtend());
-            response.setResult(order_json.toJSONString());
-            return JSONObject.toJSONString(response);
+            response.setResult(order_json.toString());
+            return JSON.toJSONString(response);
         } catch (Exception e) {
             log.error("OrderManageImpl queryThirdOrder error", e);
             return buildHomeResponse(1004, "其他错误");
