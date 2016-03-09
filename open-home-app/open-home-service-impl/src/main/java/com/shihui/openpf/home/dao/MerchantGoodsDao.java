@@ -107,6 +107,7 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
 	 * @param goodsId
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Integer> getAvailableMerchant(int goodsId){
 
 		String sql = "select merchant_id from merchant_goods where goods_id = ? and status = 1";
@@ -114,12 +115,9 @@ public class MerchantGoodsDao extends AbstractDao<MerchantGoods> {
 		return jdbcTemplate.query(sql, new Object[]{goodsId},new RowMapper<Integer>() {
 			@Override
 			public Integer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
-				Integer merchantId = rs.getInt("merchant_id");
-				if(merchantId!=null) {
-					result.add(merchantId);
-					return merchantId;
-				}
-				return null;
+				int merchantId = rs.getInt("merchant_id");
+				result.add(merchantId);
+				return merchantId;
 			}
 		});
 	}

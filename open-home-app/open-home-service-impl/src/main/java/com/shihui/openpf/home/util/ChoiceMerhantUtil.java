@@ -22,15 +22,15 @@ public class ChoiceMerhantUtil {
         if (choiceMap == null || choiceMap.size() == 0) return -1;
 
         if (choiceMap.size() == 1) {
-            for (Map.Entry entry : choiceMap.entrySet()) {
-                return (Integer) entry.getKey();
+            for (Map.Entry<Integer, Integer> entry : choiceMap.entrySet()) {
+                return entry.getKey();
             }
         }
 
         List<String> rangeList = new ArrayList<>();
-        for (Map.Entry entry : choiceMap.entrySet()) {
-            Integer key = (Integer) entry.getKey();
-            Integer value = (Integer) entry.getValue();
+        for (Map.Entry<Integer, Integer> entry : choiceMap.entrySet()) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
             total = total + value;
             String rangevalue = String.valueOf(key) + "," + String.valueOf(total);
             rangeList.add(rangevalue);
