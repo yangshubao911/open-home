@@ -46,7 +46,7 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 	 */
 	@Override
 	public Map<String, String> getServiceAvailableTimeParam(Merchant merchant, int serviceType, int cityId,
-			String longitude, String latitude, String version,int categoryId ,int amount) {
+			String longitude, String latitude, String version,int categoryId ,int amount, String productId) {
 		TreeMap<String, String> param = new TreeMap<>();
 		
 		param.put("cityId", String.valueOf(getYJCityId(cityId)));
@@ -63,7 +63,7 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 
 	@Override
 	public Map<String, String> isServiceAvailableParam(Merchant merchant, int serviceType, int cityId, String longitude,
-			String latitude, String serviceStartTime, String version,int categoryId ,int amount) {
+			String latitude, String serviceStartTime, String version,int categoryId ,int amount, String productId) {
 		TreeMap<String, String> param = new TreeMap<>();
 		//转为云家政城市码
 		param.put("cityId", String.valueOf(getYJCityId(cityId)));
