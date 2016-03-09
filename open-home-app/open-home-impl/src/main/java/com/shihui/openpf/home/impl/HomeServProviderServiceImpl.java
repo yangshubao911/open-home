@@ -101,7 +101,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			ResultParser resultParser = null;
 
 			if(api==null) {
-				log.info("merchant:{} can't find api info!!!" + entry.getKey().getMerchantId());
+				log.info("商户位配置获取服务时间接口，merchant_id={}" , entry.getKey().getMerchantId());
 				continue;
 			}
 			//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
@@ -133,6 +133,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 					//处理请求结果
 					String content = handler.get();
 					HomeResponse responseTmp = handler.getResultParser().getServiceAvailableTimeResult(handler.getMerchant(), content);
+					log.info("请求服务时间接口完成, response={}", response);
 					if(responseTmp.getCode() == 0){
 						JSONObject result = JSONObject.parseObject(responseTmp.getResult());
 						//加入商户id以便区分
@@ -194,6 +195,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().isServiceAvailableResult(merchant, content);
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -229,6 +231,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().createOrderResult(merchant, content);
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -264,6 +267,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().cancelOrderResult(merchant, content);
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -299,6 +303,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().payNoticeResult(merchant, content);
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -334,6 +339,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().evaluateOrderResult(merchant, content);
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 	
