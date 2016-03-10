@@ -11,6 +11,12 @@ import me.weimi.api.commons.http.ApacheHttpClient;
 import me.weimi.api.commons.http.ApiHttpClient;
 import me.weimi.api.commons.util.ApiLogger;
 
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by zhoutc on 2015/9/6.
  */
@@ -39,21 +45,28 @@ public class SnapShotUtil {
 			Map<String, Object> goods_info = new HashMap<String, Object>();
 			goods_info.put("goods_id", goods.getGoodsId());
 			goods_info.put("goods_name", goods.getGoodsName());
-			goods_info.put("goods_img_multi", goods.getImageId());
+		//	goods_info.put("goods_img_multi", goods.getImageId());
+			List<String> big = new ArrayList();
+			big.add(goods.getDetailImage());
+			List<String> detail = new ArrayList();
+			detail.add(goods.getImageId());
+			goods_info.put("goods_big_img",big );
+			goods_info.put("goods_small_img", detail);
+			goods_info.put("category_id", goods.getCategoryId());
 			goods_info.put("merchant_id", goods.getServiceMerchantCode());
 			goods_info.put("goods_type", 2);
 			goods_info.put("goods_desc", goods.getGoodsDesc());
 			goods_info.put("market_price", goods.getPrice());
 			goods_info.put("shihui_price", goods.getPrice());
 			goods_info.put("goods_lable", goods.getServiceId());
-			goods_info.put("status", goods.getGoodsStatus());
+			goods_info.put("goods_status", goods.getGoodsStatus());
 			goods_info.put("created_by", "openpf");
 			goods_info.put("create_time", goods.getCreateTime());
 			goods_info.put("settle_price", goods.getPrice());
 			goods_info.put("settle_method", 1);// 未结算
 
 			Map<String, Object> action_info = new HashMap<String, Object>();
-			action_info.put("auction_id", goods.getGoodsId());
+			action_info.put("auction_id", 0);
 			action_info.put("auction_name", goods.getGoodsName());
 			action_info.put("auction_desc", goods.getGoodsName());
 			action_info.put("goods_id", goods.getGoodsId());

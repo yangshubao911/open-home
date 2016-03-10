@@ -55,6 +55,7 @@ public class PaymentSuccessConsumer implements Consumer {
 			OrderStatusEnum status = order_vo.getOrderStatus();
 			OrderTypeEnum orderTypeEnum = order_vo.getOrderType();
 			if (orderTypeEnum.compareTo(OrderTypeEnum.DoorTDoor) != 0) {
+				log.info("非标准化上门服务业务，msg={}", msg);
 				return true;
 			}
 
