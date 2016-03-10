@@ -136,4 +136,9 @@ public class OrderServiceImpl implements OrderService {
     public String exportUnusual() {
         return null;
     }
+
+	@Override
+	public boolean update(Order order) {
+		return orderDao.update(order) > 0;
+	}
 }

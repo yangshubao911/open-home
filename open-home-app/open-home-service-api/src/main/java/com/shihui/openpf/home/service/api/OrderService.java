@@ -78,5 +78,12 @@ public interface OrderService {
 	 * @return 订单列表
 	 */
 	public String exportUnusual();
+	
+	/**
+	 * 更新
+	 * @param order
+	 * @return
+	 */
+	boolean update(Order order);
 
 }

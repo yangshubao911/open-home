@@ -8,74 +8,76 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
-
 /**
  * The persistent class for the order database table.
  * 
  */
-@Entity(name="order")
+@Entity(name = "order")
 public class Order implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="order_id")
+	@Column(name = "order_id")
 	private Long orderId;
 
-	@Column(name="campaign_id")
+	@Column(name = "campaign_id")
 	private Integer campaignId;
 
 	@JSONField(name = "create_time", format = "yyyy-MM-dd HH:mm:ss")
-	@Column(name="create_time")
+	@Column(name = "create_time")
 	private Date createTime;
 
-	@Column(name="extend")
+	@Column(name = "extend")
 	private String extend;
 
-	@Column(name="gid")
+	@Column(name = "gid")
 	private Long gid;
 
-	@Column(name="goods_id")
+	@Column(name = "goods_id")
 	private Long goodsId;
 
-	@Column(name="goods_num")
+	@Column(name = "goods_num")
 	private Integer goodsNum;
 
-	@Column(name="goods_version")
+	@Column(name = "goods_version")
 	private Integer goodsVersion;
 
-	@Column(name="merchant_id")
+	@Column(name = "merchant_id")
 	private Integer merchantId;
 
-	@Column(name="order_status")
+	@Column(name = "order_status")
 	private Integer orderStatus;
 
-	@Column(name="pay")
+	@Column(name = "pay")
 	private String pay;
 
-	@Column(name="payment_type")
+	@Column(name = "payment_type")
 	private Integer paymentType;
 
-	@Column(name="price")
+	@Column(name = "price")
 	private String price;
 
-	@Column(name="sh_off_set")
+	@Column(name = "sh_off_set")
 	private String shOffSet;
 
 	@JSONField(name = "update_time", format = "yyyy-MM-dd HH:mm:ss")
-	@Column(name="update_time")
+	@Column(name = "update_time")
 	private Date updateTime;
 
-	@Column(name="user_id")
+	@Column(name = "user_id")
 	private Long userId;
 
-	@Column(name="service_id")
+	@Column(name = "service_id")
 	private Integer service_id;
 
-	@Column(name="remark")
+	@Column(name = "remark")
 	private String remark;
 
-	@Column(name="phone")
+	@Column(name = "phone")
 	private String phone;
+	@JSONField(name = "audit_id")
+	@Column(name = "audit_id")
+	private Long auditId;
 
 	public Order() {
 	}
@@ -119,8 +121,6 @@ public class Order implements Serializable {
 	public void setGid(Long gid) {
 		this.gid = gid;
 	}
-
-
 
 	public Integer getGoodsNum() {
 		return goodsNum;
@@ -232,5 +232,13 @@ public class Order implements Serializable {
 
 	public void setGoodsId(Long goodsId) {
 		this.goodsId = goodsId;
+	}
+
+	public Long getAuditId() {
+		return auditId;
+	}
+
+	public void setAuditId(Long auditId) {
+		this.auditId = auditId;
 	}
 }

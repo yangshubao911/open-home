@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.shihui.api.order.common.enums.OrderStatusEnum;
+import com.shihui.api.order.emodel.OperatorTypeEnum;
+import com.shihui.api.order.emodel.RefundModeEnum;
 import com.shihui.api.order.service.OpenService;
+import com.shihui.api.order.service.OrderRefundService;
 import com.shihui.api.order.service.OrderService;
 import com.shihui.api.order.vo.ApiResult;
 import com.shihui.api.order.vo.SimpleResult;
@@ -28,6 +30,9 @@ public class OrderSystemServiceImpl implements OrderSystemService {
 
     @Resource(name = "omsOrderService")
     OrderService orderService;
+    
+    @Resource
+    OrderRefundService orderRefundService;
 
     @Override
     public ApiResult submitOrder(SingleGoodsCreateOrderParam singleGoodsCreateOrderParam) {
@@ -44,16 +49,15 @@ public class OrderSystemServiceImpl implements OrderSystemService {
     }
 
     @Override
-    public boolean merchantCancelOrder(long orderId, OrderStatusEnum orderStatus, int operatorId) {
+    public boolean updateOrderStatus(long orderId, OrderStatusEnum oldStatus, OrderStatusEnum newStatus, OperatorTypeEnum operatorTypeEnum, long operatorId, String adminEmail) {
         try {
-            JSONObject jsonObject = orderService.internalMerchantCancleOrder(orderId, orderStatus, operatorId);
-
-            if (jsonObject.getInteger("result_status") == 1) {
+            int count = orderService.updateOrderStatus(orderId, oldStatus, newStatus, operatorTypeEnum, operatorId, adminEmail);
+            if (count > 0) {
                 return true;
             }
 
         } catch (Exception e) {
-            log.error("merchantCancelOrder -- orderId:{} cancel error!!!", orderId, e);
+            log.error("updateOrderStatus -- orderId:{} update error!!!", orderId, e);
         }
         return false;
     }
@@ -101,4 +105,16 @@ public class OrderSystemServiceImpl implements OrderSystemService {
         }
         return null;
     }
+
+	@Override
+	public SimpleResult openRefund(RefundModeEnum refundMode, long orderId, long price, String reason, int isReview,
+			int isShihui) {
+		SimpleResult result = null;
+		try {
+			result = this.orderRefundService.openRefund(refundMode, orderId, price, reason, isReview, isShihui);
+		} catch (Exception e) {
+			log.error("order refund exception !!!, order_id={}", orderId, e);
+		}
+		return result;
+	}
 }

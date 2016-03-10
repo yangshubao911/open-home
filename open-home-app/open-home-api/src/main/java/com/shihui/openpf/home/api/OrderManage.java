@@ -1,8 +1,8 @@
 package com.shihui.openpf.home.api;
 
-import com.shihui.openpf.home.model.OrderCancelType;
-import me.weimi.api.commons.context.RequestContext;
 import com.shihui.openpf.home.model.Order;
+
+import me.weimi.api.commons.context.RequestContext;
 
 
 /**
@@ -50,14 +50,17 @@ public interface OrderManage {
      */
     public String updateThirdOrder(String key,int serviceType,String orderId,String version,String sign, int status);
 
-
     /**
-     * 取消平台订单
-     *
-     * @param orderId 订单ID
+     *  平台取消订单
+     * @param userId
+     * @param email
+     * @param orderId
+     * @param price
+     * @param reason
+     * @param refundSHCoin 是否退实惠现金，1-是，2-否
      * @return 返回取消订单结果
      */
-    public String cancelLocalOrder(long orderId , OrderCancelType orderCancelType);
+    public String cancelLocalOrder(long userId, String email, long orderId , String price, String reason, int refundSHCoin);
 
 
     /**

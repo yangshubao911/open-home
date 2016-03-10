@@ -24,7 +24,6 @@ import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.OrderCancelType;
 
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
@@ -144,18 +143,14 @@ public class OrderResource {
     @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
     public String cancel(
             @Context RequestContext rc,
+            @ParamDesc(isRequired = true, desc = "操作人ID") @QueryParam("userId") long userId,
+            @ParamDesc(isRequired = true, desc = "操作人Email") @QueryParam("email") String email,
             @ParamDesc(isRequired = true, desc = "订单ID") @QueryParam("orderId") long orderId,
             @ParamDesc(isRequired = true, desc = "退款金额") @QueryParam("price") String price,
-            @ParamDesc(isRequired = true, desc = "退款备注") @QueryParam("reson") String reson
+            @ParamDesc(isRequired = true, desc = "退款备注") @QueryParam("reason") String reason,
+            @ParamDesc(isRequired = true, desc = "是否退实惠现金，1-是，2-否") @QueryParam("refund_sh_coin") Integer refundSHCoin
     ) {
-        OrderCancelType orderCancelType = null;
-        try {
-            orderCancelType = OrderCancelType.valueOf("REFUND_PARTIAL");
-        } catch (Exception e) {
-//        	log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
-        }
-        return orderManage.cancelLocalOrder(orderId, orderCancelType);
-
+        return orderManage.cancelLocalOrder(userId, email, orderId, price, reason, refundSHCoin);
     }
 
     @GET
