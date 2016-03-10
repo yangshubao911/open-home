@@ -6,8 +6,6 @@ import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
 
-import java.util.List;
-
 public interface OrderService {
 	
 	/**

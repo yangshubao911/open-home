@@ -309,6 +309,7 @@ public abstract class AbstractDao<T> {
 	 * 查询所有记录
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<T> findAll(){
 		return this.jdbcTemplate.query("select * from " + tableName, rowMapper);
 	}
@@ -318,6 +319,7 @@ public abstract class AbstractDao<T> {
 	 * @param t
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public T findById(T t){
 		StringBuilder sql = new StringBuilder("select * from `");
 		sql.append(this.tableName).append("` where 1=1");
@@ -360,6 +362,7 @@ public abstract class AbstractDao<T> {
 	 * @param t
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<T> findByCondition(T t){
 		StringBuilder sql = new StringBuilder("select * from `");
 		sql.append(this.tableName).append("` where 1=1");
@@ -398,6 +401,7 @@ public abstract class AbstractDao<T> {
 	 * @param args
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<T> queryForList(String sql, Object... args){
 		return this.jdbcTemplate.query(sql, args, rowMapper);
 	}
@@ -408,6 +412,7 @@ public abstract class AbstractDao<T> {
 	 * @param args
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public T queryForObject(String sql, Object... args){
 		List<T> list =  this.jdbcTemplate.query(sql, args, rowMapper);
 		if(list.size() > 0)

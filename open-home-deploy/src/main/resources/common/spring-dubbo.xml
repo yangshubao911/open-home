@@ -20,5 +20,5 @@
 
     <dubbo:reference id="omsOrderService" interface="com.shihui.api.order.service.OrderService" init="true" timeout="15000" retries="0" check="false" />
 
-
+    <dubbo:reference id="orderRefundService" interface="com.shihui.api.order.service.OrderRefundService" init="true" timeout="15000" retries="0" check="false" />
 </beans>

@@ -3,6 +3,8 @@ package com.shihui.openpf.home.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +12,7 @@ import java.util.Date;
  *
  */
 @Entity(name="order_history")
-public class OrderHistory {
+public class OrderHistory implements Serializable{
 
     private static final long serialVersionUID = 1L;
 

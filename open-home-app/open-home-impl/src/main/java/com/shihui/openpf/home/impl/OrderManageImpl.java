@@ -9,15 +9,6 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
-
-import com.shihui.api.order.common.enums.OrderStatusEnum;
-import com.shihui.api.order.common.enums.OrderTypeEnum;
-import com.shihui.api.order.vo.SimpleResult;
-import com.shihui.openpf.common.tools.AlgorithmUtil;
-import com.shihui.openpf.common.tools.SignUtil;
-import com.shihui.openpf.common.tools.StringUtil;
-import com.shihui.openpf.home.model.*;
-import com.shihui.openpf.home.service.api.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,9 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.shihui.api.order.common.enums.OrderStatusEnum;
+import com.shihui.api.order.common.enums.OrderTypeEnum;
+import com.shihui.api.order.service.OrderRefundService;
+import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.openpf.common.dubbo.api.MerchantBusinessManage;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
 import com.shihui.openpf.common.dubbo.api.ServiceManage;
@@ -35,9 +29,29 @@ import com.shihui.openpf.common.model.Group;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantBusiness;
 import com.shihui.openpf.common.service.api.GroupManage;
+import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
+import com.shihui.openpf.common.tools.SignUtil;
+import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.OrderManage;
+import com.shihui.openpf.home.model.Contact;
+import com.shihui.openpf.home.model.Goods;
+import com.shihui.openpf.home.model.HomeCodeEnum;
+import com.shihui.openpf.home.model.HomeOrderStatusEnum;
+import com.shihui.openpf.home.model.HomeResponse;
+import com.shihui.openpf.home.model.MerchantGoods;
+import com.shihui.openpf.home.model.Order;
+import com.shihui.openpf.home.model.OrderCancelType;
+import com.shihui.openpf.home.model.Request;
+import com.shihui.openpf.home.model.YjzOrderStatusEnum;
+import com.shihui.openpf.home.model.YjzUpdateResult;
+import com.shihui.openpf.home.service.api.ContactService;
+import com.shihui.openpf.home.service.api.GoodsService;
+import com.shihui.openpf.home.service.api.MerchantGoodsService;
+import com.shihui.openpf.home.service.api.OrderService;
+import com.shihui.openpf.home.service.api.OrderSystemService;
+import com.shihui.openpf.home.service.api.RequestService;
 
 import me.weimi.api.commons.context.RequestContext;
 
@@ -49,53 +63,31 @@ public class OrderManageImpl implements OrderManage {
 
     @Resource(name="openOrderService")
     OrderService orderService;
-
     @Resource
     GoodsService goodsService;
-
     @Resource
     ContactService contactService;
-
     @Resource
     MerchantManage merchantManage;
-
     @Resource
     HomeServProviderService homeServProviderService;
-
     @Resource
     RequestService requestService;
-
     @Resource
     MerchantGoodsService merchantGoodsService;
-
     @Resource
     ServiceManage serviceManage;
-
     @Resource
     MerchantBusinessManage merchantBusinessManage;
-
     @Resource
     GroupManage groupManage;
-
-
     @Resource
     OrderSystemService orderSystemService;
+    @Resource
+    OrderRefundService orderRefundService;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    /**
-     * 客户端创建订单
-     *
-     * @param json 创建订单请求数据
-     * @return 返回结果
-     */
-    @Override
-    public String createOrder(RequestContext rc, String json) {
-        OrderForm orderForm = JSON.parseObject(json, OrderForm.class);
-
-
-        return null;
-    }
 
     /**
      * OPS查询订单
@@ -247,26 +239,25 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String queryThirdOrder(String key, Integer serviceType, String orderId, String version, String sign) {
-        HomeResponse response = new HomeResponse();
         try {
             Merchant merchant = merchantManage.getByKey(key);
             if (merchant == null) {
-                return buildHomeResponse(1001, "参数错误");
+                return HomeCodeEnum.PARAM_ERR.toJSONString();
             }
             com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
             if (service == null) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
             MerchantBusiness search = new MerchantBusiness();
             search.setMerchantId(merchant.getMerchantId());
             search.setServiceId(service.getServiceId());
             MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
             if (merchantBusiness == null) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
             if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1 ||
                     merchantBusiness.getStatus() != 1) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
 
             TreeMap<String, String> param = new TreeMap<>();
@@ -276,22 +267,22 @@ public class OrderManageImpl implements OrderManage {
             param.put("version", version);
             String server_sign = SignUtil.genSign(param, merchant.getMd5Key());
             if (server_sign.compareTo(sign) != 0) {
-                return buildHomeResponse(1002, "签名错误");
+                return HomeCodeEnum.SIGN_ERR.toJSONString();
             }
             Request request = new Request();
             request.setRequestId(orderId);
             Request db_request = requestService.queryById(request);
             if (db_request == null) {
-                return buildHomeResponse(3001, "未查询到订单");
+                return HomeCodeEnum.ORDER_NA.toJSONString();
             }
             Order order = orderService.queryOrder(db_request.getOrderId());
             if (order == null) {
-                return buildHomeResponse(3001, "未查询到订单");
+                return HomeCodeEnum.ORDER_NA.toJSONString();
             }
 
             Goods goods = goodsService.findById(order.getGoodsId());
             if (goods == null) {
-                return buildHomeResponse(1004, "其他错误");
+                return HomeCodeEnum.OTHER_ERR.toJSONString();
             }
             Contact contact = contactService.queryByOrderId(db_request.getOrderId());
 
@@ -321,7 +312,7 @@ public class OrderManageImpl implements OrderManage {
             return result.toJSONString();
         } catch (Exception e) {
             log.error("OrderManageImpl queryThirdOrder error", e);
-            return buildHomeResponse(1004, "其他错误");
+            return HomeCodeEnum.OTHER_ERR.toJSONString();
         }
 
     }
@@ -334,26 +325,25 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String cancelThirdOrder(String key, int serviceType, String orderId, String version, String sign) {
-        HomeResponse response = new HomeResponse();
         try {
             Merchant merchant = merchantManage.getByKey(key);
             if (merchant == null) {
-                return buildHomeResponse(1001, "参数错误");
+                return HomeCodeEnum.PARAM_ERR.toJSONString();
             }
             com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
             if (service == null) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
             MerchantBusiness search = new MerchantBusiness();
             search.setMerchantId(merchant.getMerchantId());
             search.setServiceId(service.getServiceId());
             MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
             if (merchantBusiness == null) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
             if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != -1 ||
                     merchantBusiness.getStatus() != -1) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
 
             TreeMap<String, String> param = new TreeMap<>();
@@ -363,28 +353,33 @@ public class OrderManageImpl implements OrderManage {
             param.put("version", version);
             String server_sign = SignUtil.genSign(param, merchant.getMd5Key());
             if (server_sign.compareTo(sign) != 0) {
-                return buildHomeResponse(1002, "签名错误");
+                return HomeCodeEnum.SIGN_ERR.toJSONString();
             }
             Request request = new Request();
             request.setRequestId(orderId);
             Request db_request = requestService.queryById(request);
             if (db_request == null) {
-                return buildHomeResponse(3001, "未查询到订单");
+                return HomeCodeEnum.ORDER_NA.toJSONString();
             }
             Order order = orderService.queryOrder(request.getOrderId());
             if (order == null) {
-                return buildHomeResponse(3001, "未查询到订单");
+                return HomeCodeEnum.ORDER_NA.toJSONString();
             }
             OrderCancelType orderCancelType = null;
 
             Integer status = order.getOrderStatus();
             switch (OrderStatusEnum.parse(status)) {
-                //TODO 未完成
+            //TODO 待完成
+            case OrderDistribute:;
+            	
+			default:
+				
+				break;
             }
             return cancelOrder(order, orderCancelType);
         } catch (Exception e) {
             log.error("OrderManageImpl queryThirdOrder error", e);
-            return buildHomeResponse(1004, "其他错误");
+            return HomeCodeEnum.OTHER_ERR.toJSONString();
         }
     }
 
@@ -396,26 +391,25 @@ public class OrderManageImpl implements OrderManage {
      */
     @Override
     public String updateThirdOrder(String key, int serviceType, String orderId, String version, String sign, int status) {
-        HomeResponse response = new HomeResponse();
         try {
             Merchant merchant = merchantManage.getByKey(key);
             if (merchant == null) {
-                return buildHomeResponse(1001, "参数错误");
+                return HomeCodeEnum.PARAM_ERR.toJSONString();
             }
             com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
             if (service == null) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
             MerchantBusiness search = new MerchantBusiness();
             search.setMerchantId(merchant.getMerchantId());
             search.setServiceId(service.getServiceId());
             MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
             if (merchantBusiness == null) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
             if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1 ||
                     merchantBusiness.getStatus() != 1) {
-                return buildHomeResponse(2003, "服务类型不支持");
+                return HomeCodeEnum.SERVICE_NA.toJSONString();
             }
 
             TreeMap<String, String> param = new TreeMap<>();
@@ -426,17 +420,17 @@ public class OrderManageImpl implements OrderManage {
             param.put("status", String.valueOf(status));
             String server_sign = SignUtil.genSign(param, merchant.getMd5Key());
             if (server_sign.compareTo(sign) != 0) {
-                return buildHomeResponse(1002, "签名错误");
+                return HomeCodeEnum.SIGN_ERR.toJSONString();
             }
             Request request = new Request();
             request.setRequestId(orderId);
             Request db_request = requestService.queryById(request);
             if (db_request == null) {
-                return buildHomeResponse(3001, "未查询到订单");
+                return HomeCodeEnum.ORDER_NA.toJSONString();
             }
             Order order = orderService.queryOrder(db_request.getOrderId());
             if (order == null) {
-                return buildHomeResponse(3001, "未查询到订单");
+                return HomeCodeEnum.ORDER_NA.toJSONString();
             }
 
             MerchantGoods merchantGoods_search = new MerchantGoods();
@@ -456,7 +450,7 @@ public class OrderManageImpl implements OrderManage {
 
                 case OrderConfirmed:
                     if (db_statusEnum.getValue() != HomeOrderStatusEnum.OrderUnConfirm.getValue()) {
-                        return buildHomeResponse(1, "状态流转错误");
+                        return HomeCodeEnum.OTHER_ERR.toJSONString("状态流转错误");
                     }
                     boolean updateRequest = updateRequest(orderId, statusEnum.getValue());
 
@@ -465,17 +459,17 @@ public class OrderManageImpl implements OrderManage {
                                 settlementJson.toString(), OrderStatusEnum.OrderUnStockOut.getValue());
 
                         if (success) {
-                            return buildHomeResponse(0, "success");
+                            return HomeCodeEnum.SUCCESS.toJSONString();
                         } else {
-                            return buildHomeResponse(1, "更新失败");
+                            return HomeCodeEnum.OTHER_ERR.toJSONString("更新失败");
                         }
 
                     } else {
-                        return buildHomeResponse(1,"更新失败");
+                        return HomeCodeEnum.OTHER_ERR.toJSONString("更新失败");
                     }
                 case OrderComplete:
                     if (db_statusEnum.getValue() != HomeOrderStatusEnum.OrderConfirmed.getValue()) {
-                       return buildHomeResponse(1, "状态流转错误");
+                    	return HomeCodeEnum.OTHER_ERR.toJSONString("状态流转错误");
                     }
                     boolean updateRequest1 = updateRequest(orderId, statusEnum.getValue());
                     if (updateRequest1) {
@@ -483,13 +477,13 @@ public class OrderManageImpl implements OrderManage {
                                 OrderStatusEnum.OrderDistribute.getValue());
 
                         if (success) {
-                            return buildHomeResponse(0, "success");
+                            return HomeCodeEnum.SUCCESS.toJSONString();
                         } else {
-                            return buildHomeResponse(1, "更新订单失败");
+                        	return HomeCodeEnum.OTHER_ERR.toJSONString("更新失败");
                         }
 
                     } else {
-                        return buildHomeResponse(1,"更新订单失败");
+                    	return HomeCodeEnum.OTHER_ERR.toJSONString("更新失败");
                     }
 
                 case OrderCancel:
@@ -510,13 +504,13 @@ public class OrderManageImpl implements OrderManage {
                                 request1.setRequestStatus(statusEnum.getValue());
                                 boolean update_status = requestService.updateStatus(request1);
                                 if (update_status) {
-                                    return buildHomeResponse(0,"success");
+                                    return HomeCodeEnum.SUCCESS.toJSONString();
                                 } else {
-                                    return buildHomeResponse(1,"更新订单失败");
+                                	return HomeCodeEnum.OTHER_ERR.toJSONString("更新失败");
                                 }
 
                             } else {
-                                return buildHomeResponse(1,"更新订单失败");
+                            	return HomeCodeEnum.OTHER_ERR.toJSONString("更新失败");
                             }
                         case OrderConfirmed:
                             //不允许取消
@@ -524,12 +518,12 @@ public class OrderManageImpl implements OrderManage {
                             //不允许取消
                     }
                 default:
-                    return buildHomeResponse(1, "状态流转错误");
+                    return HomeCodeEnum.OTHER_ERR.toJSONString("状态流转错误");
 
             }
         } catch (Exception e) {
             log.error("OrderManageImpl queryThirdOrder error", e);
-            return buildHomeResponse(1004, "其他错误");
+            return HomeCodeEnum.OTHER_ERR.toJSONString();
         }
     }
 
@@ -543,7 +537,7 @@ public class OrderManageImpl implements OrderManage {
     public String cancelLocalOrder(long orderId, OrderCancelType orderCancelType) {
         Order order = orderService.queryOrder(orderId);
         if (order == null) {
-            return buildHomeResponse(3001, "未查询到订单");
+            return HomeCodeEnum.ORDER_NA.toJSONString();
         }
         return cancelOrder(order, orderCancelType);
     }
@@ -555,12 +549,12 @@ public class OrderManageImpl implements OrderManage {
      * @return 返回订单详情
      */
     public String cancelOrder(Order order, OrderCancelType orderCancelType) {
-        if (orderCancelType == null) return buildHomeResponse(1004, "其他错误");
+        if (orderCancelType == null) return HomeCodeEnum.OTHER_ERR.toJSONString();
         //Order order = orderService.queryOrder(orderId);
         long orderId = order.getOrderId();
         com.shihui.api.order.vo.SimpleResult orderDetailVo = orderSystemService.backendOrderDetail(orderId);
         if (order == null || orderDetailVo == null)
-            return buildHomeResponse(3001, "未查询到订单");
+            return HomeCodeEnum.ORDER_NA.toJSONString();
 
 /*        if (order.getOrderStatus() == OrderStatusEnum.OrderBackClose.getValue() ||
                 order.getOrderStatus() == OrderStatusEnum.OrderCloseByMerchant.getValue() ||
@@ -573,14 +567,14 @@ public class OrderManageImpl implements OrderManage {
         }*/
 
         Contact contact = contactService.queryByOrderId(orderId);
-        if (contact == null) return buildHomeResponse(1004, "其他错误");
+        if (contact == null) return HomeCodeEnum.OTHER_ERR.toJSONString();
         DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime serviceStartTime = DateTime.parse(contact.getServiceStartTime(), format);
         DateTime now = new DateTime();
 
         if (serviceStartTime.getMillis() - 2 * 60 * 60 * 1000 <= now.getMillis()) {
             if (orderCancelType.getValue() != OrderCancelType.REFUND_PARTIAL.getValue())
-                return buildHomeResponse(3102, "取消订单超时");
+                return HomeCodeEnum.CANCEL_TIME_OUT.toJSONString();
         }
 
         String result = null;
@@ -649,13 +643,13 @@ public class OrderManageImpl implements OrderManage {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnpaid.getValue()) {
-            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         //2.调用dubbo接口取消未支付订单
         return "";
@@ -665,13 +659,13 @@ public class OrderManageImpl implements OrderManage {
 
         if (order.getOrderStatus() != OrderStatusEnum.OrderDistribute.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderDistribute.getValue()) {
-            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderDistribute.getName());
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单状态不为" + OrderStatusEnum.OrderDistribute.getName());
         }
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         //2.调用dubbo接口取消未支付订单
         return "";
@@ -680,12 +674,12 @@ public class OrderManageImpl implements OrderManage {
     private String MerchantCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
-            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+        	return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         long merchantCode = merchant.getMerchantCode();
         //2.调用dubbo接口取消未支付订单
@@ -695,29 +689,30 @@ public class OrderManageImpl implements OrderManage {
     private String OutOfTimeCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnpaid.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnpaid.getValue()) {
-            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单状态不为" + OrderStatusEnum.OrderUnpaid.getName());
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+        	return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         //2.更新订单表
-        return buildHomeResponse(0, "取消订单成功");
+        return HomeCodeEnum.SUCCESS.toJSONString();
     }
 
     private String MerchantOutOfTimeCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
         if (order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
-            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
+            HomeCodeEnum.CANCEL_FAIL.toJSONString("订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName());
+            
         }
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         //2.更新订单表
-        return buildHomeResponse(0, "取消订单成功");
+        return HomeCodeEnum.SUCCESS.toJSONString("取消订单成功");
     }
 
     private String PhpCloseCancel(Order order, com.shihui.api.order.po.Order orderDetailVo) {
@@ -725,14 +720,14 @@ public class OrderManageImpl implements OrderManage {
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         //2.更新订单表
         boolean update = orderService.updateOrder(order.getOrderId(), OrderStatusEnum.BackClose);
         if (update)
-            return buildHomeResponse(0, "取消订单成功");
+            return HomeCodeEnum.SUCCESS.toJSONString();
         else
-            return buildHomeResponse(3101, "取消订单失败");
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString();
     }
 
     private String RefundPartial(Order order, com.shihui.api.order.po.Order orderDetailVo) {
@@ -740,13 +735,13 @@ public class OrderManageImpl implements OrderManage {
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderDistribute.getValue() ||
                 order.getOrderStatus() != OrderStatusEnum.OrderUnConfirm.getValue() ||
                 orderDetailVo.getOrderStatus().getValue() != OrderStatusEnum.OrderUnConfirm.getValue()) {
-            return buildHomeResponse(3101, "订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName() + "或" + OrderStatusEnum.OrderDistribute.getName());
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单状态不为" + OrderStatusEnum.OrderUnConfirm.getName() + "或" + OrderStatusEnum.OrderDistribute.getName());
         }
 
         //1.取消第三方订单
         Merchant merchant = merchantManage.getById(order.getMerchantId());
         if (!cancelThirdPartOrder(order, merchant)) {
-            return buildHomeResponse(3101, "取消第三方订单失败");
+            return HomeCodeEnum.CANCEL_FAIL.toJSONString();
         }
         long merchantCode = merchant.getMerchantCode();
         long refundMoney_l = 0l;
@@ -985,12 +980,6 @@ public class OrderManageImpl implements OrderManage {
         return JSONObject.toJSONString(new SimpleResult(status, msg));
     }
 
-    public String buildHomeResponse(int code, String msg) {
-        HomeResponse response = new HomeResponse();
-        response.setMsg(msg);
-        response.setCode(code);
-        return JSONObject.toJSONString(response);
-    }
 
     /**
      * 计算签名

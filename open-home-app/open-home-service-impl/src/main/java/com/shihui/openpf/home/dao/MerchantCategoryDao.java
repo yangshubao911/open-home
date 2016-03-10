@@ -21,56 +21,53 @@ import com.shihui.openpf.home.model.MerchantCategory;
 @Repository
 public class MerchantCategoryDao extends AbstractDao<MerchantCategory> {
 
- public int batchSave(List<MerchantCategory> merchantCategorys) throws SQLException{
-	 String sql = "insert into merchant_category(merchant_id, category_id, status, service_id) values(?,?,?,?)";
-	 DataSource dataSource = this.jdbcTemplate.getDataSource();
-	 int result = 0;
-	 try (Connection conn = dataSource.getConnection()){
-		 conn.setAutoCommit(false);
-		 try (PreparedStatement ps = conn.prepareStatement(sql)){
-			 for(MerchantCategory cate : merchantCategorys){
-				 ps.setInt(1, cate.getMerchantId());
-				 ps.setInt(2, cate.getCategoryId());
-				 ps.setInt(3, cate.getStatus());
-				 ps.setInt(4, cate.getServiceId());
-				 
-				 ps.addBatch();
-			 }
-			 int[] resultarr = ps.executeBatch();
-			 
-			 for(int i=0; i<resultarr.length; i++){
-				 result += resultarr[i];
-			 }
-			 conn.commit();
-		 }catch(SQLException e){
-			 conn.rollback();
-			 throw e;
-		 }finally{
-			 conn.setAutoCommit(true);
-		 }
-		 return result;
-	} catch (SQLException e) {
-		throw e;
-	}
- }
+	public int batchSave(List<MerchantCategory> merchantCategorys) throws SQLException {
+		String sql = "insert into merchant_category(merchant_id, category_id, status, service_id) values(?,?,?,?)";
+		DataSource dataSource = this.jdbcTemplate.getDataSource();
+		int result = 0;
+		try (Connection conn = dataSource.getConnection()) {
+			conn.setAutoCommit(false);
+			try (PreparedStatement ps = conn.prepareStatement(sql)) {
+				for (MerchantCategory cate : merchantCategorys) {
+					ps.setInt(1, cate.getMerchantId());
+					ps.setInt(2, cate.getCategoryId());
+					ps.setInt(3, cate.getStatus());
+					ps.setInt(4, cate.getServiceId());
 
+					ps.addBatch();
+				}
+				int[] resultarr = ps.executeBatch();
+
+				for (int i = 0; i < resultarr.length; i++) {
+					result += resultarr[i];
+				}
+				conn.commit();
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				conn.setAutoCommit(true);
+			}
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<Integer> queryAvailableMerchantId(int categoryId, int serviceId) {
 		String sql = "select merchant_id from merchant_category where category_id = ? and service_id = ? and status = 1";
 
-		final List<Integer> result= new ArrayList<>();
-		return jdbcTemplate.query(sql, new Object[]{categoryId, serviceId},new RowMapper<Integer>() {
+		final List<Integer> result = new ArrayList<>();
+		return jdbcTemplate.query(sql, new Object[] { categoryId, serviceId }, new RowMapper<Integer>() {
 			@Override
 			public Integer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
 				Integer merchantId = rs.getInt("merchant_id");
-				if(merchantId!=null) {
-					result.add(merchantId);
-					return merchantId;
-				}
-				return null;
+				result.add(merchantId);
+				return merchantId;
 			}
 		});
 
 	}
-
 
 }

@@ -4,6 +4,7 @@
 package com.shihui.openpf.home.resource;
 
 import java.io.File;
+
 import javax.annotation.Resource;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -15,9 +16,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.shihui.openpf.common.tools.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
+import com.alibaba.fastjson.JSON;
+import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
@@ -36,6 +40,7 @@ import me.weimi.api.swarm.annotations.ParamDesc;
 @Controller
 @Path("/v2/openpf/home/order")
 public class OrderResource {
+	private Logger log = LoggerFactory.getLogger(getClass());
 
     @Resource
     OrderManage orderManage;
@@ -56,9 +61,9 @@ public class OrderResource {
                            @ParamDesc(desc = "页标", isRequired = false) @QueryParam("cursor") @DefaultValue("1") int cursor ,
                            @ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("count") @DefaultValue("10") int count) {
 
-
+    	 Order queryOrder = new Order();
         try {
-            Order queryOrder = new Order();
+           
             if(!StringUtil.isEmpty(orderId))
             queryOrder.setOrderId(Long.parseLong(orderId));
             if(!StringUtil.isEmpty(status))
@@ -71,7 +76,7 @@ public class OrderResource {
             queryOrder.setMerchantId(Integer.parseInt(merchantId));
             return orderManage.queryOrderList(rc,queryOrder,startTime,endTime,cursor,count );
         }catch (Exception e){
-
+        	log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
         }
         return null;
     }
@@ -140,13 +145,14 @@ public class OrderResource {
     public String cancel(
             @Context RequestContext rc,
             @ParamDesc(isRequired = true, desc = "订单ID") @QueryParam("orderId") long orderId,
-            @ParamDesc(isRequired = true, desc = "取消订单类型") @QueryParam("cancelType") String cancelType
+            @ParamDesc(isRequired = true, desc = "退款金额") @QueryParam("price") String price,
+            @ParamDesc(isRequired = true, desc = "退款备注") @QueryParam("reson") String reson
     ) {
         OrderCancelType orderCancelType = null;
         try {
             orderCancelType = OrderCancelType.valueOf("REFUND_PARTIAL");
         } catch (Exception e) {
-
+//        	log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
         }
         return orderManage.cancelLocalOrder(orderId, orderCancelType);
 
@@ -154,7 +160,7 @@ public class OrderResource {
 
     @GET
     @Path("/unusualOrder/count")
-    @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    @BaseInfo(desc = "异常订单数量查询接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
     public String count(
             @Context RequestContext rc) {
         return orderManage.countunusual();
@@ -162,7 +168,7 @@ public class OrderResource {
 
     @GET
     @Path("/unusualOrder/query")
-    @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    @BaseInfo(desc = "异常订单查询接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
     public String query(
             @Context RequestContext rc) {
         return orderManage.queryUnusual();
@@ -171,7 +177,7 @@ public class OrderResource {
     @GET
     @Path("/unusualOrder/export")
     @Produces("application/vnd.ms-excel; charset=UTF-8")
-    @BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
+    @BaseInfo(desc = "异常订单导出接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
     public  Response export(
             @Context RequestContext rc) {
         String fileName = orderManage.exportUnusual();

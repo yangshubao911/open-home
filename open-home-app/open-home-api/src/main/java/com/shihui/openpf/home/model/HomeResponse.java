@@ -20,6 +20,13 @@ public class HomeResponse implements Serializable {
 	private int code = -1;// 查询结果
 	private String msg;// 结果描述
 	private String result;// 查询内容
+	
+	public HomeResponse(){};
+	
+	public HomeResponse(int code, String msg){
+		this.code = code;
+		this.msg = msg;
+	}
 
 	public Merchant getMerchant() {
 		return merchant;

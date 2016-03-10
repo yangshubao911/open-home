@@ -12,14 +12,6 @@ public interface OrderManage {
 
     /**
      * 客户端创建订单
-     * @param json 创建订单请求数据
-     *
-     * @return 返回结果
-     */
-    public String createOrder(RequestContext rc, String json);
-
-    /**
-     * 客户端创建订单
      * @param order 创建订单请求数据
      *
      * @return 返回结果

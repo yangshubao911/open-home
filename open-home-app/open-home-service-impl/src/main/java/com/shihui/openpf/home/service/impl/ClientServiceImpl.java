@@ -285,14 +285,17 @@ public class ClientServiceImpl implements ClientService {
         Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(serviceId, cityId, districtId, plateId);
         List<Integer> m_c_merchantIds = merchantCategoryService.queryAvailableMerchantId(goods.getCategoryId(), goods.getServiceId());
         List<Integer> m_g_merchantIds = merchantGoodsService.getAvailableMerchant(goodsId);
-        Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
+        @SuppressWarnings("unchecked")
+		Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
         if (collection_1 == null || collection_1.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_2 = CollectionUtils.intersection(collection_1, m_c_merchantIds);
         if (collection_2 == null || collection_2.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_3 = CollectionUtils.intersection(collection_2, m_g_merchantIds);
         if (collection_3 == null || collection_3.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
@@ -397,14 +400,17 @@ public class ClientServiceImpl implements ClientService {
         Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(serviceId, cityId, districtId, plateId);
         List<Integer> m_c_merchantIds = merchantCategoryService.queryAvailableMerchantId(goods.getCategoryId(), goods.getServiceId());
         List<Integer> m_g_merchantIds = merchantGoodsService.getAvailableMerchant(goodsId);
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
         if (collection_1 == null || collection_1.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_2 = CollectionUtils.intersection(collection_1, m_c_merchantIds);
         if (collection_2 == null || collection_2.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_3 = CollectionUtils.intersection(collection_2, m_g_merchantIds);
         if (collection_3 == null || collection_3.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
@@ -486,16 +492,15 @@ public class ClientServiceImpl implements ClientService {
             }
         }
 
-        JSONObject times_json = new JSONObject();
-        Map times_map = new TreeMap<>();
-        for (Map.Entry entry : result_times_map.entrySet()) {
-            String key = (String) entry.getKey();
-            Map<String, String> value = (Map<String, String>) entry.getValue();
+        Map<String, Object> times_map = new TreeMap<>();
+        for (Map.Entry<String, Map<String, String>> entry : result_times_map.entrySet()) {
+            String key = entry.getKey();
+            Map<String, String> value = entry.getValue();
             JSONArray times_array = new JSONArray();
-            for (Map.Entry entry1 : value.entrySet()) {
+            for (Map.Entry<String, String> entry1 : value.entrySet()) {
                 JSONObject json = new JSONObject();
-                String times = (String) entry1.getKey();
-                String merchants = (String) entry1.getValue();
+                String times = entry1.getKey();
+                String merchants = entry1.getValue();
                 String client_time = times.substring(0, 2) + ":" + times.substring(2, 4);
                 json.put(client_time, merchants.split(","));
                 times_array.add(json);
@@ -518,7 +523,6 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     public String orderCreate(OrderForm orderForm, String ip) {
-        JSONObject result_json = new JSONObject();
         com.shihui.openpf.common.model.Service service = serviceManage.findById(orderForm.getServiceId());
         if (service.getServiceStatus() != 1) {
             throw new AppException(HomeExcepFactor.Service_Close);
@@ -560,7 +564,7 @@ public class ClientServiceImpl implements ClientService {
             merchantMap.put(merchant.getMerchantId(), merchant);
         }
         List<Integer> m_s_merchantIds = new ArrayList<>();
-        Map<Integer, Integer> mbMap = new HashMap();
+        Map<Integer, Integer> mbMap = new HashMap<>();
         MerchantBusiness merchantBusiness = new MerchantBusiness();
         merchantBusiness.setServiceId(orderForm.getServiceId());
         merchantBusiness.setStatus(1);
@@ -578,27 +582,30 @@ public class ClientServiceImpl implements ClientService {
         merchantGoods_search.setGoodsId(orderForm.getGoodsId());
         List<MerchantGoods> merchantGoodsList = merchantGoodsService.queryMerchantGoodsList(merchantGoods_search);
         List<Integer> m_g_merchantIds = new ArrayList<>();
-        Map<Integer, String> mgMap = new HashMap();
+        Map<Integer, String> mgMap = new HashMap<>();
         for (MerchantGoods merchantGoods : merchantGoodsList) {
             m_g_merchantIds.add(merchantGoods.getMerchantId());
             mgMap.put(merchantGoods.getMerchantId(), merchantGoods.getSettlement());
         }
 
-        Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
+        @SuppressWarnings("unchecked")
+		Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
         if (collection_1 == null || collection_1.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_2 = CollectionUtils.intersection(collection_1, m_c_merchantIds);
         if (collection_2 == null || collection_2.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
+        @SuppressWarnings("unchecked")
         Collection<Integer> collection_3 = CollectionUtils.intersection(collection_2, m_g_merchantIds);
         if (collection_3 == null || collection_3.size() == 0) {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
 
         String[] merchants = orderForm.getMerchants().split(",");
-        Map<Integer, String> map = new HashMap();
+        Map<Integer, String> map = new HashMap<>();
         for (String merchantId : merchants) {
             map.put(Integer.parseInt(merchantId), "");
         }
@@ -652,12 +659,10 @@ public class ClientServiceImpl implements ClientService {
         long balance = currencyService.getUserBalance(orderForm.getUserId());
         if (balance == -1) balance = 0;
         BigDecimal real_offset = null;
-        BigDecimal shoffset = null;
         BigDecimal actPrice = null;
         real_offset = orderForm.getCostSh() == 1 &&
                 new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
-        shoffset = new BigDecimal(goods.getShOffSet());
         actPrice = new BigDecimal(goods.getPrice()).subtract(real_offset);
         if (actPrice.compareTo(new BigDecimal(orderForm.getActPay())) != 0 ||
                 real_offset.compareTo(new BigDecimal(orderForm.getActOffset())) != 0) {

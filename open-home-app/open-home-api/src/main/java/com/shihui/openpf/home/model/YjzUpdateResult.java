@@ -6,7 +6,9 @@ import java.io.Serializable;
  * Created by zhoutc on 2015/10/26.
  */
 public class YjzUpdateResult implements Serializable{
-    private int code;
+	private static final long serialVersionUID = -5645093124076183513L;
+	
+	private int code;
     private String msg;
     private String[] body;
 

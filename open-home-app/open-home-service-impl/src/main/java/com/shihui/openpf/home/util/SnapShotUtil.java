@@ -1,9 +1,12 @@
 package com.shihui.openpf.home.util;
 
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.Goods;
-import me.weimi.api.commons.config.ConfigLoader;
-import me.weimi.api.commons.config.DefaultConfigLoader;
+
 import me.weimi.api.commons.http.ApacheHttpClient;
 import me.weimi.api.commons.http.ApiHttpClient;
 import me.weimi.api.commons.util.ApiLogger;

@@ -9,7 +9,9 @@ import me.weimi.api.core.HttpStatus;
  */
 public class HomeExcepFactor extends ExcepFactor {
 
-    public static final HomeExcepFactor Service_Close;
+	private static final long serialVersionUID = 6306671362373933341L;
+
+	public static final HomeExcepFactor Service_Close;
 
     public static final HomeExcepFactor Group_Unfound;
 
