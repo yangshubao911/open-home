@@ -143,9 +143,9 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 						result.put("merchant_id", handler.getMerchant().getMerchantId());
 						
 						resultArray.add(result);
-						//删除已经处理完的请求
-						handlers.remove(i);
 					}
+					//删除已经处理完的请求
+					handlers.remove(i);
 				}
 			}
 			if(handlers.size() == 0)
