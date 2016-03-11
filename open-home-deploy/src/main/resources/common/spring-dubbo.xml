@@ -9,16 +9,23 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-
-<!--     <dubbo:reference id="userService" interface="com.shihui.rpc.user.service.api.UserService" check="false"/> -->
-
+    <!-- 实惠现金接口 -->
     <dubbo:reference id="currencyRpcAccountService" interface="com.shihui.currency.api.rpc.CurrencyRpcAccountService" check="false"/>
-
-    <dubbo:reference id="ServiceManage" interface=" com.shihui.openpf.common.dubbo.api.ServiceManage" check="false"/>
-
+    <!-- 订单系统-开放平台定制接口 -->
     <dubbo:reference id="openService" interface="com.shihui.api.order.service.OpenService" init="true" timeout="15000" retries="0" check="false" />
-
+    <!-- 订单系统-订单接口 -->
     <dubbo:reference id="omsOrderService" interface="com.shihui.api.order.service.OrderService" init="true" timeout="15000" retries="0" check="false" />
-
+    <!-- 订单系统-退款接口 -->
     <dubbo:reference id="orderRefundService" interface="com.shihui.api.order.service.OrderRefundService" init="true" timeout="15000" retries="0" check="false" />
+
+	<!-- 开放平台-小区信息接口 -->
+	<dubbo:reference id="groupManage" interface="com.shihui.openpf.common.service.api.GroupManage" />
+	<!-- 开放平台-供应商地接口 -->
+	<dubbo:reference id="merchantManage"  interface="com.shihui.openpf.common.dubbo.api.MerchantManage" />
+	<!-- 开放平台-供应商服务关联接口 -->
+	<dubbo:reference id="merchantBusinessManage" interface="com.shihui.openpf.common.dubbo.api.MerchantBusinessManage"/>
+	<!-- 开放平台-供应商服务区域接口 -->
+	<dubbo:reference id="merchantAreaManage" interface=" com.shihui.openpf.common.dubbo.api.MerchantAreaManage" check="false"/>
+	<!-- 开放平台-业务类型接口 -->
+	<dubbo:reference id="ServiceManage" interface=" com.shihui.openpf.common.dubbo.api.ServiceManage" check="false"/>
 </beans>

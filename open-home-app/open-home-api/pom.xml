@@ -11,29 +11,4 @@
 
     <artifactId>open-home-api</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>me.weimi.api</groupId>
-            <artifactId>matrix-commons</artifactId>
-            <version>1.3.108-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.shihui.openpf</groupId>
-            <artifactId>open-common-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.shihui.openpf</groupId>
-            <artifactId>open-home-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpasyncclient</artifactId>
-			<version>4.1.1</version>
-		</dependency>
-    </dependencies>
-
 </project>
