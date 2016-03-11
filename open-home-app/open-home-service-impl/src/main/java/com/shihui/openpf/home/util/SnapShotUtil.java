@@ -1,7 +1,9 @@
 package com.shihui.openpf.home.util;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
@@ -10,12 +12,6 @@ import com.shihui.openpf.home.model.Goods;
 import me.weimi.api.commons.http.ApacheHttpClient;
 import me.weimi.api.commons.http.ApiHttpClient;
 import me.weimi.api.commons.util.ApiLogger;
-
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by zhoutc on 2015/9/6.
@@ -46,9 +42,9 @@ public class SnapShotUtil {
 			goods_info.put("goods_id", goods.getGoodsId());
 			goods_info.put("goods_name", goods.getGoodsName());
 		//	goods_info.put("goods_img_multi", goods.getImageId());
-			List<String> big = new ArrayList();
+			List<String> big = new ArrayList<>();
 			big.add(goods.getDetailImage());
-			List<String> detail = new ArrayList();
+			List<String> detail = new ArrayList<>();
 			detail.add(goods.getImageId());
 			goods_info.put("goods_big_img",big );
 			goods_info.put("goods_small_img", detail);

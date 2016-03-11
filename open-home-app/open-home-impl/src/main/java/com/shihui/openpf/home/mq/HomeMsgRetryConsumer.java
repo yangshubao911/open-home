@@ -42,7 +42,7 @@ public class HomeMsgRetryConsumer implements Consumer {
 	private MerchantManage merchantManage;
 	
 	@Value("${mq.home.msg.retry_wait_second}")
-	private int waitTime = 180;//单位秒
+	private int waitTime = 5;//单位秒
 	
 	/* (non-Javadoc)
 	 * @see com.shihui.commons.mq.api.Consumer#doit(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
