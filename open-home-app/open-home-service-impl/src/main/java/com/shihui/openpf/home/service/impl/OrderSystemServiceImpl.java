@@ -14,6 +14,8 @@ import com.shihui.api.order.service.OpenService;
 import com.shihui.api.order.service.OrderRefundService;
 import com.shihui.api.order.service.OrderService;
 import com.shihui.api.order.vo.ApiResult;
+import com.shihui.api.order.vo.CustomCancelParam;
+import com.shihui.api.order.vo.MerchantCancelParam;
 import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.api.order.vo.SingleGoodsCreateOrderParam;
 import com.shihui.openpf.home.service.api.OrderSystemService;
@@ -85,14 +87,24 @@ public class OrderSystemServiceImpl implements OrderSystemService {
     }
 
     @Override
-    public boolean fail(int orderType , long orderId, long goodsId, long merchantCode,long refundsPrice,int nowStatus, String reason) {
+    public SimpleResult merchantCancel(long orderId, long merchantCode,long refundsPrice,int nowStatus, String reason) {
         try {
-            boolean result = openService.fail(orderType, orderId, goodsId ,merchantCode, refundsPrice, nowStatus, reason);
+        	MerchantCancelParam param = new MerchantCancelParam();
+        	param.setIsNeedReview(2);//是否需审核 1需审核  2无需审核
+        	param.setIsReturnShihui(1);//是否退实惠现金  1是  2否
+        	param.setMerchantId(merchantCode);
+        	param.setOrderId(orderId);
+        	param.setOrderStatus(OrderStatusEnum.parse(nowStatus));
+        	param.setPrice(refundsPrice);
+        	param.setReason(reason);
+        	SimpleResult result = openService.merchantCancel(param);
             return result;
         } catch (Exception e) {
-            log.error("complete exception !!!", e);
+            log.error("订单系统——商户退款接口异常", e);
         }
-        return false;
+        SimpleResult result = new SimpleResult();
+        result.setStatus(2);
+        return result ;
     }
 
     @Override
@@ -116,5 +128,27 @@ public class OrderSystemServiceImpl implements OrderSystemService {
 			log.error("order refund exception !!!, order_id={}", orderId, e);
 		}
 		return result;
+	}
+
+	@Override
+	public SimpleResult customCancel(long orderId, long merchantCode, long userId, long refundsPrice, int nowStatus, String reason) {
+		try {
+			CustomCancelParam param = new CustomCancelParam();
+        	param.setIsNeedReview(2);//是否需审核 1需审核  2无需审核
+        	param.setIsReturnShihui(1);//是否退实惠现金  1是  2否
+        	param.setMerchantId(merchantCode);
+        	param.setOrderId(orderId);
+        	param.setOrderStatus(OrderStatusEnum.parse(nowStatus));
+        	param.setPrice(refundsPrice);
+        	param.setReason(reason);
+        	param.setUserId(userId);
+        	SimpleResult result = openService.customCancel(param);
+            return result;
+        } catch (Exception e) {
+            log.error("订单系统——用户退款接口异常", e);
+        }
+        SimpleResult result = new SimpleResult();
+        result.setStatus(2);
+        return result ;
 	}
 }
