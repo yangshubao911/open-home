@@ -96,6 +96,9 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		//请求供应商接口
 		List<OpenHomeHttpCallbackHandler<String>> handlers = new LinkedList<OpenHomeHttpCallbackHandler<String>>();
 		for(Entry<Merchant, MerchantApi> entry : merchantApiMap.entrySet()){
+			if(entry.getKey() == null){
+				continue;
+			}
 			MerchantApi api = entry.getValue();
 			ParamAssembler paramParser = null;
 			ResultParser resultParser = null;
