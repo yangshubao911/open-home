@@ -18,7 +18,28 @@ public interface OrderSystemService {
 
     public boolean complete(long orderId ,long goodsId ,String settlementInfo, int nowStatus);
 
-    public boolean fail(int orderType , long orderId, long goodsId, long merchantCode,long refundsPrice,int nowStatus, String reason);
+    /**
+     * 商户退款接口
+     * @param orderId
+     * @param merchantCode
+     * @param refundsPrice
+     * @param nowStatus
+     * @param reason
+     * @return
+     */
+    public SimpleResult merchantCancel(long orderId, long merchantCode,long refundsPrice,int nowStatus, String reason);
+    
+    /**
+     * 用户退款
+     * @param orderId
+     * @param merchantCode
+     * @param userId
+     * @param refundsPrice
+     * @param nowStatus
+     * @param reason
+     * @return
+     */
+    public SimpleResult customCancel(long orderId, long merchantCode, long userId, long refundsPrice,int nowStatus, String reason);
 
     public SimpleResult backendOrderDetail(long orderId);
     

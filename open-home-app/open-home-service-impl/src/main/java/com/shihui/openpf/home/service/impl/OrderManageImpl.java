@@ -1,4 +1,4 @@
-package com.shihui.openpf.home.impl;
+package com.shihui.openpf.home.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -33,13 +33,10 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
-import com.shihui.openpf.home.api.HomeServProviderService;
-import com.shihui.openpf.home.api.OrderManage;
 import com.shihui.openpf.home.model.Contact;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.HomeCodeEnum;
 import com.shihui.openpf.home.model.HomeOrderStatusEnum;
-import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.Request;
@@ -47,7 +44,9 @@ import com.shihui.openpf.home.model.YjzOrderStatusEnum;
 import com.shihui.openpf.home.model.YjzUpdateResult;
 import com.shihui.openpf.home.service.api.ContactService;
 import com.shihui.openpf.home.service.api.GoodsService;
+import com.shihui.openpf.home.service.api.HomeServProviderService;
 import com.shihui.openpf.home.service.api.MerchantGoodsService;
+import com.shihui.openpf.home.service.api.OrderManage;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.service.api.RequestService;
@@ -389,8 +388,7 @@ public class OrderManageImpl implements OrderManage {
 					request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 					this.requestService.updateStatus(request);
 					// 商户取消订单，全额退款，无需审核，退回实惠现金
-					SimpleResult sr = orderSystemService.openRefund(RefundModeEnum.MERCHANTCANCEL, order.getOrderId(),
-							StringUtil.yuan2hao(order.getPrice()), "商户取消订单", 2, 1);
+					SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), "商户取消订单");
 					if (sr.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
@@ -399,7 +397,7 @@ public class OrderManageImpl implements OrderManage {
 						updateOrder.setUpdateTime(new Date());
 						this.orderService.update(order);
 					}else{
-						log.error("商户取消订单，发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
+						log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 					}
 					return HomeCodeEnum.SUCCESS.toJSONString();
 				} else {
@@ -552,7 +550,7 @@ public class OrderManageImpl implements OrderManage {
 			case OrderDistribute:
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				Date startTime = sdf.parse(contact.getServiceStartTime());
-				long diffTime = System.currentTimeMillis() - startTime.getTime();
+				long diffTime = startTime.getTime() - System.currentTimeMillis();
 				if(diffTime < 0 || diffTime > 2 * 60 * 60 * 1000){
 					return HomeCodeEnum.CANCEL_TIME_OUT.toJSONString("只能在开始服务时间前两小时内才能取消订单");
 				}
@@ -616,31 +614,6 @@ public class OrderManageImpl implements OrderManage {
 		return result.toJSONString();
 	}
 
-	public boolean cancelThirdPartOrder(Order order, Merchant merchant) {
-
-		Request request = requestService.queryOrderRequest(order.getOrderId());
-		if (request == null) {
-			log.info("cancelThirdPartOrder--orderId = {} not found request!!!", order.getOrderId());
-			return false;
-		}
-		HomeResponse homeResponse = homeServProviderService.cancelOrder(merchant, order.getService_id(),
-				request.getRequestId());
-		log.info("cancelThirdPartOrder--orderId = {} cancel request code = {} and msg = {}!!!", order.getOrderId(),
-				homeResponse.getCode(), homeResponse.getMsg());
-
-		if (homeResponse.getCode() == 0) {
-			Request new_request = new Request();
-			request.setRequestId(request.getRequestId());
-			request.setRequestStatus(-1);
-			if (requestService.updateStatus(new_request)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
 
 	/**
 	 * 导出异常订单
@@ -793,9 +766,15 @@ public class OrderManageImpl implements OrderManage {
 
 				case OrderUnConfirm:
 					// 商户取消订单流程
-					boolean cancel = orderSystemService.fail(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
-							order.getGoodsId(), merchant.getMerchantCode(), refundsPrice, status, "商户发起取消");
-					if (cancel) {
+					SimpleResult result = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), refundsPrice, status, "商户发起取消");
+					if (result.getStatus() == 1) {
+						// 保存审核id
+						Order updateOrder = new Order();
+						updateOrder.setOrderId(order.getOrderId());
+						updateOrder.setAuditId((long) result.getData());
+						updateOrder.setUpdateTime(new Date());
+						this.orderService.update(order);
+						
 						Request request1 = new Request();
 						request1.setRequestId(orderId);
 						request1.setRequestStatus(statusEnum.getServerValue());

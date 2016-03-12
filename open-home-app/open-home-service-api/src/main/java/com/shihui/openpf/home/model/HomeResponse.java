@@ -62,7 +62,7 @@ public class HomeResponse implements Serializable {
 
 	@Override
 	public String toString() {
-		return "HomeResponse [merchant=" + merchant.getMerchantId() + ", code=" + code + ", msg=" + msg + ", result=" + result + "]";
+		return "HomeResponse [code=" + code + ", msg=" + msg + ", result=" + result + "]";
 	}
 
 }

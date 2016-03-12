@@ -14,12 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.shihui.openpf</groupId>
-            <artifactId>open-home-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.shihui.openpf</groupId>
-            <artifactId>open-home-impl</artifactId>
+            <artifactId>open-home-service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

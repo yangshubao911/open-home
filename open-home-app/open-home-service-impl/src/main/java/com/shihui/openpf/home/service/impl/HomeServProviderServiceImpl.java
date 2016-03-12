@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.shihui.openpf.home.impl;
+package com.shihui.openpf.home.service.impl;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -30,13 +30,13 @@ import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantApi;
 import com.shihui.openpf.common.model.MerchantApiName;
 import com.shihui.openpf.common.service.api.GroupManage;
-import com.shihui.openpf.home.api.HomeServProviderService;
 import com.shihui.openpf.home.api.ParamAssembler;
 import com.shihui.openpf.home.api.ResultParser;
 import com.shihui.openpf.home.http.FastHttpUtils;
 import com.shihui.openpf.home.http.OpenHomeHttpCallbackHandler;
 import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.OrderInfo;
+import com.shihui.openpf.home.service.api.HomeServProviderService;
 
 
 /**
@@ -96,6 +96,9 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		//请求供应商接口
 		List<OpenHomeHttpCallbackHandler<String>> handlers = new LinkedList<OpenHomeHttpCallbackHandler<String>>();
 		for(Entry<Merchant, MerchantApi> entry : merchantApiMap.entrySet()){
+			if(entry.getKey() == null){
+				continue;
+			}
 			MerchantApi api = entry.getValue();
 			ParamAssembler paramParser = null;
 			ResultParser resultParser = null;
@@ -140,9 +143,9 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 						result.put("merchant_id", handler.getMerchant().getMerchantId());
 						
 						resultArray.add(result);
-						//删除已经处理完的请求
-						handlers.remove(i);
 					}
+					//删除已经处理完的请求
+					handlers.remove(i);
 				}
 			}
 			if(handlers.size() == 0)
