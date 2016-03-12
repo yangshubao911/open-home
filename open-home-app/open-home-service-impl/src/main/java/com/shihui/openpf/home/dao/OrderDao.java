@@ -111,7 +111,7 @@ public class OrderDao extends AbstractDao<Order> {
     public Order queryOrder(long orderId){
         String sql = "select * from `order` where order_id = ?";
         try {
-            return super.queryForObject(sql,orderId);
+            return super.queryForObject(sql, orderId);
         }catch (Exception e){
 
         }
@@ -138,4 +138,13 @@ public class OrderDao extends AbstractDao<Order> {
         return super.queryForList(sql, new Object[]{8});
     }
 
+    /**
+     * 查询用户下单数量
+     *
+     * @return 订单数量
+     */
+    public int countOrders(long userId){
+        String sql = "select count(*) from `order` where user_id = ?";
+        return super.queryCount(sql, new Object[]{userId});
+    }
 }

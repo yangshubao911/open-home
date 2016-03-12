@@ -141,4 +141,9 @@ public class OrderServiceImpl implements OrderService {
 	public boolean update(Order order) {
 		return orderDao.update(order) > 0;
 	}
+
+    @Override
+    public int countOrders(long userId) {
+        return orderDao.countOrders(userId);
+    }
 }

@@ -16,6 +16,8 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.common.model.Campaign;
+import com.shihui.openpf.common.service.api.CampaignService;
 import com.shihui.openpf.home.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -93,6 +95,8 @@ public class ClientServiceImpl implements ClientService {
     RequestService requestService;
     @Resource(name="openOrderService")
     OrderService orderService;
+    @Resource
+    CampaignService campaignService;
 
     /**
      * 客户端查询商品列表
@@ -323,9 +327,10 @@ public class ClientServiceImpl implements ClientService {
         goods_json.put("goodsDesc", goods.getGoodsDesc());
         goods_json.put("originalPrice", goods.getPrice());
         goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
-        goods_json.put("shOffset",goods.getShOffSet());
-        result.put("goods", goods_json);
-        result.put("balance", balance);
+
+
+
+
 
         BigDecimal real_offset = null;
         BigDecimal shoffset = null;
@@ -335,6 +340,25 @@ public class ClientServiceImpl implements ClientService {
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
         shoffset = new BigDecimal(goods.getShOffSet());
 
+
+        Date now = new Date();
+        Campaign campaign = new Campaign();
+        Campaign db_campaign = null;
+        campaign.setServiceId(goods.getServiceId());
+        List<Campaign> campaigns = campaignService.findByCondition(campaign);
+        if(campaigns!=null || campaigns.size() > 0){
+            db_campaign = campaigns.get(0);
+            if(now.getTime() <= db_campaign.getEndTime().getTime()&&
+                    now.getTime() >= db_campaign.getStartTime().getTime()&&
+                    db_campaign.getStatus() == 1){
+                if(orderService.countOrders(userId)==0){
+                    real_offset = offsetMoney(goods,balance,costSh,userId);
+                    shoffset = new BigDecimal(goods.getFirstShOffSet());
+                }
+            }
+
+        }
+        actPrice = new BigDecimal(goods.getPrice()).subtract(real_offset);
         //showButton 0不使用实惠现金或者实惠现金不够抵用  1使用实惠现金并且实惠现金够抵用
         int showButton = 1;
         if(balance==0) showButton=0;
@@ -343,7 +367,10 @@ public class ClientServiceImpl implements ClientService {
             showButton = 0;
 
         if (shoffset.compareTo(new BigDecimal("0")) == 0) showButton = 2;
-        actPrice = new BigDecimal(goods.getPrice()).subtract(real_offset);
+
+        goods_json.put("shOffset",real_offset.setScale(2).toString());
+        result.put("goods", goods_json);
+        result.put("balance", balance);
         result.put("actPay", actPrice);
         result.put("actOffset", real_offset);
         result.put("showButton", showButton);
@@ -656,6 +683,9 @@ public class ClientServiceImpl implements ClientService {
         if (merchantId == null || homeResponse == null || homeResponse.getCode() != 0) {
             throw new AppException(HomeExcepFactor.Merchant_Refresh);
         }
+
+
+
         long balance = currencyService.getUserBalance(orderForm.getUserId());
         if (balance == -1) balance = 0;
         BigDecimal real_offset = null;
@@ -663,6 +693,25 @@ public class ClientServiceImpl implements ClientService {
         real_offset = orderForm.getCostSh() == 1 &&
                 new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
+
+
+
+        Date now = new Date();
+        Campaign campaign = new Campaign();
+        Campaign db_campaign = null;
+        campaign.setServiceId(goods.getServiceId());
+        List<Campaign> campaigns = campaignService.findByCondition(campaign);
+        if(campaigns!=null || campaigns.size() > 0){
+            db_campaign = campaigns.get(0);
+            if(now.getTime() <= db_campaign.getEndTime().getTime()&&
+                    now.getTime() >= db_campaign.getStartTime().getTime()&&
+                    db_campaign.getStatus() == 1){
+                if(orderService.countOrders(orderForm.getUserId())==0){
+                    real_offset = offsetMoney(goods,balance,orderForm.getCostSh(),orderForm.getUserId());
+                }
+            }
+
+        }
         actPrice = new BigDecimal(goods.getPrice()).subtract(real_offset);
         if (actPrice.compareTo(new BigDecimal(orderForm.getActPay())) != 0 ||
                 real_offset.compareTo(new BigDecimal(orderForm.getActOffset())) != 0) {
@@ -698,7 +747,7 @@ public class ClientServiceImpl implements ClientService {
         //JSONObject third_order_result = third_order.getJSONObject("result");
         String requestId = third_order.getString("orderId");
 
-        Date now = new Date();
+
         SingleGoodsCreateOrderParam singleGoodsCreateOrderParam = new SingleGoodsCreateOrderParam();
         singleGoodsCreateOrderParam.setCampaignId(1);
         singleGoodsCreateOrderParam.setCityId(cityId);
@@ -800,5 +849,34 @@ public class ClientServiceImpl implements ClientService {
         boolean create_order = orderService.createOrder(order);
         log.info("CreateOrder -- orderId：{} save order result：{}", orderId, create_order);
         return JSON.toJSONString(result);
+    }
+
+
+    public BigDecimal offsetMoney(Goods goods, long userBalance , int costSh , long userId) {
+
+        BigDecimal shOffset = new BigDecimal(goods.getShOffSet());
+        BigDecimal firstOffset = new BigDecimal(goods.getFirstShOffSet());
+        BigDecimal balance = new BigDecimal(userBalance).divide(new BigDecimal("100"));
+        BigDecimal real_shoffset = null;
+        if(costSh!=1){
+            return new BigDecimal("0");
+        }
+        if (balance.compareTo(shOffset) >= 0 && balance.compareTo(firstOffset) >= 0) {
+            //余额比首单优惠和实惠抵扣价格均多
+            real_shoffset = shOffset.compareTo(firstOffset) >= 0 ?
+                    shOffset:
+                    firstOffset;
+        } else if (balance.compareTo(shOffset) < 0 && balance.compareTo(firstOffset) < 0) {
+            //余额比首单优惠和实惠抵扣价格均少
+            real_shoffset = new BigDecimal("0");
+        } else {
+            //用户余额在首单优惠价格和实惠抵扣价格之间
+            real_shoffset = shOffset.compareTo(firstOffset) >= 0 ?
+                    firstOffset :
+                    shOffset;
+        }
+        log.info("FirstOrderProcess--ClearingMoney--UserID:{} real_shoffset:{}",userId,real_shoffset.toString());
+
+        return real_shoffset;
     }
 }
