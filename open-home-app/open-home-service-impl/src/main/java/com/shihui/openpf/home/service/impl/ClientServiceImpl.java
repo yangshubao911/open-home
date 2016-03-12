@@ -707,6 +707,10 @@ public class ClientServiceImpl implements ClientService {
         JSONObject jo = new JSONObject();
         jo.put("service_id", service.getServiceId());
         jo.put("merchant_id", selectedMer.getMerchantId());
+        jo.put("category_id", category.getId());
+        jo.put("title", service.getServiceName());
+        String title = "【"+service.getServiceName()+"】" + goods.getGoodsName() ;
+        jo.put("goodsName", selectedMer.getMerchantId());
         
         singleGoodsCreateOrderParam.setExt(jo.toJSONString());
         
