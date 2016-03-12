@@ -710,7 +710,7 @@ public class ClientServiceImpl implements ClientService {
         jo.put("category_id", category.getId());
         jo.put("title", service.getServiceName());
         String title = "【"+service.getServiceName()+"】" + goods.getGoodsName() ;
-        jo.put("goodsName", selectedMer.getMerchantId());
+        jo.put("goodsName", title);
         
         singleGoodsCreateOrderParam.setExt(jo.toJSONString());
         
