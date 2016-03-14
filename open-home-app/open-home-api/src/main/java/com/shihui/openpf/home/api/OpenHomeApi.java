@@ -16,6 +16,6 @@ public interface OpenHomeApi {
 	 * @param userId 用户id
 	 * @return
 	 */
-	SimpleHomeResponse userCancelOrder(long orderId, long userId);
+	SimpleHomeResponse userCancelOrder(long orderId, long userId, String reason);
 
 }
