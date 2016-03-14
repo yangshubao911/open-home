@@ -364,7 +364,7 @@ public class OrderManageImpl implements OrderManage {
 			if (db_request == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
 			}
-			Order order = orderService.queryOrder(request.getOrderId());
+			Order order = orderService.queryOrder(db_request.getOrderId());
 			if (order == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
 			}
