@@ -56,7 +56,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 	 * @see com.shihui.openpf.home.api.OpenHomeApi#userCancelOrder(long, long)
 	 */
 	@Override
-	public SimpleHomeResponse userCancelOrder(long orderId, long userId) {
+	public SimpleHomeResponse userCancelOrder(long orderId, long userId, String reason) {
 		SimpleHomeResponse response = new SimpleHomeResponse();
 		try {
 			Order order = orderService.queryOrder(orderId);
@@ -112,7 +112,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 				// 商户取消订单，全额退款，无需审核，退回实惠现金
 				try {
 					SimpleResult sr = orderSystemService.customCancel(order.getOrderId(), merchant.getMerchantCode(),
-							userId, StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), "商户取消订单");
+							userId, StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), reason);
 					if (sr.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
