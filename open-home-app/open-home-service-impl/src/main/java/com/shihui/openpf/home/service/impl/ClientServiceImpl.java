@@ -344,7 +344,7 @@ public class ClientServiceImpl implements ClientService {
         BigDecimal shoffset = null;
         BigDecimal actPrice = null;
         real_offset = costSh == 1 &&
-                new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
+                new BigDecimal(balance).divide(new BigDecimal("10000")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
         shoffset = new BigDecimal(goods.getShOffSet());
 
@@ -371,7 +371,7 @@ public class ClientServiceImpl implements ClientService {
         int showButton = 1;
         if(balance==0) showButton=0;
         if(shoffset.compareTo(new BigDecimal("0"))==0)showButton=0;
-        if (new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(shoffset) < 0)
+        if (new BigDecimal(balance).divide(new BigDecimal("10000")).compareTo(shoffset) < 0)
             showButton = 0;
 
         if (shoffset.compareTo(new BigDecimal("0")) == 0) showButton = 2;
@@ -699,7 +699,7 @@ public class ClientServiceImpl implements ClientService {
         BigDecimal real_offset = null;
         BigDecimal actPrice = null;
         real_offset = orderForm.getCostSh() == 1 &&
-                new BigDecimal(balance).divide(new BigDecimal("100")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
+                new BigDecimal(balance).divide(new BigDecimal("10000")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
 
 
