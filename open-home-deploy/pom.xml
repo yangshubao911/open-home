@@ -28,6 +28,11 @@
             	</exclusion>
             </exclusions>
         </dependency>
+         <dependency>
+            <groupId>com.shihui.openpf</groupId>
+            <artifactId>open-home-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

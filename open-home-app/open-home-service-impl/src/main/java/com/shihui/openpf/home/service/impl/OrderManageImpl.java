@@ -344,8 +344,8 @@ public class OrderManageImpl implements OrderManage {
 			if (merchantBusiness == null) {
 				return HomeCodeEnum.SERVICE_NA.toJSONString();
 			}
-			if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != -1
-					|| merchantBusiness.getStatus() != -1) {
+			if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1
+					|| merchantBusiness.getStatus() != 1) {
 				return HomeCodeEnum.SERVICE_NA.toJSONString();
 			}
 
@@ -364,7 +364,7 @@ public class OrderManageImpl implements OrderManage {
 			if (db_request == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
 			}
-			Order order = orderService.queryOrder(request.getOrderId());
+			Order order = orderService.queryOrder(db_request.getOrderId());
 			if (order == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
 			}

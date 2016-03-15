@@ -18,9 +18,11 @@ import com.shihui.openpf.home.api.SimpleHomeResponse;
 import com.shihui.openpf.home.model.Contact;
 import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.Order;
+import com.shihui.openpf.home.model.OrderBad;
 import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.service.api.ContactService;
 import com.shihui.openpf.home.service.api.HomeServProviderService;
+import com.shihui.openpf.home.service.api.OrderBadService;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.service.api.RequestService;
@@ -45,6 +47,8 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 	HomeServProviderService homeServProviderService;
 	@Resource
 	OrderSystemService orderSystemService;
+	@Resource
+	OrderBadService orderBadService;
 
 	/*
 	 * (non-Javadoc)
@@ -106,25 +110,49 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 					request.getRequestId());
 			if (homeResponse.getCode() == 0) {
 				// 商户取消订单，全额退款，无需审核，退回实惠现金
-				SimpleResult sr = orderSystemService.customCancel(order.getOrderId(), merchant.getMerchantCode(),
-						userId, StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), reason);
-				if (sr.getStatus() == 1) {
-					// 保存审核id
-					Order updateOrder = new Order();
-					updateOrder.setOrderId(order.getOrderId());
-					updateOrder.setAuditId((long) sr.getData());
-					updateOrder.setUpdateTime(new Date());
-					this.orderService.update(order);
+				try {
+					SimpleResult sr = orderSystemService.customCancel(order.getOrderId(), merchant.getMerchantCode(),
+							userId, StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), reason);
+					if (sr.getStatus() == 1) {
+						// 保存审核id
+						Order updateOrder = new Order();
+						updateOrder.setOrderId(order.getOrderId());
+						updateOrder.setAuditId((long) sr.getData());
+						updateOrder.setUpdateTime(new Date());
+						try {
+							this.orderService.update(order);
+						} catch (Exception e) {
+							log.error("用户取消订单成功，但保存退款审核id失败，orderId={}，auditId={}", updateOrder.getOrderId(), updateOrder.getAuditId(), e);
+						}
 
-					response.setCode(0);
-					response.setMsg("取消订单成功");
-					return response;
-				} else {
-					log.error("用户取消订单并发起退款失败，订单号={}，用户id={}，原订单状态={}", order.getOrderId(), userId,
-							order.getOrderStatus());
-					response.setCode(1);
-					response.setMsg("调用订单系统接口失败，msg=" + sr.getMsg());
-					return response;
+						response.setCode(0);
+						response.setMsg("取消订单成功");
+						return response;
+					} else {
+						log.error("用户取消订单并发起退款失败，订单号={}，用户id={}，原订单状态={}", order.getOrderId(), userId,
+								order.getOrderStatus());
+						OrderBad orderBad = new OrderBad();
+						orderBad.setOrderId(orderId);
+						orderBad.setOrderStatus(order.getOrderStatus());
+						orderBad.setBadComment("调用第三方取消订单成功，但调用订单系统取消订单失败，msg=" + sr.getMsg());
+						orderBadService.save(orderBad);
+						
+						response.setCode(1);
+						response.setMsg("调用订单系统接口失败，msg=" + sr.getMsg());
+						return response;
+					}
+				} catch (Exception e) {
+					OrderBad orderBad = new OrderBad();
+					orderBad.setOrderId(orderId);
+					orderBad.setOrderStatus(order.getOrderStatus());
+					orderBad.setBadComment("调用第三方取消订单成功，但调用订单系统取消订单发生异常，msg=" + e.getMessage());
+					orderBadService.save(orderBad);
+
+                    log.error("调用第三方取消订单成功，但调用订单系统取消订单发生异常，orderId={}", orderId, e);
+                    
+                	response.setCode(1);
+        			response.setMsg("订单系统错误");
+        			return response;
 				}
 			} else {
 				response.setCode(1);

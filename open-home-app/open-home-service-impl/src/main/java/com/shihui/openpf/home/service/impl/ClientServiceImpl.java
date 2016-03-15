@@ -346,7 +346,7 @@ public class ClientServiceImpl implements ClientService {
         Campaign db_campaign = null;
         campaign.setServiceId(goods.getServiceId());
         List<Campaign> campaigns = campaignService.findByCondition(campaign);
-        if(campaigns!=null || campaigns.size() > 0){
+        if(campaigns!=null && campaigns.size() > 0){
             db_campaign = campaigns.get(0);
             if(now.getTime() <= db_campaign.getEndTime().getTime()&&
                     now.getTime() >= db_campaign.getStartTime().getTime()&&
@@ -701,7 +701,7 @@ public class ClientServiceImpl implements ClientService {
         Campaign db_campaign = null;
         campaign.setServiceId(goods.getServiceId());
         List<Campaign> campaigns = campaignService.findByCondition(campaign);
-        if(campaigns!=null || campaigns.size() > 0){
+        if(campaigns!=null && campaigns.size() > 0){
             db_campaign = campaigns.get(0);
             if(now.getTime() <= db_campaign.getEndTime().getTime()&&
                     now.getTime() >= db_campaign.getStartTime().getTime()&&
