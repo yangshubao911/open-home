@@ -551,8 +551,8 @@ public class OrderManageImpl implements OrderManage {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				Date startTime = sdf.parse(contact.getServiceStartTime());
 				long diffTime = startTime.getTime() - System.currentTimeMillis();
-				if(diffTime < 0 || diffTime > 2 * 60 * 60 * 1000){
-					return HomeCodeEnum.CANCEL_TIME_OUT.toJSONString("只能在开始服务时间前两小时内才能取消订单");
+				if(diffTime > 2 * 60 * 60 * 1000){
+					return HomeCodeEnum.CANCEL_TIME_OUT.toJSONString("现时间段不允许取消订单");
 				}
 				if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
 					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 1, refundSHCoin);
