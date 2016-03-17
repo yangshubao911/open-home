@@ -758,47 +758,54 @@ public class OrderManageImpl implements OrderManage {
 				}
 
 			case OrderCancel:
-				long refundsPrice = StringUtil.yuan2hao(order.getPay());
-
-				switch (db_statusEnum) {
-				case UnPay:
-					// 取消订单
-
-				case OrderUnConfirm:
-					// 商户取消订单流程
-					SimpleResult result = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), refundsPrice, status, "商户发起取消");
-					if (result.getStatus() == 1) {
-						// 保存审核id
-						Order updateOrder = new Order();
-						updateOrder.setOrderId(order.getOrderId());
-						updateOrder.setAuditId((long) result.getData());
-						updateOrder.setUpdateTime(new Date());
-						this.orderService.update(order);
-						
-						Request request1 = new Request();
-						request1.setRequestId(orderId);
-						request1.setRequestStatus(statusEnum.getServerValue());
-						boolean update_status = requestService.updateStatus(request1);
-						if (update_status) {
-							return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
-						} else {
-							return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
-						}
-
-					} else {
-						return JSONObject.toJSONString(new YjzUpdateResult(1, "更新订单失败", new String[0]));
-					}
-				case OrderConfirmed:
-					// 不允许取消
-					return JSONObject
-							.toJSONString(new YjzUpdateResult(3, "当前状态不允许取消订单" + statusEnum.getValue(), new String[0]));
-
-				case OrderComplete:
-					// 不允许取消
-					return JSONObject
-							.toJSONString(new YjzUpdateResult(3, "当前状态不允许取消订单" + statusEnum.getValue(), new String[0]));
-
+				Request request1 = new Request();
+				request1.setRequestId(orderId);
+				Request db_request1 = requestService.queryById(request1);
+				if (db_request1 == null) {
+					return HomeCodeEnum.ORDER_NA.toJSONString();
 				}
+				OrderStatusEnum db_status = OrderStatusEnum.parse(order.getOrderStatus());
+				switch (db_status) {
+					case OrderUnpaid:
+						if (this.orderSystemService.updateOrderStatus(order.getOrderId(), db_status,
+								OrderStatusEnum.OrderCloseByOutTime, OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
+							// 更新request表
+							request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
+							this.requestService.updateStatus(request);
+							return HomeCodeEnum.SUCCESS.toJSONString();
+						} else {
+							return HomeCodeEnum.SYSTEM_ERR.toJSONString();
+						}
+					case OrderUnStockOut:
+						if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
+								OrderStatusEnum.parse(order.getOrderStatus()), OrderStatusEnum.OrderCloseByOutTime,
+								OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
+							request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
+							this.requestService.updateStatus(request);
+							// 商户取消订单，全额退款，无需审核，退回实惠现金
+							SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), "商户取消订单");
+							if (sr.getStatus() == 1) {
+								// 保存审核id
+								Order updateOrder = new Order();
+								updateOrder.setOrderId(order.getOrderId());
+								updateOrder.setAuditId((long) sr.getData());
+								updateOrder.setUpdateTime(new Date());
+								this.orderService.update(order);
+							}else{
+								log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
+							}
+							return HomeCodeEnum.SUCCESS.toJSONString();
+						} else {
+							return HomeCodeEnum.SYSTEM_ERR.toJSONString();
+						}
+					case OrderCancelByCustom:
+					case OrderCloseByOutTime:
+					case BackClose:
+						return HomeCodeEnum.SUCCESS.toJSONString();
+					default:
+						return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单不允许取消");
+				}
+
 			default:
 				return JSONObject
 						.toJSONString(new YjzUpdateResult(2, "状态流转错误:" + statusEnum.getValue(), new String[0]));
