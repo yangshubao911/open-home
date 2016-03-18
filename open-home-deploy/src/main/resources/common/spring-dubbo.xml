@@ -9,9 +9,7 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <!-- 实惠现金接口 -->
-    <dubbo:reference id="currencyRpcAccountService" interface="com.shihui.currency.api.rpc.CurrencyRpcAccountService" check="false"/>
-    <!-- 订单系统-开放平台定制接口 -->
+     <!-- 订单系统-开放平台定制接口 -->
     <dubbo:reference id="openService" interface="com.shihui.api.order.service.OpenService" init="true" timeout="15000" retries="0" check="false" />
     <!-- 订单系统-订单接口 -->
     <dubbo:reference id="omsOrderService" interface="com.shihui.api.order.service.OrderService" init="true" timeout="15000" retries="0" check="false" />
@@ -30,5 +28,7 @@
 	<dubbo:reference id="serviceManage" interface="com.shihui.openpf.common.dubbo.api.ServiceManage" check="false"/>
     <!-- 开放平台-业务类型接口 -->
     <dubbo:reference id="campaignService" interface="com.shihui.openpf.common.service.api.CampaignService" check="false"/>
+    <!-- 实惠现金接口 -->
+    <dubbo:reference id="accountDubbo" interface="com.shihui.tradingcenter.commons.dispatcher.currency.AccountDubbo" check="false"/>
 
 </beans>
