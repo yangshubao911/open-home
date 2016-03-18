@@ -92,7 +92,7 @@ public class OrderManageImpl implements OrderManage {
 	 * @return 返回结果
 	 */
 	@Override
-	public String queryOrderList(RequestContext rc, Order queryOrder, String startTime, String endTime, int page,
+	public String queryOrderList( Order queryOrder, String startTime, String endTime, int page,
 			int size) {
 		try {
 			JSONObject result = new JSONObject();

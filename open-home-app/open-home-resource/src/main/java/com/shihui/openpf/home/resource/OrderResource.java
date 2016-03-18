@@ -73,7 +73,7 @@ public class OrderResource {
             queryOrder.setUserId(Long.parseLong(userId));
             if(!StringUtil.isEmpty(merchantId))
             queryOrder.setMerchantId(Integer.parseInt(merchantId));
-            return orderManage.queryOrderList(rc,queryOrder,startTime,endTime,cursor,count );
+            return orderManage.queryOrderList(queryOrder,startTime,endTime,cursor,count );
         }catch (Exception e){
         	log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
         }

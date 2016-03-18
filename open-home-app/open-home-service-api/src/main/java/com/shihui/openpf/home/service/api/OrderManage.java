@@ -2,8 +2,6 @@ package com.shihui.openpf.home.service.api;
 
 import com.shihui.openpf.home.model.Order;
 
-import me.weimi.api.commons.context.RequestContext;
-
 
 /**
  * Created by zhoutc on 2016/1/21.
@@ -16,7 +14,7 @@ public interface OrderManage {
      *
      * @return 返回结果
      */
-    public String queryOrderList(RequestContext rc, Order order, String startTime, String endTime ,int page, int size);
+    public String queryOrderList(Order order, String startTime, String endTime ,int page, int size);
 
     /**
      * 查询订单详情

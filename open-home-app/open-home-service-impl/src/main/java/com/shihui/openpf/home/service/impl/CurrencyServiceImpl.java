@@ -1,7 +1,7 @@
 package com.shihui.openpf.home.service.impl;
 
-import com.shihui.currency.api.rpc.CurrencyRpcAccountService;
 import com.shihui.openpf.home.service.api.CurrencyService;
+import com.shihui.tradingcenter.commons.dispatcher.currency.AccountDubbo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 public class CurrencyServiceImpl implements CurrencyService {
 
     @Resource
-    CurrencyRpcAccountService currencyRpcAccountService;
+    AccountDubbo accountDubbo;
 
     /**
      * 查询用户实惠现金余额
@@ -24,8 +24,10 @@ public class CurrencyServiceImpl implements CurrencyService {
      */
     @Override
     public long getUserBalance(long userId) {
-        return currencyRpcAccountService.getUserSHGlodAmount(userId);
+        return accountDubbo.getUserSHGlodAmount(userId);
     }
+
+
 
 
 }
