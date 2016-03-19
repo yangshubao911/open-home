@@ -694,7 +694,7 @@ public class OrderManageImpl implements OrderManage {
 		request.setMerchantId(merchant.getMerchantId());
 		Request db_request = requestService.queryById(request);
 
-		Order order = orderService.queryOrder(request.getOrderId());
+		Order order = orderService.queryOrder(db_request.getOrderId());
 
 		MerchantGoods merchantGoods_search = new MerchantGoods();
 		merchantGoods_search.setMerchantId(order.getMerchantId());
