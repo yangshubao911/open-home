@@ -709,7 +709,7 @@ public class OrderManageImpl implements OrderManage {
 			return JSONObject.toJSONString(new YjzUpdateResult(5, "签名错误", new String[0]));
 
 		try {
-			YjzOrderStatusEnum db_statusEnum = YjzOrderStatusEnum.parseServerValues(request.getRequestStatus());
+			YjzOrderStatusEnum db_statusEnum = YjzOrderStatusEnum.parseServerValues(db_request.getRequestStatus());
 			YjzOrderStatusEnum statusEnum = YjzOrderStatusEnum.parse(status);
 
 			JSONObject settlementJson = new JSONObject();
