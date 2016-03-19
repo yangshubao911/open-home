@@ -57,8 +57,8 @@ public class OrderResource {
                            @ParamDesc(desc = "订单状态", isRequired = false) @QueryParam("status") String status,
                            @ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") String startTime,
                            @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") String endTime,
-                           @ParamDesc(desc = "页标", isRequired = false) @QueryParam("cursor") @DefaultValue("1") int cursor ,
-                           @ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("count") @DefaultValue("10") int count) {
+                           @ParamDesc(desc = "页标", isRequired = false) @QueryParam("page") @DefaultValue("1") int page ,
+                           @ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("size") @DefaultValue("10") int size) {
 
     	 Order queryOrder = new Order();
         try {
@@ -73,7 +73,7 @@ public class OrderResource {
             queryOrder.setUserId(Long.parseLong(userId));
             if(!StringUtil.isEmpty(merchantId))
             queryOrder.setMerchantId(Integer.parseInt(merchantId));
-            return orderManage.queryOrderList(queryOrder,startTime,endTime,cursor,count );
+            return orderManage.queryOrderList(queryOrder,startTime,endTime,page,size );
         }catch (Exception e){
         	log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
         }
