@@ -705,7 +705,7 @@ public class OrderManageImpl implements OrderManage {
 			log.info("yjzConverter -- can't find request by key:{} requestId:{}", pId, orderId);
 		}
 
-		if (!genSign(map, merchant.getMd5Key()).equalsIgnoreCase(sign))
+		if (!genSign(map, merchant.getMd5Key()).equals(sign))
 			return JSONObject.toJSONString(new YjzUpdateResult(5, "签名错误", new String[0]));
 
 		try {
