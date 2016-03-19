@@ -147,6 +147,7 @@ public class ClientServiceImpl implements ClientService {
                 goods_json.put("goodsId", goods.getGoodsId());
                 goods_json.put("categoryId", goods.getCategoryId());
                 goods_json.put("goodsImage", goods.getImageId());
+                goods_json.put("detailImage", goods.getDetailImage());
                 goods_json.put("goodsVersion", goods.getGoodsVersion());
                 goods_json.put("goodsName", goods.getGoodsName());
                 goods_json.put("goodsSubtitle", goods.getGoodsSubtitle());
@@ -203,6 +204,7 @@ public class ClientServiceImpl implements ClientService {
         goods_json.put("serviceId", goods.getServiceId());
         goods_json.put("goodsId", goods.getGoodsId());
         goods_json.put("categoryId", goods.getCategoryId());
+        goods_json.put("goodsImage", goods.getImageId());
         goods_json.put("detailImage", goods.getDetailImage());
         goods_json.put("goodsVersion", goods.getGoodsVersion());
         goods_json.put("goodsName", goods.getGoodsName());
