@@ -687,7 +687,7 @@ public class OrderManageImpl implements OrderManage {
 			map.put("version", version);
 		if (methodName != null)
 			map.put("methodName", methodName);
-		map.put("sign", sign);
+		//map.put("sign", sign);
 
 		Request request = new Request();
 		request.setRequestId(orderId);
