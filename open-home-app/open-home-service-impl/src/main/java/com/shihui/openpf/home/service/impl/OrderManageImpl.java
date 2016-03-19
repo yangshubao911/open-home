@@ -745,7 +745,7 @@ public class OrderManageImpl implements OrderManage {
 				boolean updateRequest1 = updateRequest(orderId, statusEnum.getServerValue());
 				if (updateRequest1) {
 					boolean success = orderSystemService.complete(order.getOrderId(), order.getGoodsId(),
-							settlementJson.toJSONString(), OrderStatusEnum.OrderHadReceived.getValue());
+							settlementJson.toJSONString(), OrderStatusEnum.OrderDistribute.getValue());
 
 					if (success) {
 						return JSONObject.toJSONString(new YjzUpdateResult(0, "success", new String[0]));
