@@ -132,5 +132,16 @@ public class ClientResource {
         return clientService.orderCreate(orderForm,rc.getIp());
     }
 
+    @Path("/order/test")
+    @POST
+    @BaseInfo(desc = "测试接单完成接口", needAuth = AuthType.OPTION, status = ApiStatus.PUBLIC, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public boolean orderTest(@Context RequestContext rc,
+                              @ParamDesc(desc = "订单Id", isRequired = true) @QueryParam("orderId") long orderId,
+                              @ParamDesc(desc = "状态变更", isRequired = true) @QueryParam("status") int status){
+
+        return  clientService.testOrder(orderId,status);
+    }
+
 
 }

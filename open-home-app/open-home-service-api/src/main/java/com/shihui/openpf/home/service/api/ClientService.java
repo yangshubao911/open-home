@@ -43,4 +43,11 @@ public interface ClientService {
     public String orderCreate(OrderForm orderForm, String ip);
 
 
+    /**
+     * 测试修改订单状态
+     *
+     * @return 修改结果
+     */
+    public boolean testOrder(long orderId , int status);
+
 }

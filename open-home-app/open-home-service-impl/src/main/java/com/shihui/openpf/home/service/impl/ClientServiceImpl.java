@@ -16,6 +16,9 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
+import com.shihui.api.order.common.enums.OrderTypeEnum;
+import com.shihui.openpf.common.tools.SignUtil;
+import com.shihui.openpf.home.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,16 +42,6 @@ import com.shihui.openpf.common.service.api.CampaignService;
 import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.cache.GoodsCache;
-import com.shihui.openpf.home.model.Category;
-import com.shihui.openpf.home.model.Contact;
-import com.shihui.openpf.home.model.Goods;
-import com.shihui.openpf.home.model.HomeOrderStatusEnum;
-import com.shihui.openpf.home.model.HomeResponse;
-import com.shihui.openpf.home.model.MerchantGoods;
-import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.OrderForm;
-import com.shihui.openpf.home.model.OrderInfo;
-import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.service.api.CategoryService;
 import com.shihui.openpf.home.service.api.ClientService;
 import com.shihui.openpf.home.service.api.ContactService;
@@ -889,4 +882,100 @@ public class ClientServiceImpl implements ClientService {
 
         return real_shoffset;
     }
+
+    @Override
+    public boolean testOrder(long orderId, int status) {
+        try {
+            Order order = orderService.queryOrder(orderId);
+            if (order == null) {
+                log.error("unfound orderid");
+                return false;
+            }
+
+            Request request = new Request();
+            request.setOrderId(order.getOrderId());
+            request.setMerchantId(order.getMerchantId());
+            Request db_request = requestService.queryById(request);
+            if (db_request == null) {
+                log.error("unfound request");
+                return false;
+            }
+
+            Merchant merchant = merchantManage.getById(order.getMerchantId());
+            if (merchant == null) {
+                log.error("merchant request");
+                return false;
+            }
+            MerchantGoods merchantGoods_search = new MerchantGoods();
+            merchantGoods_search.setMerchantId(order.getMerchantId());
+            merchantGoods_search.setGoodsId(order.getGoodsId());
+            MerchantGoods merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods_search);
+
+            HomeOrderStatusEnum db_statusEnum = HomeOrderStatusEnum.parse(db_request.getRequestStatus());
+            JSONObject settlementJson = new JSONObject();
+            settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
+            settlementJson.put("settleMerchantId", merchant.getMerchantCode());
+
+            switch (status) {
+
+                case 1:
+                    if (db_statusEnum.getValue() != HomeOrderStatusEnum.OrderUnConfirm.getValue()) {
+                        log.error("status wrong");
+                        return false;
+                    }
+                    boolean updateRequest = updateRequest(db_request.getRequestId(), HomeOrderStatusEnum.OrderConfirmed.getValue());
+
+                    if (updateRequest) {
+                        boolean success = orderSystemService.success(OrderTypeEnum.DoorTDoor.getValue(), order.getOrderId(),
+                                order.getGoodsId(), settlementJson.toString(), OrderStatusEnum.OrderUnStockOut.getValue());
+
+                        if (success) {
+                            return true;
+                        } else {
+                            log.error("update order wrong");
+                            return false;
+                        }
+
+                    } else {
+                        log.error("update request wrong");
+                        return false;
+                    }
+                case 2:
+                    if (db_statusEnum.getValue() != HomeOrderStatusEnum.OrderConfirmed.getValue()) {
+                        log.error("status wrong");
+                        return false;
+                    }
+                    boolean updateRequest1 = updateRequest(db_request.getRequestId(), HomeOrderStatusEnum.OrderComplete.getValue());
+                    if (updateRequest1) {
+                        boolean success = orderSystemService.complete(order.getOrderId(), order.getGoodsId(),
+                                settlementJson.toString(), OrderStatusEnum.OrderDistribute.getValue());
+
+                        if (success) {
+                            return true;
+                        } else {
+                            log.error("update order wrong");
+                            return false;
+                        }
+
+                    } else {
+                        log.error("update request wrong");
+                        return false;
+                    }
+                default:
+                    log.error("unknow status");
+                    return false;
+            }
+        } catch (Exception e) {
+            log.error("第三方更新订单状态异常", e);
+        }
+        return false;
+    }
+
+    public boolean updateRequest(String requestId, int status) {
+        Request update_request = new Request();
+        update_request.setRequestId(requestId);
+        update_request.setRequestStatus(status);
+        return requestService.updateStatus(update_request);
+    }
+
 }
