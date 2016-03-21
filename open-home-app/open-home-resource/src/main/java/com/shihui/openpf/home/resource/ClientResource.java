@@ -133,7 +133,7 @@ public class ClientResource {
     }
 
     @Path("/order/test")
-    @POST
+    @GET
     @BaseInfo(desc = "测试接单完成接口", needAuth = AuthType.OPTION, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public boolean orderTest(@Context RequestContext rc,
