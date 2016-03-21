@@ -52,7 +52,7 @@ public class GoodsResource {
 	        @ParamDesc(desc = "城市名称", isRequired = true) @FormParam("city_name") String city_name,
 	        @ParamDesc(desc = "商品描述", isRequired = true) @FormParam("goods_desc") String goods_desc,
 	        @ParamDesc(desc = "商品名称", isRequired = true) @FormParam("goods_name") String goods_name,
-	        @ParamDesc(desc = "商品图片", isRequired = true) @FormParam("image_id") String image_id,
+	        @ParamDesc(desc = "商品图片", isRequired = false) @FormParam("image_id") String image_id,
 	        @ParamDesc(desc = "商品详情图片", isRequired = true) @FormParam("detail_image") String detail_image,
 	        @ParamDesc(desc = "服务类型id", isRequired = true) @FormParam("service_id") Integer service_id,
 	        @ParamDesc(desc = "状态", isRequired = true) @FormParam("goods_status") Integer goods_status,
