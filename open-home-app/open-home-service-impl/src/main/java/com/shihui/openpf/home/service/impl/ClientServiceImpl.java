@@ -892,10 +892,10 @@ public class ClientServiceImpl implements ClientService {
                 return false;
             }
 
-            Request request = new Request();
+         /*   Request request = new Request();
             request.setOrderId(order.getOrderId());
-            request.setMerchantId(order.getMerchantId());
-            Request db_request = requestService.queryById(request);
+            request.setMerchantId(order.getMerchantId());*/
+            Request db_request = requestService.queryOrderRequest(order.getOrderId());
             if (db_request == null) {
                 log.error("unfound request");
                 return false;
