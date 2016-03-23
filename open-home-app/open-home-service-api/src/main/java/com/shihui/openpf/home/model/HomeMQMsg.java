@@ -25,6 +25,9 @@ public class HomeMQMsg implements Serializable {
 	private Integer serviceId;
 	private MerchantApiName merchantApiName;//商户接口名称
 	private Date timestamp;
+	private int retryCount = 0;
+	//下次重试等待时间，单位ms
+	private long delay = 5000L;
 
 	public Integer getMerchantId() {
 		return merchantId;
@@ -88,6 +91,22 @@ public class HomeMQMsg implements Serializable {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public int getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
+	}
+
+	public long getDelay() {
+		return delay;
+	}
+
+	public void setDelay(long delay) {
+		this.delay = delay;
 	}
 
 }

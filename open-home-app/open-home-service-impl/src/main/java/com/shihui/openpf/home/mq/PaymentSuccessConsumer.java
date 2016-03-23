@@ -1,10 +1,20 @@
 package com.shihui.openpf.home.mq;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import com.shihui.openpf.home.model.*;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -15,7 +25,19 @@ import com.shihui.commons.mq.RocketProducer;
 import com.shihui.commons.mq.annotation.ConsumerConfig;
 import com.shihui.commons.mq.api.Consumer;
 import com.shihui.commons.mq.api.Topic;
+import com.shihui.openpf.common.dubbo.api.MerchantManage;
+import com.shihui.openpf.common.dubbo.api.ServiceManage;
+import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantApiName;
+import com.shihui.openpf.common.model.Service;
+import com.shihui.openpf.home.http.FastHttpUtils;
+import com.shihui.openpf.home.model.Goods;
+import com.shihui.openpf.home.model.HomeMQMsg;
+import com.shihui.openpf.home.model.HomeOrderStatusEnum;
+import com.shihui.openpf.home.model.Order;
+import com.shihui.openpf.home.model.OrderMappingEnum;
+import com.shihui.openpf.home.model.Request;
+import com.shihui.openpf.home.service.api.GoodsService;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.RequestService;
 
@@ -33,12 +55,26 @@ public class PaymentSuccessConsumer implements Consumer {
 
 	@Resource(name = "openHomeMQProducer")
 	private RocketProducer openHomeMQProducer;
-
 	@Resource(name = "openOrderService")
 	private OrderService orderService;
-
 	@Resource
 	private RequestService requestService;
+	@Resource
+	private ServiceManage serviceManage;
+	@Resource
+	private GoodsService goodsService;
+	@Resource
+	private MerchantManage merchantManage;
+	
+	private CloseableHttpAsyncClient httpClient;
+	
+	@Value("${app_push_url}")
+	private String appPushUrl;
+	
+	@PostConstruct
+	public void init(){
+		this.httpClient = FastHttpUtils.getClient(2000);
+	}
 
 	@Override
 	public boolean doit(String topic, String tags, String key, String msg) {
@@ -77,7 +113,41 @@ public class PaymentSuccessConsumer implements Consumer {
 					request_update.setRequestStatus(third_status);
 					requestService.updateStatus(request_update);
 				}
-
+				//推送客户端消息
+				if(status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.OrderUnStockOut
+						|| status == OrderStatusEnum.BackClose || status == OrderStatusEnum.OrderHadReceived){
+					String pushMsg = null;
+					Service service = serviceManage.findById(order.getService_id());
+					if(service == null){
+						log.error("订单处理-push消息：业务信息未查到，serviceId={}, orderId={}, orderStatus={}", order.getService_id(), orderId, order.getOrderStatus());
+					} else {
+						if(status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.BackClose){
+							pushMsg = "订单已取消，我们已为您办理退款，通常需要1-3个工作日内到账。请耐心等待！";
+						}else if(status == OrderStatusEnum.OrderUnStockOut){
+							Goods goods = goodsService.findById(order.getGoodsId());
+							Merchant merchant = merchantManage.getById(order.getMerchantId());
+							
+							if(goods == null || merchant == null){
+								log.error("订单处理-push消息：商品或者商户信息未查到，serviceId={}, orderId={}, orderStatus={}", order.getService_id(), orderId, order.getOrderStatus());
+							}else {
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								pushMsg = "尊敬的用户，您在"+ sdf.format(order.getCreateTime())
+										+"通过实惠平台预约了" + goods.getGoodsName()
+										+"，服务提供方为"+ merchant.getMerchantName()
+										+"，如有疑问，请致电实惠客服：4006611388";
+							}
+							
+						}else{
+							pushMsg = "亲，服务已完成，小惠会再接再厉，感谢您的使用。";
+						}
+					}
+					if(pushMsg != null){
+						this.pushMsg(pushMsg, order.getUserId(), service.getServiceMerchantCode());
+					}
+					
+				}
+				
+				
 				if (status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.OrderCloseByOutTime
 						|| status == OrderStatusEnum.BackClose) {// 取消订单
 					HomeMQMsg homeMsg = new HomeMQMsg();
@@ -88,7 +158,7 @@ public class PaymentSuccessConsumer implements Consumer {
 					homeMsg.setServiceId(order.getService_id());
 					homeMsg.setMerchantApiName(MerchantApiName.CANCEL_ORDER);
 					homeMsg.setThirdOrderId(request.getRequestId());
-
+					
 					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice, String.valueOf(orderId),
 							JSON.toJSONString(homeMsg));
 
@@ -113,6 +183,31 @@ public class PaymentSuccessConsumer implements Consumer {
 		}
 
 		return false;
+	}
+	
+	/**
+	 * push app通知
+	 * @param msg
+	 * @param userId
+	 * @param merchantCode
+	 */
+	private void pushMsg(String msg, long userId, long merchantCode) {
+		try {
+			HttpPost httpPost = new HttpPost(appPushUrl);
+			httpPost.addHeader("X-Matrix-UID", "1000");
+			
+			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+			nvps.add(new BasicNameValuePair("touid", String.valueOf(userId)));
+			nvps.add(new BasicNameValuePair("dataid", "10001"));
+			nvps.add(new BasicNameValuePair("data", msg));
+			nvps.add(new BasicNameValuePair("fromuid",  String.valueOf(merchantCode)));
+			UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(nvps, "utf-8");
+			httpPost.setEntity(urlEncodedFormEntity);
+			
+			FastHttpUtils.executePostReturnString(httpClient, httpPost);
+		} catch (Exception e) {
+			log.error("push app消息异常", e);
+		}
 	}
 
 }
