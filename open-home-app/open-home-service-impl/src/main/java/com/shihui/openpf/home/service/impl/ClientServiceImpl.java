@@ -109,7 +109,7 @@ public class ClientServiceImpl implements ClientService {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
-        if (service.getServiceStatus() != 1) {
+        if (service == null||service.getServiceStatus() != 1) {
             throw new AppException(HomeExcepFactor.Service_Close);
         }
         Group group = groupManage.getGroupInfoByGid(groupId);
