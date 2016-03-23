@@ -758,7 +758,7 @@ public class ClientServiceImpl implements ClientService {
         //添加扩展字段
         JSONObject jo = new JSONObject();
         jo.put("service_id", service.getServiceId());
-        jo.put("merchant_id", selectedMer.getMerchantId());
+        jo.put("merchant_id", service.getServiceMerchantId());
         jo.put("category_id", category.getId());
         jo.put("title", service.getServiceName());
         String title = "【"+service.getServiceName()+"】" + goods.getGoodsName() ;
@@ -776,7 +776,7 @@ public class ClientServiceImpl implements ClientService {
 
         long overTime = System.currentTimeMillis() + 1000 * 30 * 60;
         singleGoodsCreateOrderParam.setOverdueTime(overTime);
-        singleGoodsCreateOrderParam.setMerchantId(selectedMer.getMerchantCode());
+        singleGoodsCreateOrderParam.setMerchantId(service.getServiceMerchantId());
         singleGoodsCreateOrderParam.setPrice(StringUtil.yuan2hao(orderForm.getActPay()));
         singleGoodsCreateOrderParam.setOffset(StringUtil.yuan2hao(orderForm.getActOffset()));
         singleGoodsCreateOrderParam.setProvinceId(proviceId);
