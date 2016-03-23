@@ -68,7 +68,7 @@ public class PaymentSuccessConsumer implements Consumer {
 	
 	private CloseableHttpAsyncClient httpClient;
 	
-	@Value("app_push_url")
+	@Value("${app_push_url}")
 	private String appPushUrl;
 	
 	@PostConstruct
