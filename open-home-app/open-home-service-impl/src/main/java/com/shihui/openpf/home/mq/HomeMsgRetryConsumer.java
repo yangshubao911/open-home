@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -41,9 +40,6 @@ public class HomeMsgRetryConsumer implements Consumer {
 	@Resource
 	private MerchantManage merchantManage;
 	
-	@Value("${mq.home.msg.retry_wait_second}")
-	private int waitTime = 5;//单位秒
-	
 	/* (non-Javadoc)
 	 * @see com.shihui.commons.mq.api.Consumer#doit(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -53,7 +49,7 @@ public class HomeMsgRetryConsumer implements Consumer {
 		
 		try {
 			HomeMQMsg homeMsg = JSON.parseObject(msg, HomeMQMsg.class);
-			if(System.currentTimeMillis() - homeMsg.getTimestamp().getTime() < waitTime * 1000){
+			if(System.currentTimeMillis() - homeMsg.getTimestamp().getTime() < homeMsg.getDelay()){
 				//若间隔时间未到不执行请求
 				TimeUnit.MILLISECONDS.sleep(1000);
 				return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
@@ -79,6 +75,13 @@ public class HomeMsgRetryConsumer implements Consumer {
 					//加入重试队列重试
 					Date now = new Date();
 					homeMsg.setTimestamp(now);
+					int retryCount = homeMsg.getRetryCount();
+					if(retryCount > 20 && retryCount < 50){
+						homeMsg.setDelay(60 * 1000);
+					} else if(retryCount > 50){
+						homeMsg.setDelay(5 * 60 * 1000);
+					}
+					homeMsg.setRetryCount(retryCount + 1);
 					return openHomeMQProducer.send(Topic.Open_Home_Pay_Notice_Retry, String.valueOf(homeMsg.getOrderId()), JSON.toJSONString(homeMsg));
 				}
 			} else {
