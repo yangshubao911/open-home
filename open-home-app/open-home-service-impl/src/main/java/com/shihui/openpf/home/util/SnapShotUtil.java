@@ -118,4 +118,12 @@ public class SnapShotUtil {
 		}
 
 	}
+
+	public static void main(String[] args) {
+		Map<String,Object> a = new HashMap();
+		List<String> b = new ArrayList<>();
+        a.put("aaa",b.toArray());
+		System.out.println(JSON.toJSON(a));
+
+	}
 }
