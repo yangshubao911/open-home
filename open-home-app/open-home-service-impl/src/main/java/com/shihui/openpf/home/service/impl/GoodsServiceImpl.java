@@ -67,7 +67,7 @@ public class GoodsServiceImpl implements GoodsService {
 				return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
 			}
 			
-			goods.setServiceMerchantCode(service.getServiceMerchantCode());
+			goods.setServiceMerchantCode(service.getServiceMerchantId());
 			
 			String result = SnapShotUtil.sendSnapShot(goods);
 			if(result == null || result.isEmpty()){
@@ -114,8 +114,11 @@ public class GoodsServiceImpl implements GoodsService {
 			oldGoods.setPrice(goods.getPrice());
 		
 		oldGoods.setUpdateTime(goods.getUpdateTime());
-		
-		
+		Service service = this.serviceManage.findById(goods.getServiceId());
+		if(service == null){
+			return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
+		}
+		oldGoods.setServiceMerchantCode(service.getServiceMerchantId());
 		String result = SnapShotUtil.sendSnapShot(oldGoods);
 		if(result == null || result.isEmpty()){
 			log.warn("【更新】调用创建商品快照接口失败，商品id={}", goods.getGoodsId());
