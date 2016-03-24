@@ -338,8 +338,9 @@ public class ClientServiceImpl implements ClientService {
         BigDecimal real_offset = null;
         BigDecimal shoffset = null;
         BigDecimal actPrice = null;
+        BigDecimal balanceYuan = new BigDecimal(balance).divide(new BigDecimal("10000"));
         real_offset = costSh == 1 &&
-                new BigDecimal(balance).divide(new BigDecimal("10000")).compareTo(new BigDecimal(goods.getShOffSet())) >= 0
+                balanceYuan .compareTo(new BigDecimal(goods.getShOffSet())) >= 0
                 ? new BigDecimal(goods.getShOffSet()) : new BigDecimal("0");
         shoffset = new BigDecimal(goods.getShOffSet());
 
@@ -366,14 +367,14 @@ public class ClientServiceImpl implements ClientService {
         int showButton = 1;
         if(balance==0) showButton=0;
         if(shoffset.compareTo(new BigDecimal("0"))==0)showButton=0;
-        if (new BigDecimal(balance).divide(new BigDecimal("10000")).compareTo(shoffset) < 0)
+        if (balanceYuan.compareTo(shoffset) < 0)
             showButton = 0;
 
         if (shoffset.compareTo(new BigDecimal("0")) == 0) showButton = 2;
 
         goods_json.put("shOffset",real_offset.setScale(2).toString());
         result.put("goods", goods_json);
-        result.put("balance", balance);
+        result.put("balance", balanceYuan.stripTrailingZeros().toPlainString());
         result.put("actPay", actPrice);
         result.put("actOffset", real_offset);
         result.put("showButton", showButton);

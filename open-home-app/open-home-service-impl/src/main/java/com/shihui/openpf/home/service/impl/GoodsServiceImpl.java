@@ -114,7 +114,7 @@ public class GoodsServiceImpl implements GoodsService {
 			oldGoods.setPrice(goods.getPrice());
 		
 		oldGoods.setUpdateTime(goods.getUpdateTime());
-		Service service = this.serviceManage.findById(goods.getServiceId());
+		Service service = this.serviceManage.findById(oldGoods.getServiceId());
 		if(service == null){
 			return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
 		}
