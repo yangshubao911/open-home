@@ -186,7 +186,7 @@ public class GoodsServiceImpl implements GoodsService {
 		for(Goods goods : goodsList){
 			try {
 				goods.setUpdateTime(now);
-				this.goodsDao.update(goods);
+				this.update(goods);
 				successCount++;
 			} catch (Exception e) {
 				log.error("批量更新商品信息异常，goods_id={}", goods.getGoodsId(), e);
