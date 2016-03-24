@@ -860,7 +860,7 @@ public class ClientServiceImpl implements ClientService {
 
         BigDecimal shOffset = new BigDecimal(goods.getShOffSet());
         BigDecimal firstOffset = new BigDecimal(goods.getFirstShOffSet());
-        BigDecimal balance = new BigDecimal(userBalance).divide(new BigDecimal("100"));
+        BigDecimal balance = new BigDecimal(userBalance).divide(new BigDecimal("10000"));
         BigDecimal real_shoffset = null;
         if(costSh!=1){
             return new BigDecimal("0");
