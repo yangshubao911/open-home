@@ -89,7 +89,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 				long diffTime = startTime.getTime() - System.currentTimeMillis() ;
 				if(diffTime <= 2 * 60 * 60 * 1000){
 					response.setCode(1);
-					response.setMsg("预约时间已临近，不允许取消订单");
+					response.setMsg("距离服务开始时间不到2小时，若取消，请联系实惠客服");
 					return response;
 				}
 			}
