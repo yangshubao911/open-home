@@ -51,6 +51,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	public static final long WAIT_TIME_OUT = 3000;//请求等待时间，单位毫秒
 	
 	private static final int HTTP_GET = 1;
+	private static final int HTTP_POST = 2;
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private CloseableHttpAsyncClient httpClient;
@@ -225,7 +226,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
 		Map<String, String> param = paramParser.createOrderParam(merchant, serviceType, orderInfo, api.getVersion());
-		this.executeHttpRequst(api, param, handler, HTTP_GET);
+		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
@@ -261,7 +262,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
 		Map<String, String> param = paramParser.cancelOrderParam(merchant, serviceType, orderId, api.getVersion());
-		this.executeHttpRequst(api, param, handler, HTTP_GET);
+		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
@@ -297,7 +298,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
 		Map<String, String> param = paramParser.payNoticeParam(merchant, serviceType, orderId, settlePrice, api.getVersion());
-		this.executeHttpRequst(api, param, handler, HTTP_GET);
+		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
@@ -333,7 +334,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		//执行请求，非阻塞方式
 		OpenHomeHttpCallbackHandler<String> handler = new OpenHomeHttpCallbackHandler<String>(merchant, resultParser);
 		Map<String, String> param = paramParser.evaluateOrderParam(merchant, serviceType, orderId, score, comments, api.getVersion());
-		this.executeHttpRequst(api, param, handler, HTTP_GET);
+		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
