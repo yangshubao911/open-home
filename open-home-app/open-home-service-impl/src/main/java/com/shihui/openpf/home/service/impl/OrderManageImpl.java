@@ -51,8 +51,6 @@ import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.service.api.RequestService;
 
-import me.weimi.api.commons.context.RequestContext;
-
 /**
  * Created by zhoutc on 2016/1/21.
  */
@@ -700,10 +698,6 @@ public class OrderManageImpl implements OrderManage {
 		merchantGoods_search.setMerchantId(order.getMerchantId());
 		merchantGoods_search.setGoodsId(order.getGoodsId());
 		MerchantGoods merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods_search);
-
-		if (db_request == null) {
-			log.info("yjzConverter -- can't find request by key:{} requestId:{}", pId, orderId);
-		}
 
 		if (!genSign(map, merchant.getMd5Key()).equals(sign))
 			return JSONObject.toJSONString(new YjzUpdateResult(5, "签名错误", new String[0]));

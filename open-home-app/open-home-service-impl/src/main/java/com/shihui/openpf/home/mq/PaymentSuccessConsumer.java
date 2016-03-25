@@ -30,6 +30,7 @@ import com.shihui.openpf.common.dubbo.api.ServiceManage;
 import com.shihui.openpf.common.model.Merchant;
 import com.shihui.openpf.common.model.MerchantApiName;
 import com.shihui.openpf.common.model.Service;
+import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.http.FastHttpUtils;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.HomeMQMsg;
@@ -65,6 +66,8 @@ public class PaymentSuccessConsumer implements Consumer {
 	private GoodsService goodsService;
 	@Resource
 	private MerchantManage merchantManage;
+	@Resource
+	private GoodsCache goodsCache;
 	
 	private CloseableHttpAsyncClient httpClient;
 	
@@ -163,6 +166,9 @@ public class PaymentSuccessConsumer implements Consumer {
 							JSON.toJSONString(homeMsg));
 
 				} else if (status == OrderStatusEnum.OrderUnStockOut) {// 支付通知
+					//缓存售出数量
+					goodsCache.increaseSell(order.getGoodsId());
+					
 					HomeMQMsg homeMsg = new HomeMQMsg();
 					homeMsg.setGoodsId(order.getGoodsId());
 					homeMsg.setMerchantId(order.getMerchantId());
