@@ -773,7 +773,7 @@ public class ClientServiceImpl implements ClientService {
         singleGoodsCreateOrderParam.setGoodsId(goods.getGoodsId());
         singleGoodsCreateOrderParam.setGoodsName(goods.getGoodsName());
         singleGoodsCreateOrderParam.setUserId(orderForm.getUserId());
-        singleGoodsCreateOrderParam.setOrderType(service.getOrderType());
+        singleGoodsCreateOrderParam.setOrderType(OrderTypeEnum.parse(service.getOrderType()));
 
         long overTime = System.currentTimeMillis() + 1000 * 30 * 60;
         singleGoodsCreateOrderParam.setOverdueTime(overTime);
