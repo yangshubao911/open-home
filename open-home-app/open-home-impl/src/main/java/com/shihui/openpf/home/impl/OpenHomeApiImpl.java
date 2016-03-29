@@ -112,7 +112,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 				// 商户取消订单，全额退款，无需审核，退回实惠现金
 				try {
 					SimpleResult sr = orderSystemService.customCancel(order.getOrderId(), merchant.getMerchantCode(),
-							userId, StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), reason);
+							userId, StringUtil.yuan2hao(order.getPay()), order.getOrderStatus(), reason);
 					if (sr.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
