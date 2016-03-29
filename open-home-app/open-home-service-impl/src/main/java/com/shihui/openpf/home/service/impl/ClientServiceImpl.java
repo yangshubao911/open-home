@@ -330,6 +330,7 @@ public class ClientServiceImpl implements ClientService {
 
         JSONObject goods_json = new JSONObject();
         goods_json.put("serviceId", goods.getServiceId());
+        goods_json.put("serviceName", service.getServiceName());
         goods_json.put("goodsId", goods.getGoodsId());
         goods_json.put("categoryId", goods.getCategoryId());
         goods_json.put("goodsImage", goods.getImageId());
