@@ -128,7 +128,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		response.setMsg("查询成功");
 		long start = System.currentTimeMillis();
 		JSONArray resultArray = new JSONArray();
-		
+
 		while(System.currentTimeMillis() - start < WAIT_TIME_OUT){
 			int size = handlers.size();
 			for(int i = size -1; i >= 0; i-- ){

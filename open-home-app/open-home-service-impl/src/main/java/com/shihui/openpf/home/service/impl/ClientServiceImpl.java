@@ -383,8 +383,8 @@ public class ClientServiceImpl implements ClientService {
         goods_json.put("shOffset",real_offset.setScale(2).toString());
         result.put("goods", goods_json);
         result.put("balance", balanceYuan.stripTrailingZeros().toPlainString());
-        result.put("actPay", actPrice);
-        result.put("actOffset", real_offset);
+        result.put("actPay", actPrice.stripTrailingZeros().toPlainString());
+        result.put("actOffset", real_offset.stripTrailingZeros().toPlainString());
         result.put("showButton", showButton);
         return result.toJSONString();
     }
