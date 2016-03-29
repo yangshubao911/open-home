@@ -30,6 +30,11 @@ public class YunjiazhengResultParser implements ResultParser {
 	@Override
 	public HomeResponse getServiceAvailableTimeResult(Merchant merchant, String result) {
 		HomeResponse response = new HomeResponse();
+		if(result != null && result.startsWith("[")){
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		JSONObject jo = JSONObject.parseObject(result);
 		Integer code = jo.getInteger("code");
 		if(code == null){
@@ -68,8 +73,13 @@ public class YunjiazhengResultParser implements ResultParser {
 
 	@Override
 	public HomeResponse isServiceAvailableResult(Merchant merchant, String result) {
-		JSONObject jo = JSONObject.parseObject(result);
 		HomeResponse response = new HomeResponse();
+		if(result != null && result.startsWith("[")){
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
+		JSONObject jo = JSONObject.parseObject(result);
 		response.setCode(jo.getIntValue("code"));
 		response.setMsg(jo.getString("msg"));
 		return response;
@@ -80,8 +90,13 @@ public class YunjiazhengResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse createOrderResult(Merchant merchant, String result) {
-		JSONObject jo = JSONObject.parseObject(result);
 		HomeResponse response = new HomeResponse();
+		if(result != null && result.startsWith("[")){
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
+		JSONObject jo = JSONObject.parseObject(result);
 		response.setCode(jo.getIntValue("code"));
 		response.setMsg(jo.getString("msg"));
 		//JSONObject resultJo = new JSONObject();
@@ -95,8 +110,13 @@ public class YunjiazhengResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse cancelOrderResult(Merchant merchant, String result) {
-		JSONObject jo = JSONObject.parseObject(result);
 		HomeResponse response = new HomeResponse();
+		if(result != null && result.startsWith("[")){
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
+		JSONObject jo = JSONObject.parseObject(result);
 		response.setCode(jo.getIntValue("code"));
 		response.setMsg(jo.getString("msg"));
 		return response;
@@ -107,8 +127,13 @@ public class YunjiazhengResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse payNoticeResult(Merchant merchant, String result) {
-		JSONObject jo = JSONObject.parseObject(result);
 		HomeResponse response = new HomeResponse();
+		if(result != null && result.startsWith("[")){
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
+		JSONObject jo = JSONObject.parseObject(result);
 		response.setCode(jo.getIntValue("code"));
 		response.setMsg(jo.getString("msg"));
 		return response;
@@ -119,8 +144,13 @@ public class YunjiazhengResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse evaluateOrderResult(Merchant merchant, String result) {
-		JSONObject jo = JSONObject.parseObject(result);
 		HomeResponse response = new HomeResponse();
+		if(result != null && result.startsWith("[")){
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
+		JSONObject jo = JSONObject.parseObject(result);
 		response.setCode(jo.getIntValue("code"));
 		response.setMsg(jo.getString("msg"));
 		return response;

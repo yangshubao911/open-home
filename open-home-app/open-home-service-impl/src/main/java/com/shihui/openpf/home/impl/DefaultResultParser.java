@@ -20,11 +20,23 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse getServiceAvailableTimeResult(Merchant merchant, String result) {
+		if(result != null && result.startsWith("[")){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		return JSON.parseObject(result, HomeResponse.class);
 	}
 
 	@Override
 	public HomeResponse isServiceAvailableResult(Merchant merchant, String result) {
+		if(result != null && result.startsWith("[")){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
 		response.setMerchant(merchant);
 		return response;
@@ -35,6 +47,12 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse createOrderResult(Merchant merchant, String result) {
+		if(result != null && result.startsWith("[")){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
 		response.setMerchant(merchant);
 		return response;
@@ -45,6 +63,12 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse cancelOrderResult(Merchant merchant, String result) {
+		if(result != null && result.startsWith("[")){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
 		response.setMerchant(merchant);
 		return response;
@@ -55,6 +79,12 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse payNoticeResult(Merchant merchant, String result) {
+		if(result != null && result.startsWith("[")){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
 		response.setMerchant(merchant);
 		return response;
@@ -65,6 +95,12 @@ public class DefaultResultParser implements ResultParser {
 	 */
 	@Override
 	public HomeResponse evaluateOrderResult(Merchant merchant, String result) {
+		if(result != null && result.startsWith("[")){
+			HomeResponse response = new HomeResponse();
+			response.setCode(1004);
+			response.setMsg("接口请求失败，接口返回：" + result);
+			return response;
+		}
 		HomeResponse response = JSON.parseObject(result, HomeResponse.class);
 		response.setMerchant(merchant);
 		return response;
