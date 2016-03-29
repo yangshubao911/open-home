@@ -380,7 +380,7 @@ public class ClientServiceImpl implements ClientService {
 
         if (shoffset.compareTo(new BigDecimal("0")) == 0) showButton = 2;
 
-        goods_json.put("shOffset",real_offset.setScale(2).toString());
+        goods_json.put("shOffset",shoffset.setScale(2).toString());
         result.put("goods", goods_json);
         result.put("balance", balanceYuan.stripTrailingZeros().toPlainString());
         result.put("actPay", actPrice.stripTrailingZeros().toPlainString());
