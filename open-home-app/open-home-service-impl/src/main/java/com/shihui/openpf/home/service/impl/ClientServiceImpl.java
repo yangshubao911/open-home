@@ -326,7 +326,7 @@ public class ClientServiceImpl implements ClientService {
             throw new AppException(HomeExcepFactor.Merchant_Unfound);
         }
         long balance = currencyService.getUserBalance(userId);
-        if (balance == -1) balance = 0;
+        if (balance == -1 || balance == -100) balance = 0;
 
         JSONObject goods_json = new JSONObject();
         goods_json.put("serviceId", goods.getServiceId());
@@ -375,13 +375,15 @@ public class ClientServiceImpl implements ClientService {
         int showButton = 1;
         if(balance==0) showButton=0;
         if(shoffset.compareTo(new BigDecimal("0"))==0)showButton=0;
-        if (balanceYuan.compareTo(shoffset) < 0)
-            showButton = 0;
+        if (balanceYuan.compareTo(shoffset) < 0) showButton = 0;
+        if(costSh==0) showButton = 0;
 
         if (shoffset.compareTo(new BigDecimal("0")) == 0) showButton = 2;
 
         goods_json.put("shOffset",shoffset.setScale(2).toString());
         result.put("goods", goods_json);
+
+        balanceYuan = balanceYuan.subtract(shoffset);
         result.put("balance", balanceYuan.stripTrailingZeros().toPlainString());
         result.put("actPay", actPrice.stripTrailingZeros().toPlainString());
         result.put("actOffset", real_offset.stripTrailingZeros().toPlainString());
