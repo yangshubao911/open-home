@@ -368,6 +368,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 
 			OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
+			OrderStatusEnum statusNew = null;
 			switch (status) {
 			case OrderUnpaid:
 				if (this.orderSystemService.updateOrderStatus(order.getOrderId(), status,
@@ -379,10 +380,13 @@ public class OrderManageImpl implements OrderManage {
 				} else {
 					return HomeCodeEnum.SYSTEM_ERR.toJSONString();
 				}
-			case OrderUnStockOut:
+			case OrderUnStockOut://未出库
+				statusNew = OrderStatusEnum.OrderCancelStockOut;
+			case OrderDistribute://配送中
+				statusNew = OrderStatusEnum.PayedCancel;
 				if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
-						status, OrderStatusEnum.OrderCancelStockOut,
-						OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
+						status, statusNew, OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
+					//更新第三方订单记录，状态值为开放平台标准化状态-取消
 					request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 					this.requestService.updateStatus(request);
 					// 商户取消订单，全额退款，无需审核，退回实惠现金
@@ -403,6 +407,7 @@ public class OrderManageImpl implements OrderManage {
 				}
 			case OrderCancelByCustom:
 			case OrderCloseByOutTime:
+			case PayedCancel:
 			case BackClose:
 				return HomeCodeEnum.SUCCESS.toJSONString();
 			default:
@@ -546,7 +551,7 @@ public class OrderManageImpl implements OrderManage {
 			OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
 			switch(status){
 			case OrderDistribute:
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date startTime = sdf.parse(contact.getServiceStartTime());
 				long diffTime = startTime.getTime() - System.currentTimeMillis();
 				if(diffTime > 2 * 60 * 60 * 1000){
