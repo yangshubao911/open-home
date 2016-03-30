@@ -84,7 +84,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 				}
 				
 				//判断预约时间差
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date startTime = sdf.parse(contact.getServiceStartTime());
 				long diffTime = startTime.getTime() - System.currentTimeMillis() ;
 				if(diffTime <= 2 * 60 * 60 * 1000){
