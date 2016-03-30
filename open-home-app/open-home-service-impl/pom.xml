@@ -26,10 +26,7 @@
 			<artifactId>open-common-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.shihui.api</groupId>
-			<artifactId>frame-parent</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpasyncclient</artifactId>
