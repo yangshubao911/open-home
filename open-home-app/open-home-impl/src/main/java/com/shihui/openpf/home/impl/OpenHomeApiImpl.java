@@ -126,7 +126,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 						}
 
 						response.setCode(0);
-						response.setMsg("取消订单成功");
+						response.setMsg(String.valueOf(sr.getData()));//返回退款流程编号
 						return response;
 					} else {
 						log.error("用户取消订单并发起退款失败，订单号={}，用户id={}，原订单状态={}", order.getOrderId(), userId,
