@@ -140,7 +140,7 @@ public class PaymentSuccessConsumer implements Consumer {
 										+"，如有疑问，请致电实惠客服：4006611388";
 							}
 							
-						}else{
+						}else if(status == OrderStatusEnum.OrderHadReceived){
 							pushMsg = "亲，服务已完成，小惠会再接再厉，感谢您的使用。";
 						}
 					}
