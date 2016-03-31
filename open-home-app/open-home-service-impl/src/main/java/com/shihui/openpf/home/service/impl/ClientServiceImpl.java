@@ -255,7 +255,7 @@ public class ClientServiceImpl implements ClientService {
                 if (merchantList != null && merchantList.size() > 0) {
                     for (Merchant merchant : merchantList) {
                         JSONObject merchant_json = new JSONObject();
-                        merchant_json.put("merchantId", merchant.getMerchantId());
+                        merchant_json.put("merchantId", merchant.getMerchantCode());
                         merchant_json.put("merchantImage", merchant.getMerchantImage());
                         merchant_json.put("merchantName", merchant.getMerchantName());
                         merchant_json.put("merchantDesc", merchant.getMerchantDesc());
