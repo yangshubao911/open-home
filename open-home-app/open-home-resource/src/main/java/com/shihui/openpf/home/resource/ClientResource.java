@@ -3,6 +3,7 @@ package com.shihui.openpf.home.resource;
 
 import com.shihui.openpf.home.model.OrderForm;
 import com.shihui.openpf.home.service.api.ClientService;
+import com.shihui.openpf.home.util.OperationLogger;
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
@@ -14,6 +15,8 @@ import javax.annotation.Resource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -34,7 +37,7 @@ public class ClientResource {
                        @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
                        @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                        @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid) {
-        return clientService.listGoods(serviceId, userId, groupId);
+        return clientService.listGoods(serviceId, userId, groupId, mid , rc);
     }
 
 
@@ -49,7 +52,7 @@ public class ClientResource {
                          @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
                          @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
                          @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid) {
-        return clientService.detail(serviceId, userId, groupId, categoryId, goodsId);
+        return clientService.detail(serviceId, userId, groupId, categoryId, goodsId, mid , rc);
     }
 
     @Path("/order/confirm")

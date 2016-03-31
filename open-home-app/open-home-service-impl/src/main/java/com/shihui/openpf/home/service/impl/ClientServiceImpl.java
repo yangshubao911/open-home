@@ -16,6 +16,8 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
+import com.shihui.openpf.home.util.OperationLogger;
+import me.weimi.api.commons.context.RequestContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +115,7 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回商品列表
      */
     @Override
-    public String listGoods(Integer serviceId, Long userId, Long groupId) {
+    public String listGoods(Integer serviceId, Long userId, Long groupId , Long mid , RequestContext rc) {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
@@ -125,6 +127,13 @@ public class ClientServiceImpl implements ClientService {
             throw new AppException(HomeExcepFactor.Group_Unfound);
         }
         int cityId = group.getCityId();
+        Map<String, String> expand = new HashMap<>();
+        expand.put("cityId",cityId+"");
+        expand.put("gid",groupId+"");
+        expand.put("serviceId",mid+"");
+        OperationLogger.log("central.operation", rc, expand);
+
+
         List<Goods> goodsList = goodsService.list(serviceId, cityId);
         if (goodsList == null || goodsList.size() == 0) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);
@@ -176,14 +185,23 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回商品接口
      */
     @Override
-    public String detail(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId) {
+    public String detail(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId, Long mid , RequestContext rc) {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
         if (service.getServiceStatus() != 1) {
             throw new AppException(HomeExcepFactor.Service_Close);
         }
-
+        Group group = groupManage.getGroupInfoByGid(groupId);
+        if (group == null) {
+            throw new AppException(HomeExcepFactor.Group_Unfound);
+        }
+        int cityId = group.getCityId();
+        Map<String, String> expand = new HashMap<>();
+        expand.put("cityId",cityId+"");
+        expand.put("gid",groupId+"");
+        expand.put("serviceId",mid+"");
+        OperationLogger.log("central.operation", rc, expand);
         Goods goods = goodsService.findById(goodsId);
         if (goods == null) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);

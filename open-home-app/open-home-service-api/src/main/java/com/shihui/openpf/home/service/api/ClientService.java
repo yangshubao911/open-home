@@ -1,6 +1,8 @@
 package com.shihui.openpf.home.service.api;
 
 import com.shihui.openpf.home.model.OrderForm;
+import me.weimi.api.commons.context.RequestContext;
+
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -12,14 +14,14 @@ public interface ClientService {
      *
      * @return 返回商品列表
      */
-    public String listGoods(Integer serviceId, Long userId , Long groupId);
+    public String listGoods(Integer serviceId, Long userId , Long groupId, Long mid , RequestContext rc);
 
     /**
      * 客户端查询商品详情
      *
      * @return 返回商品接口
      */
-    public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId);
+    public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId , Long mid , RequestContext rc);
 
     /**
      * 客户端订单确认接口
