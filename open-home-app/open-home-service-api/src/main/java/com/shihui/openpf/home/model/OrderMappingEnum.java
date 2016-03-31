@@ -15,6 +15,7 @@ public enum  OrderMappingEnum {
     OrderCancelStockOut(70, 30 ,"取消出库"),
     OrderDistribute(80,15, "配送中"),
     OrderHadReceived(90,20, "已确认收货"),
+    PaiedCancel(95, 30 ,"已支付取消"),
     BackClose(100, 30,"后台关闭");
 
     private Integer value;
