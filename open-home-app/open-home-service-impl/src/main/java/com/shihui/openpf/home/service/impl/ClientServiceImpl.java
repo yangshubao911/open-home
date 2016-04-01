@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.shihui.openpf.home.util.OperationLogger;
 import me.weimi.api.commons.context.RequestContext;
@@ -115,7 +116,7 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回商品列表
      */
     @Override
-    public String listGoods(Integer serviceId, Long userId, Long groupId , Long mid , RequestContext rc) {
+    public String listGoods(Integer serviceId, Long userId, Long groupId , Long mid , RequestContext rc, HttpServletRequest request) {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
@@ -133,6 +134,7 @@ public class ClientServiceImpl implements ClientService {
         expand.put("serviceId",mid+"");
         expand.put("businessId",serviceId+"");
         expand.put("businessName",service.getServiceName()+"");
+        expand.put("ndeviceid", request.getHeader("ndeviceid"));
         OperationLogger.log("operation.open-home.list", rc, expand);
 
 
@@ -187,7 +189,7 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回商品接口
      */
     @Override
-    public String detail(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId, Long mid , RequestContext rc) {
+    public String detail(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId, Long mid , RequestContext rc, HttpServletRequest request) {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
@@ -206,7 +208,7 @@ public class ClientServiceImpl implements ClientService {
         expand.put("businessId",serviceId+"");
         expand.put("businessName",service.getServiceName()+"");
         expand.put("product_id",goodsId+"");
-
+        expand.put("ndeviceid", request.getHeader("ndeviceid"));
         OperationLogger.log("operation.open-home.detail", rc, expand);
         Goods goods = goodsService.findById(goodsId);
         if (goods == null) {

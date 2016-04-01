@@ -32,7 +32,7 @@ public class OperationLogger {
         olog.setAction(action + "?businessId=" + expand.get("businessId") + "&businessName=" + expand.get("businessName"));
         olog.setChannel(rc.getClientVersion().channel);
         olog.setClientVersion(rc.getClientVersion().clientVersion + "");
-        olog.setDeviceId(rc.getClientVersion().udid);
+        olog.setDeviceId(MapUtils.getString(expand, "ndeviceid", "0"));
         olog.setCityId(MapUtils.getString(expand, "cityId", "0"));
         olog.setGid(MapUtils.getString(expand, "gid", "0"));
         olog.setServiceId(MapUtils.getString(expand, "serviceId", "0"));
