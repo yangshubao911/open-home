@@ -31,13 +31,14 @@ public class OperationLogger {
         olog.setAction(action);
         olog.setChannel(rc.getClientVersion().channel);
         olog.setClientVersion(rc.getClientVersion().clientVersion + "");
+        olog.setDeviceId(rc.getClientVersion().device);
         olog.setCityId(MapUtils.getString(expand, "cityId", "0"));
         olog.setGid(MapUtils.getString(expand, "gid", "0"));
         olog.setServiceId(MapUtils.getString(expand, "serviceId", "0"));
         olog.setUid(rc.getCurrentUid() + "");
         olog.setIp(rc.getIp());
 
-        centralLogger.log("central.operation", olog.toJSONObject());
+        centralLogger.log(action, olog.toJSONObject());
     }
 
 }

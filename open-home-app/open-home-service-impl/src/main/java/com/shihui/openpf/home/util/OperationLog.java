@@ -18,6 +18,7 @@ public class OperationLog implements JSONAware {
 
     private String time;
     private String uid;
+    @JSONField(name = "deviceid")
     private String deviceId;
     private String channel;
     @JSONField(name = "client_version")
