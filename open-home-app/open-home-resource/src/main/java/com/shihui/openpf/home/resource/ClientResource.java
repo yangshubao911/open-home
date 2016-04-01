@@ -9,9 +9,13 @@ import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +28,7 @@ import java.util.Map;
 @Controller
 @Path("/v2/openpf/home/client")
 public class ClientResource {
-
+    private Logger log = LoggerFactory.getLogger(getClass());
     @Resource
     ClientService clientService;
 
@@ -33,10 +37,12 @@ public class ClientResource {
     @BaseInfo(desc = "查询归属城市所有分类商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String list(@Context RequestContext rc,
+                       @Context HttpServletRequest request,
                        @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
                        @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
                        @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                        @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid) {
+        log.info("-----------"+request.getHeader("ndeviceid"));
         return clientService.listGoods(serviceId, userId, groupId, mid , rc);
     }
 
@@ -46,6 +52,7 @@ public class ClientResource {
     @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String detail(@Context RequestContext rc,
+                         @Context HttpServletRequest request,
                          @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
                          @ParamDesc(desc = "小区Id", isRequired = true) @QueryParam("groupId") long groupId,
                          @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
