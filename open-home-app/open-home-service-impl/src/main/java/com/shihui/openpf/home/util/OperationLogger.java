@@ -29,7 +29,7 @@ public class OperationLogger {
         }
         OperationLog olog = new OperationLog();
         olog.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        olog.setAction(action + "?businessId=" + expand.get("businessId") + "&businessName=" + expand.get("businessName") );
+        olog.setAction(action + "?businessId=" + expand.get("businessId") + "&businessName=" + expand.get("businessName"));
         olog.setChannel(rc.getClientVersion().channel);
         olog.setClientVersion(rc.getClientVersion().clientVersion + "");
         olog.setDeviceId(rc.getClientVersion().udid);
@@ -38,10 +38,11 @@ public class OperationLogger {
         olog.setServiceId(MapUtils.getString(expand, "serviceId", "0"));
         olog.setUid(rc.getCurrentUid() + "");
         olog.setIp(rc.getIp());
-        Map<String,String> map = new HashMap<>();
-        map.put("businessId",expand.get("businessId"));
-        map.put("businessName",expand.get("businessName"));
-        olog.setExpand(map);
+        if(expand.get("product_id")!=null) {
+            Map<String, String> map = new HashMap<>();
+            map.put("product_id",expand.get("product_id"));
+            olog.setExpand(map);
+        }
         centralLogger.log(action, olog.toJSONObject());
     }
 

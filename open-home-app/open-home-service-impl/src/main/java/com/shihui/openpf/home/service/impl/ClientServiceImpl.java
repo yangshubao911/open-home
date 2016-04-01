@@ -205,6 +205,7 @@ public class ClientServiceImpl implements ClientService {
         expand.put("serviceId",mid+"");
         expand.put("businessId",serviceId+"");
         expand.put("businessName",service.getServiceName()+"");
+        expand.put("product_id",goodsId+"");
         OperationLogger.log("operation.open-home.detail", rc, expand);
         Goods goods = goodsService.findById(goodsId);
         if (goods == null) {
