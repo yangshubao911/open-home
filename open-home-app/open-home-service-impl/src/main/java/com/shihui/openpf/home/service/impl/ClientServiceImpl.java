@@ -131,7 +131,9 @@ public class ClientServiceImpl implements ClientService {
         expand.put("cityId",cityId+"");
         expand.put("gid",groupId+"");
         expand.put("serviceId",mid+"");
-        OperationLogger.log("open-home.list", rc, expand);
+        expand.put("businessId",serviceId+"");
+        expand.put("businessName",service.getServiceName()+"");
+        OperationLogger.log("central.operation.open-home.list", rc, expand);
 
 
         List<Goods> goodsList = goodsService.list(serviceId, cityId);
@@ -201,7 +203,9 @@ public class ClientServiceImpl implements ClientService {
         expand.put("cityId",cityId+"");
         expand.put("gid",groupId+"");
         expand.put("serviceId",mid+"");
-        OperationLogger.log("open-home.detail", rc, expand);
+        expand.put("businessId",serviceId+"");
+        expand.put("businessName",service.getServiceName()+"");
+        OperationLogger.log("central.operation.open-home.detail", rc, expand);
         Goods goods = goodsService.findById(goodsId);
         if (goods == null) {
             throw new AppException(HomeExcepFactor.Goods_Unfound);

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +38,10 @@ public class OperationLogger {
         olog.setServiceId(MapUtils.getString(expand, "serviceId", "0"));
         olog.setUid(rc.getCurrentUid() + "");
         olog.setIp(rc.getIp());
-
+        Map<String,String> map = new HashMap<>();
+        map.put("businessId",expand.get("businessId"));
+        map.put("businessName",expand.get("businessName"));
+        olog.setExpand(map);
         centralLogger.log(action, olog.toJSONObject());
     }
 
