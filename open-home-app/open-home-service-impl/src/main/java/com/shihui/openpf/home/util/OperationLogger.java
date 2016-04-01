@@ -29,7 +29,7 @@ public class OperationLogger {
         }
         OperationLog olog = new OperationLog();
         olog.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        olog.setAction(action);
+        olog.setAction(action + "?businessId=" + expand.get("businessId") + "&businessName=" + expand.get("businessName") );
         olog.setChannel(rc.getClientVersion().channel);
         olog.setClientVersion(rc.getClientVersion().clientVersion + "");
         olog.setDeviceId(rc.getClientVersion().device);
