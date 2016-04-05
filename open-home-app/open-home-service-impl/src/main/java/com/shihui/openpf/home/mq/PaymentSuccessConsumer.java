@@ -34,7 +34,6 @@ import com.shihui.openpf.home.cache.GoodsCache;
 import com.shihui.openpf.home.http.FastHttpUtils;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.HomeMQMsg;
-import com.shihui.openpf.home.model.HomeOrderStatusEnum;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderMappingEnum;
 import com.shihui.openpf.home.model.Request;
@@ -118,7 +117,8 @@ public class PaymentSuccessConsumer implements Consumer {
 
 				//推送客户端消息
 				if(status == OrderStatusEnum.OrderCancelByCustom || status == OrderStatusEnum.OrderUnStockOut
-						|| status == OrderStatusEnum.BackClose || status == OrderStatusEnum.OrderHadReceived){
+						|| status == OrderStatusEnum.BackClose || status == OrderStatusEnum.OrderHadReceived
+						|| status == OrderStatusEnum.PayedCancel){
 					String pushMsg = null;
 					Service service = serviceManage.findById(order.getService_id());
 					if(service == null){
