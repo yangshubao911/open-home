@@ -122,7 +122,7 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 						updateOrder.setAuditId((long) sr.getData());
 						updateOrder.setUpdateTime(new Date());
 						try {
-							this.orderService.update(order);
+							this.orderService.update(updateOrder);
 						} catch (Exception e) {
 							log.error("用户取消订单成功，但保存退款审核id失败，orderId={}，auditId={}", updateOrder.getOrderId(), updateOrder.getAuditId(), e);
 						}
