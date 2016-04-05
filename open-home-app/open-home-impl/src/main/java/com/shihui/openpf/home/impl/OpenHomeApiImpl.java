@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
@@ -109,10 +110,11 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 			HomeResponse homeResponse = homeServProviderService.cancelOrder(merchant, order.getService_id(),
 					request.getRequestId());
 			if (homeResponse.getCode() == 0) {
-				// 商户取消订单，全额退款，无需审核，退回实惠现金
+				// 用户取消订单，全额退款，无需审核，退回实惠现金
 				try {
 					SimpleResult sr = orderSystemService.customCancel(order.getOrderId(), merchant.getMerchantCode(),
 							userId, StringUtil.yuan2hao(order.getPay()), order.getOrderStatus(), reason);
+					log.info("调用订单接口【用户取消订单】返回结果：{}", JSON.toJSONString(sr));
 					if (sr.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
