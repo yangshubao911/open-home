@@ -101,6 +101,7 @@ public class PaymentSuccessConsumer implements Consumer {
 			if (order == null) {
 				return true;
 			} else {
+				log.info("消费订单状态变更消息 topic:"+ topic +",key:"+ key + ",msg:"+ msg);
 				Request request = requestService.queryOrderRequest(orderId);
 
 
