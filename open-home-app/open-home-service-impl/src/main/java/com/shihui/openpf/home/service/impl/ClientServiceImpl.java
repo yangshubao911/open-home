@@ -116,7 +116,7 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回商品列表
      */
     @Override
-    public String listGoods(Integer serviceId, Long userId, Long groupId , Long mid , RequestContext rc, HttpServletRequest request) {
+    public String listGoods(Integer serviceId, Long userId, Long groupId , Long mid , RequestContext rc, HttpServletRequest request, int clientCityId) {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
@@ -189,7 +189,7 @@ public class ClientServiceImpl implements ClientService {
      * @return 返回商品接口
      */
     @Override
-    public String detail(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId, Long mid , RequestContext rc, HttpServletRequest request) {
+    public String detail(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId, Long mid , RequestContext rc, HttpServletRequest request, int clientCityId) {
         JSONObject result = new JSONObject();
 
         com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);

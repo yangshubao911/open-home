@@ -3,7 +3,6 @@ package com.shihui.openpf.home.util;
 
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.commons.logger.CentralLogger;
-import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +31,10 @@ public class OperationLogger {
         olog.setAction(action + "?businessId=" + expand.get("businessId") + "&businessName=" + expand.get("businessName"));
         olog.setChannel(rc.getClientVersion().channel);
         olog.setClientVersion(rc.getClientVersion().clientVersion + "");
-        olog.setDeviceId(MapUtils.getString(expand, "ndeviceid", "0"));
-        olog.setCityId(MapUtils.getString(expand, "cityId", "0"));
-        olog.setGid(MapUtils.getString(expand, "gid", "0"));
-        olog.setServiceId(MapUtils.getString(expand, "serviceId", "0"));
+        olog.setDeviceId(expand.get("ndeviceid"));
+        olog.setCityId(expand.get("cityId"));
+        olog.setGid(expand.get("gid"));
+        olog.setServiceId(expand.get("serviceId"));
         olog.setUid(rc.getCurrentUid() + "");
         olog.setIp(rc.getIp());
         if(expand.get("product_id")!=null) {
@@ -43,6 +42,7 @@ public class OperationLogger {
             map.put("product_id",expand.get("product_id"));
             olog.setExpand(map);
         }
+        log.info("TFS LOG:" + olog.toJSONObject());
         centralLogger.log(action, olog.toJSONObject());
     }
 
