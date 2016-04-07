@@ -391,6 +391,7 @@ public class OrderManageImpl implements OrderManage {
 					this.requestService.updateStatus(request);
 					// 商户取消订单，全额退款，无需审核，退回实惠现金
 					SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPay()), order.getOrderStatus(), "商户取消订单");
+					log.info("Third Cancel  status:" +sr.getStatus() + " msg" + sr.getMsg() + " data" + sr.getData());
 					if (sr.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
