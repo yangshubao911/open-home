@@ -1,26 +1,26 @@
 package com.shihui.openpf.home.resource;
 
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import org.springframework.stereotype.Controller;
+
 import com.shihui.openpf.home.model.OrderForm;
 import com.shihui.openpf.home.service.api.ClientService;
-import com.shihui.openpf.home.util.OperationLogger;
+
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -28,7 +28,6 @@ import java.util.Map;
 @Controller
 @Path("/v2/openpf/home/client")
 public class ClientResource {
-    private Logger log = LoggerFactory.getLogger(getClass());
     @Resource
     ClientService clientService;
 

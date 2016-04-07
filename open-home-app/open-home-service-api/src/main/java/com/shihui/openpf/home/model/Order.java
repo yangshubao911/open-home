@@ -56,6 +56,8 @@ public class Order implements Serializable {
 
 	@Column(name = "price")
 	private String price;
+	
+	private String settlement;
 
 	@Column(name = "sh_off_set")
 	private String shOffSet;
@@ -75,9 +77,18 @@ public class Order implements Serializable {
 
 	@Column(name = "phone")
 	private String phone;
+	
 	@JSONField(name = "audit_id")
 	@Column(name = "audit_id")
 	private Long auditId;
+	
+	@JSONField(name = "refund_type")
+	@Column(name = "refund_type")
+	private Integer refundType;
+	
+	@JSONField(name = "refund_price")
+	@Column(name = "refund_price")
+	private String refundPrice;
 
 	public Order() {
 	}
@@ -178,6 +189,14 @@ public class Order implements Serializable {
 		this.price = price;
 	}
 
+	public String getSettlement() {
+		return settlement;
+	}
+
+	public void setSettlement(String settlement) {
+		this.settlement = settlement;
+	}
+
 	public String getShOffSet() {
 		return shOffSet;
 	}
@@ -240,5 +259,21 @@ public class Order implements Serializable {
 
 	public void setAuditId(Long auditId) {
 		this.auditId = auditId;
+	}
+
+	public Integer getRefundType() {
+		return refundType;
+	}
+
+	public void setRefundType(Integer refundType) {
+		this.refundType = refundType;
+	}
+
+	public String getRefundPrice() {
+		return refundPrice;
+	}
+
+	public void setRefundPrice(String refundPrice) {
+		this.refundPrice = refundPrice;
 	}
 }

@@ -882,6 +882,7 @@ public class ClientServiceImpl implements ClientService {
         order.setPay(orderForm.getActPay());
         order.setPhone(orderForm.getServicePhone());
         order.setPrice(goods.getPrice());
+        order.setSettlement(orderInfo.getPrice());
         order.setRemark(orderForm.getRemark());
         order.setService_id(orderForm.getServiceId());
         order.setUpdateTime(now);
