@@ -384,8 +384,8 @@ public class OrderManageImpl implements OrderManage {
 				statusNew = OrderStatusEnum.OrderCancelStockOut;
 			case OrderDistribute://配送中
 				statusNew = OrderStatusEnum.PayedCancel;
-				if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
-						status, statusNew, OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
+			/*	if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
+						status, statusNew, OperatorTypeEnum.User, merchant.getMerchantId(), "")) {*/
 					//更新第三方订单记录，状态值为开放平台标准化状态-取消
 					request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 					this.requestService.updateStatus(request);
@@ -405,9 +405,9 @@ public class OrderManageImpl implements OrderManage {
 						log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 					}
 					return HomeCodeEnum.SUCCESS.toJSONString();
-				} else {
+				/*} else {
 					return HomeCodeEnum.SYSTEM_ERR.toJSONString();
-				}
+				}*/
 			case OrderCancelByCustom:
 			case OrderCloseByOutTime:
 			case PayedCancel:
