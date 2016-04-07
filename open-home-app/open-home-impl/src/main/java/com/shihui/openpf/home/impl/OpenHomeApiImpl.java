@@ -120,6 +120,8 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 						Order updateOrder = new Order();
 						updateOrder.setOrderId(order.getOrderId());
 						updateOrder.setAuditId((long) sr.getData());
+						updateOrder.setRefundType(1);//全额退款
+						updateOrder.setRefundPrice(order.getPay());
 						updateOrder.setUpdateTime(new Date());
 						try {
 							this.orderService.update(updateOrder);

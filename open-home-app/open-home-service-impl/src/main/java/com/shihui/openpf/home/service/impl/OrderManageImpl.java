@@ -396,8 +396,10 @@ public class OrderManageImpl implements OrderManage {
 						Order updateOrder = new Order();
 						updateOrder.setOrderId(order.getOrderId());
 						updateOrder.setAuditId((long) sr.getData());
+						updateOrder.setRefundType(1);//全额退款
+						updateOrder.setRefundPrice(order.getPay());
 						updateOrder.setUpdateTime(new Date());
-						this.orderService.update(order);
+						this.orderService.update(updateOrder);
 					}else{
 						log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 					}
@@ -564,8 +566,13 @@ public class OrderManageImpl implements OrderManage {
 						Order updateOrder = new Order();
 						updateOrder.setOrderId(order.getOrderId());
 						updateOrder.setAuditId((long) result.getData());
+						if(price.equals(order.getPay()))
+							updateOrder.setRefundType(1);//全额退款
+						else
+							updateOrder.setRefundType(2);//部分退款
+						updateOrder.setRefundPrice(price);
 						updateOrder.setUpdateTime(new Date());
-						this.orderService.update(order);
+						this.orderService.update(updateOrder);
 					}else{
 						log.error("后台取消订单，发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 					}
@@ -788,8 +795,10 @@ public class OrderManageImpl implements OrderManage {
 								Order updateOrder = new Order();
 								updateOrder.setOrderId(order.getOrderId());
 								updateOrder.setAuditId((long) sr.getData());
+								updateOrder.setRefundType(1);//全额退款
+								updateOrder.setRefundPrice(order.getPay());
 								updateOrder.setUpdateTime(new Date());
-								this.orderService.update(order);
+								this.orderService.update(updateOrder);
 							}else{
 								log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 							}
