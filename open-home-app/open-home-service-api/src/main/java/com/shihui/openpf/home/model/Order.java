@@ -56,6 +56,8 @@ public class Order implements Serializable {
 
 	@Column(name = "price")
 	private String price;
+	
+	private String settlement;
 
 	@Column(name = "sh_off_set")
 	private String shOffSet;
@@ -185,6 +187,14 @@ public class Order implements Serializable {
 
 	public void setPrice(String price) {
 		this.price = price;
+	}
+
+	public String getSettlement() {
+		return settlement;
+	}
+
+	public void setSettlement(String settlement) {
+		this.settlement = settlement;
 	}
 
 	public String getShOffSet() {
