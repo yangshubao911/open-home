@@ -51,6 +51,7 @@ public class OrderResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String listById(@Context RequestContext rc,
                            @ParamDesc(desc = "实惠用户id", isRequired = false) @QueryParam("userId") String userId,
+                           @ParamDesc(desc = "业务idid", isRequired = false) @QueryParam("serviceId") Integer serviceId,
                            @ParamDesc(desc = "充值手机号码", isRequired = false) @QueryParam("phoneNum") String phoneNum,
                            @ParamDesc(desc = "商户id", isRequired = false) @QueryParam("merchantId") String merchantId,
                            @ParamDesc(desc = "订单id", isRequired = false) @QueryParam("orderId") String orderId,
@@ -73,6 +74,8 @@ public class OrderResource {
             queryOrder.setUserId(Long.parseLong(userId));
             if(!StringUtil.isEmpty(merchantId))
             queryOrder.setMerchantId(Integer.parseInt(merchantId));
+            
+            queryOrder.setService_id(serviceId);
             return orderManage.queryOrderList(queryOrder,startTime,endTime,page,size );
         }catch (Exception e){
         	log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
