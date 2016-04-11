@@ -51,7 +51,7 @@ public class OrderResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String listById(@Context RequestContext rc,
                            @ParamDesc(desc = "实惠用户id", isRequired = false) @QueryParam("userId") String userId,
-                           @ParamDesc(desc = "业务idid", isRequired = false) @QueryParam("serviceId") Integer serviceId,
+                           @ParamDesc(desc = "业务id", isRequired = false) @QueryParam("serviceId") Integer serviceId,
                            @ParamDesc(desc = "充值手机号码", isRequired = false) @QueryParam("phoneNum") String phoneNum,
                            @ParamDesc(desc = "商户id", isRequired = false) @QueryParam("merchantId") String merchantId,
                            @ParamDesc(desc = "订单id", isRequired = false) @QueryParam("orderId") String orderId,
