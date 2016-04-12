@@ -128,6 +128,7 @@ public class OrderManageImpl implements OrderManage {
 			order_json.put("orderId", String.valueOf(order.getOrderId()));
 			order_json.put("userId", order.getUserId());
 			order_json.put("phone", order.getPhone());
+			order_json.put("serviceId", order.getService_id());
 
 			Goods goods = goodsService.findById(order.getGoodsId());
 			order_json.put("price", goods.getPrice());
@@ -170,7 +171,7 @@ public class OrderManageImpl implements OrderManage {
 	public String queryOrder(long orderId) {
 		try {
 			JSONObject result = new JSONObject();
-			result.put("orderId", orderId);
+			result.put("orderId", String.valueOf(orderId));
 			Order order = orderService.queryOrder(orderId);
 
 			if (order == null)
@@ -368,7 +369,6 @@ public class OrderManageImpl implements OrderManage {
 			}
 
 			OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
-			OrderStatusEnum statusNew = null;
 			switch (status) {
 			case OrderUnpaid:
 				if (this.orderSystemService.updateOrderStatus(order.getOrderId(), status,
@@ -381,33 +381,25 @@ public class OrderManageImpl implements OrderManage {
 					return HomeCodeEnum.SYSTEM_ERR.toJSONString();
 				}
 			case OrderUnStockOut://未出库
-				statusNew = OrderStatusEnum.OrderCancelStockOut;
 			case OrderDistribute://配送中
-				statusNew = OrderStatusEnum.PayedCancel;
-			/*	if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
-						status, statusNew, OperatorTypeEnum.User, merchant.getMerchantId(), "")) {*/
-					//更新第三方订单记录，状态值为开放平台标准化状态-取消
-					request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
-					this.requestService.updateStatus(request);
-					// 商户取消订单，全额退款，无需审核，退回实惠现金
-					SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPay()), order.getOrderStatus(), "商户取消订单");
-					log.info("Third Cancel  status:" +sr.getStatus() + " msg" + sr.getMsg() + " data" + sr.getData());
-					if (sr.getStatus() == 1) {
-						// 保存审核id
-						Order updateOrder = new Order();
-						updateOrder.setOrderId(order.getOrderId());
-						updateOrder.setAuditId((long) sr.getData());
-						updateOrder.setRefundType(1);//全额退款
-						updateOrder.setRefundPrice(order.getPay());
-						updateOrder.setUpdateTime(new Date());
-						this.orderService.update(updateOrder);
-					}else{
-						log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
-					}
-					return HomeCodeEnum.SUCCESS.toJSONString();
-				/*} else {
-					return HomeCodeEnum.SYSTEM_ERR.toJSONString();
-				}*/
+				request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
+				this.requestService.updateStatus(request);
+				// 商户取消订单，全额退款，无需审核，退回实惠现金
+				SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPay()), order.getOrderStatus(), "商户取消订单");
+				log.info("Third Cancel  status:" +sr.getStatus() + " msg" + sr.getMsg() + " data" + sr.getData());
+				if (sr.getStatus() == 1) {
+					// 保存审核id
+					Order updateOrder = new Order();
+					updateOrder.setOrderId(order.getOrderId());
+					updateOrder.setAuditId((long) sr.getData());
+					updateOrder.setRefundType(1);//全额退款
+					updateOrder.setRefundPrice(order.getPay());
+					updateOrder.setUpdateTime(new Date());
+					this.orderService.update(updateOrder);
+				}else{
+					log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
+				}
+				return HomeCodeEnum.SUCCESS.toJSONString();
 			case OrderCancelByCustom:
 			case OrderCloseByOutTime:
 			case PayedCancel:
@@ -484,6 +476,10 @@ public class OrderManageImpl implements OrderManage {
 			JSONObject settlementJson = new JSONObject();
 			settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
 			settlementJson.put("settleMerchantId", merchant.getMerchantCode());
+			//更新状态跟现在状态一致，则直接返回成功
+			if(db_statusEnum == statusEnum){
+				return HomeCodeEnum.SUCCESS.toJSONString();
+			}
 
 			switch (statusEnum) {
 
@@ -553,15 +549,11 @@ public class OrderManageImpl implements OrderManage {
 			}
 			OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
 			switch(status){
+			case OrderUnStockOut:
 			case OrderDistribute:
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				Date startTime = sdf.parse(contact.getServiceStartTime());
-				long diffTime = startTime.getTime() - System.currentTimeMillis();
-				if(diffTime > 2 * 60 * 60 * 1000){
-					return HomeCodeEnum.CANCEL_TIME_OUT.toJSONString("现时间段不允许取消订单");
-				}
 				if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
-					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 1, refundSHCoin);
+					//后台关闭订单，不审核
+					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 2, refundSHCoin);
 					if (result.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
@@ -577,9 +569,9 @@ public class OrderManageImpl implements OrderManage {
 					}else{
 						log.error("后台取消订单，发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 					}
-					HomeCodeEnum.SUCCESS.toJSONString();
+					return HomeCodeEnum.SUCCESS.toJSONString();
 				}else{
-					return HomeCodeEnum.CANCEL_FAIL.toJSONString();
+					return HomeCodeEnum.CANCEL_FAIL.toJSONString("更改订单状态失败");
 				}
 				
 			default:
