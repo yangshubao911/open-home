@@ -37,6 +37,7 @@ import com.shihui.openpf.home.model.Contact;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.HomeCodeEnum;
 import com.shihui.openpf.home.model.HomeOrderStatusEnum;
+import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.Request;
@@ -547,37 +548,55 @@ public class OrderManageImpl implements OrderManage {
 			if (contact == null) {
 				return HomeCodeEnum.OTHER_NA.toJSONString("订单附加信息不存在");
 			}
-			OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
-			switch(status){
-			case OrderUnStockOut:
-			case OrderDistribute:
-				if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
-					//后台关闭订单，不审核
-					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 2, refundSHCoin);
-					if (result.getStatus() == 1) {
-						// 保存审核id
-						Order updateOrder = new Order();
-						updateOrder.setOrderId(order.getOrderId());
-						updateOrder.setAuditId((long) result.getData());
-						if(price.equals(order.getPay()))
-							updateOrder.setRefundType(1);//全额退款
-						else
-							updateOrder.setRefundType(2);//部分退款
-						updateOrder.setRefundPrice(price);
-						updateOrder.setUpdateTime(new Date());
-						this.orderService.update(updateOrder);
-					}else{
-						log.error("后台取消订单，发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
-					}
-					return HomeCodeEnum.SUCCESS.toJSONString();
-				}else{
-					return HomeCodeEnum.CANCEL_FAIL.toJSONString("更改订单状态失败");
-				}
-				
-			default:
-				return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单不允许取消");
-				
+			
+			Request request = requestService.queryOrderRequest(orderId);
+			if (request == null) {
+				return HomeCodeEnum.OTHER_NA.toJSONString("订单信息缺失");
 			}
+			
+			Merchant merchant = merchantManage.getById(order.getMerchantId());
+			if(merchant == null){
+				return HomeCodeEnum.OTHER_NA.toJSONString("商户信息不存在");
+			}
+			//调用第三方接口取消订单
+			HomeResponse homeResponse = homeServProviderService.cancelOrder(merchant, order.getService_id(), request.getRequestId());
+			
+			if (homeResponse.getCode() == 0) {
+				OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
+				switch(status){
+				case OrderUnStockOut:
+				case OrderDistribute:
+					if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
+						//后台关闭订单，不审核
+						SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 2, refundSHCoin);
+						if (result.getStatus() == 1) {
+							// 保存审核id
+							Order updateOrder = new Order();
+							updateOrder.setOrderId(order.getOrderId());
+							updateOrder.setAuditId((long) result.getData());
+							if(price.equals(order.getPay()))
+								updateOrder.setRefundType(1);//全额退款
+							else
+								updateOrder.setRefundType(2);//部分退款
+							updateOrder.setRefundPrice(price);
+							updateOrder.setUpdateTime(new Date());
+							this.orderService.update(updateOrder);
+						}else{
+							log.error("后台取消订单，发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
+						}
+						return HomeCodeEnum.SUCCESS.toJSONString();
+					}else{
+						return HomeCodeEnum.CANCEL_FAIL.toJSONString("更改订单状态失败");
+					}
+					
+				default:
+					return HomeCodeEnum.CANCEL_FAIL.toJSONString("订单不允许取消");
+					
+				}
+			}else {
+				return HomeCodeEnum.CANCEL_FAIL.toJSONString("取消第三方订单失败，返回信息【" + homeResponse.getMsg() + "】");
+			}
+				
 		} catch (Exception e) {
 			log.error("取消订单异常，订单号={}", orderId, e);
 			return HomeCodeEnum.SYSTEM_ERR.toJSONString();
