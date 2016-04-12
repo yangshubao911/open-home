@@ -476,6 +476,10 @@ public class OrderManageImpl implements OrderManage {
 			JSONObject settlementJson = new JSONObject();
 			settlementJson.put("settlePrice", StringUtil.yuan2hao(merchantGoods.getSettlement()));
 			settlementJson.put("settleMerchantId", merchant.getMerchantCode());
+			//更新状态跟现在状态一致，则直接返回成功
+			if(db_statusEnum == statusEnum){
+				return HomeCodeEnum.SUCCESS.toJSONString();
+			}
 
 			switch (statusEnum) {
 
