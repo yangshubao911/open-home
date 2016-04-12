@@ -569,7 +569,7 @@ public class OrderManageImpl implements OrderManage {
 					}else{
 						log.error("后台取消订单，发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 					}
-					HomeCodeEnum.SUCCESS.toJSONString();
+					return HomeCodeEnum.SUCCESS.toJSONString();
 				}else{
 					return HomeCodeEnum.CANCEL_FAIL.toJSONString();
 				}
