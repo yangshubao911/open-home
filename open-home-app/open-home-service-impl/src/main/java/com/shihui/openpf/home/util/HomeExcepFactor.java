@@ -31,6 +31,8 @@ public class HomeExcepFactor extends ExcepFactor {
 
     public static final HomeExcepFactor Order_Fail;
 
+    public static final HomeExcepFactor Place_Unsupport;
+
     protected HomeExcepFactor(HttpStatus httpStatus, int errorCode, String errorMsg, String errorMsgCn) {
         super(29, httpStatus, errorCode, errorMsg, errorMsgCn);
     }
@@ -47,6 +49,7 @@ public class HomeExcepFactor extends ExcepFactor {
         Price_Wrong = new HomeExcepFactor(HttpStatus.BAD_REQUEST,9, "price has changed", "价格变动,请重新下单");
         Third_Order_Fail = new HomeExcepFactor(HttpStatus.BAD_REQUEST,10, "create third order fail", "创建订单失败");
         Order_Fail = new HomeExcepFactor(HttpStatus.BAD_REQUEST,11, "create local order fail", "创建订单失败");
+        Place_Unsupport = new HomeExcepFactor(HttpStatus.BAD_REQUEST,12, "place not support", "不在服务范围内");
 
     }
 }

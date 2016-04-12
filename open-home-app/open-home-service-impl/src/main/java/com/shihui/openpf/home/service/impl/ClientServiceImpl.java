@@ -503,9 +503,10 @@ public class ClientServiceImpl implements ClientService {
         String result = homeResponse.getResult();
         JSONArray jsonArray = JSON.parseArray(result);
 
-        if (jsonArray == null) {
-            throw new AppException(HomeExcepFactor.Merchant_Unfound);
+        if (jsonArray == null || jsonArray.size()==0) {
+            throw new AppException(HomeExcepFactor.Place_Unsupport);
         }
+
         Set<String> result_days = new TreeSet<>();
         Map<String, Map<String, String>> result_times_map = new TreeMap<>();
         for (int i = 0; i < jsonArray.size(); i++) {
