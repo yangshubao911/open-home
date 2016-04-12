@@ -171,7 +171,7 @@ public class OrderManageImpl implements OrderManage {
 	public String queryOrder(long orderId) {
 		try {
 			JSONObject result = new JSONObject();
-			result.put("orderId", orderId);
+			result.put("orderId", String.valueOf(orderId));
 			Order order = orderService.queryOrder(orderId);
 
 			if (order == null)
