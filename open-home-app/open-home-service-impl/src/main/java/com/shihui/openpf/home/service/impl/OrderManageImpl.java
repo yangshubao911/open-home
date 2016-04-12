@@ -549,13 +549,8 @@ public class OrderManageImpl implements OrderManage {
 			}
 			OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
 			switch(status){
+			case OrderUnStockOut:
 			case OrderDistribute:
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				Date startTime = sdf.parse(contact.getServiceStartTime());
-				long diffTime = startTime.getTime() - System.currentTimeMillis();
-				if(diffTime > 2 * 60 * 60 * 1000){
-					return HomeCodeEnum.CANCEL_TIME_OUT.toJSONString("现时间段不允许取消订单");
-				}
 				if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
 					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 1, refundSHCoin);
 					if (result.getStatus() == 1) {
@@ -575,7 +570,7 @@ public class OrderManageImpl implements OrderManage {
 					}
 					return HomeCodeEnum.SUCCESS.toJSONString();
 				}else{
-					return HomeCodeEnum.CANCEL_FAIL.toJSONString();
+					return HomeCodeEnum.CANCEL_FAIL.toJSONString("更改订单状态失败");
 				}
 				
 			default:
