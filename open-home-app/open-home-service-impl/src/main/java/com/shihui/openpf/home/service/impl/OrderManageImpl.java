@@ -552,7 +552,8 @@ public class OrderManageImpl implements OrderManage {
 			case OrderUnStockOut:
 			case OrderDistribute:
 				if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
-					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 1, refundSHCoin);
+					//后台关闭订单，不审核
+					SimpleResult result = this.orderSystemService.openRefund(RefundModeEnum.ORIGINAL, orderId, StringUtil.yuan2hao(price), reason, 2, refundSHCoin);
 					if (result.getStatus() == 1) {
 						// 保存审核id
 						Order updateOrder = new Order();
