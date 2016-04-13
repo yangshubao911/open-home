@@ -10,6 +10,9 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import com.shihui.api.order.common.enums.PaymentTypeEnum;
+import com.shihui.openpf.home.model.*;
+import com.shihui.openpf.home.service.api.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,23 +36,6 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
-import com.shihui.openpf.home.model.Contact;
-import com.shihui.openpf.home.model.Goods;
-import com.shihui.openpf.home.model.HomeCodeEnum;
-import com.shihui.openpf.home.model.HomeOrderStatusEnum;
-import com.shihui.openpf.home.model.MerchantGoods;
-import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.Request;
-import com.shihui.openpf.home.model.YjzOrderStatusEnum;
-import com.shihui.openpf.home.model.YjzUpdateResult;
-import com.shihui.openpf.home.service.api.ContactService;
-import com.shihui.openpf.home.service.api.GoodsService;
-import com.shihui.openpf.home.service.api.HomeServProviderService;
-import com.shihui.openpf.home.service.api.MerchantGoodsService;
-import com.shihui.openpf.home.service.api.OrderManage;
-import com.shihui.openpf.home.service.api.OrderService;
-import com.shihui.openpf.home.service.api.OrderSystemService;
-import com.shihui.openpf.home.service.api.RequestService;
 
 /**
  * Created by zhoutc on 2016/1/21.
@@ -79,6 +65,8 @@ public class OrderManageImpl implements OrderManage {
 	GroupManage groupManage;
 	@Resource
 	OrderSystemService orderSystemService;
+	@Resource
+	CategoryService categoryService;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -144,7 +132,6 @@ public class OrderManageImpl implements OrderManage {
 			merchantGoods.setGoodsId(order.getGoodsId());
 			merchantGoods.setMerchantId(order.getMerchantId());
 			MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
-
 			order_json.put("settlement", db_merchantGoods.getSettlement());
 			DateTime dateTime = new DateTime(order.getCreateTime());
 			order_json.put("createTime", dateTime.toString("yyyy-MM-dd HH:mm:ss"));
@@ -176,6 +163,40 @@ public class OrderManageImpl implements OrderManage {
 
 			if (order == null)
 				return null;
+
+			Contact contact = contactService.queryByOrderId(orderId);
+
+			if(contact!=null){
+				result.put("serviceStartTime",contact.getServiceStartTime());
+				result.put("serviceAddress",contact.getServiceAddress()+contact.getDetailAddress());
+				result.put("contactName", contact.getContactName());
+				result.put("contactPhone", contact.getPhoneNum());
+			}
+
+
+
+			SimpleResult simpleResult = orderSystemService.backendOrderDetail(orderId);
+			JSONObject json = JSONObject.parseObject(simpleResult.getData().toString());
+			com.shihui.api.order.po.Order order_vo = json.getObject("order", com.shihui.api.order.po.Order.class);
+			PaymentTypeEnum paymentTypeEnum =  order_vo.getPaymentType();
+			result.put("payType", paymentTypeEnum.getValue());
+			result.put("transId", order_vo.getTransId());
+			result.put("payTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(order_vo.getPaymentTime())));
+			if (order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
+				result.put("consumeTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getUpdateTime()));
+			}
+
+			Goods goods = goodsService.findById(order.getGoodsId());
+			if (goods != null) {
+				Category category = new Category();
+				category.setId(goods.getCategoryId());
+				Category db_category = categoryService.findById(category);
+
+				if(db_category!=null){
+					result.put("amount", db_category.getAmount());
+				}
+
+			}
 			/*
 			 * PaymentTypeEnum paymentTypeEnum = null; if
 			 * (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
@@ -202,7 +223,7 @@ public class OrderManageImpl implements OrderManage {
 			result.put("userId", order.getUserId());
 			result.put("phone", order.getPhone());
 
-			Goods goods = goodsService.findById(order.getGoodsId());
+
 			result.put("price", goods.getPrice());
 
 			Merchant merchant = merchantManage.getById(order.getMerchantId());
