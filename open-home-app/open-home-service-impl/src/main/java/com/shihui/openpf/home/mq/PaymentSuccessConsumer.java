@@ -125,7 +125,7 @@ public class PaymentSuccessConsumer implements Consumer {
 						log.error("订单处理-push消息：业务信息未查到，serviceId={}, orderId={}, orderStatus={}", order.getService_id(), orderId, order.getOrderStatus());
 					} else {
 						if(status == OrderStatusEnum.PayedCancel || status == OrderStatusEnum.BackClose){
-							pushMsg = "订单已取消，我们已为您办理退款，通常需要1-3个工作日内到账。请耐心等待！";
+							pushMsg = "订单(" + orderId + ")已取消，我们已为您办理退款，通常需要1-3个工作日内到账。请耐心等待！";
 						}else if(status == OrderStatusEnum.OrderUnStockOut){
 							Goods goods = goodsService.findById(order.getGoodsId());
 							Merchant merchant = merchantManage.getById(order.getMerchantId());
