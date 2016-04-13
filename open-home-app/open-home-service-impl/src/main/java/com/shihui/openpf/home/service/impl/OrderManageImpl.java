@@ -197,13 +197,17 @@ public class OrderManageImpl implements OrderManage {
 			SimpleResult simpleResult = orderSystemService.backendOrderDetail(orderId);
 			/*JSONObject json = JSONObject.parseObject(simpleResult.getData().toString());
 			com.shihui.api.order.po.Order order_vo = json.getObject("order", com.shihui.api.order.po.Order.class);*/
-			com.shihui.api.order.po.Order order_vo = JSON.parseObject(simpleResult.getData().toString(), com.shihui.api.order.po.Order.class);
-			PaymentTypeEnum paymentTypeEnum =  order_vo.getPaymentType();
-			result.put("payType", paymentTypeEnum.getValue());
-			result.put("transId", order_vo.getTransId());
-			result.put("payTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(order_vo.getPaymentTime())));
-			if (order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
-				result.put("consumeTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getUpdateTime()));
+			if(simpleResult.getStatus()==1) {
+				com.shihui.api.order.po.Order order_vo = (com.shihui.api.order.po.Order)simpleResult.getData();
+				PaymentTypeEnum paymentTypeEnum = order_vo.getPaymentType();
+				result.put("payType", paymentTypeEnum.getValue());
+				result.put("transId", order_vo.getTransId());
+				result.put("payTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(order_vo.getPaymentTime())));
+				if (order.getOrderStatus() == OrderStatusEnum.OrderHadReceived.getValue()) {
+					result.put("consumeTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getUpdateTime()));
+				}
+			}else {
+				log.info("queryOrder--orderId:" + orderId + " backendOrderDetail status:" + simpleResult.getStatus() + " msg:" + simpleResult.getMsg());
 			}
 
 			Goods goods = goodsService.findById(order.getGoodsId());
