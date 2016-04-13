@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
+import com.shihui.api.order.common.enums.PayTypeEnum;
 import com.shihui.api.order.common.enums.PaymentTypeEnum;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
@@ -199,8 +200,8 @@ public class OrderManageImpl implements OrderManage {
 			com.shihui.api.order.po.Order order_vo = json.getObject("order", com.shihui.api.order.po.Order.class);*/
 			if(simpleResult.getStatus()==1) {
 				com.shihui.api.order.po.Order order_vo = (com.shihui.api.order.po.Order)simpleResult.getData();
-				PaymentTypeEnum paymentTypeEnum = order_vo.getPaymentType();
-				result.put("payType", paymentTypeEnum.getValue());
+				PayTypeEnum payType = order_vo.getPayType();
+				result.put("payType", payType.getValue());
 				result.put("transId", order_vo.getTransId());
 				result.put("payTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(order_vo.getPaymentTime())));
 				if (order.getOrderStatus() == OrderStatusEnum.OrderHadReceived.getValue()) {
