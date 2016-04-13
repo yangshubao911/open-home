@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
 import com.shihui.api.order.common.enums.PaymentTypeEnum;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
@@ -194,8 +195,9 @@ public class OrderManageImpl implements OrderManage {
 
 
 			SimpleResult simpleResult = orderSystemService.backendOrderDetail(orderId);
-			JSONObject json = JSONObject.parseObject(simpleResult.getData().toString());
-			com.shihui.api.order.po.Order order_vo = json.getObject("order", com.shihui.api.order.po.Order.class);
+			/*JSONObject json = JSONObject.parseObject(simpleResult.getData().toString());
+			com.shihui.api.order.po.Order order_vo = json.getObject("order", com.shihui.api.order.po.Order.class);*/
+			com.shihui.api.order.po.Order order_vo = JSON.parseObject(simpleResult.getData().toString(), com.shihui.api.order.po.Order.class);
 			PaymentTypeEnum paymentTypeEnum =  order_vo.getPaymentType();
 			result.put("payType", paymentTypeEnum.getValue());
 			result.put("transId", order_vo.getTransId());
