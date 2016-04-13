@@ -202,7 +202,7 @@ public class OrderManageImpl implements OrderManage {
 				com.shihui.api.order.po.Order order_vo = (com.shihui.api.order.po.Order)simpleResult.getData();
 				PayTypeEnum payType = order_vo.getPayType();
 				result.put("payType", payType.getValue());
-				result.put("transId", order_vo.getTransId());
+				result.put("transId", String.valueOf(order_vo.getTransId()));
 				result.put("payTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(order_vo.getPaymentTime())));
 				if (order.getOrderStatus() == OrderStatusEnum.OrderHadReceived.getValue()) {
 					result.put("consumeTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getUpdateTime()));
