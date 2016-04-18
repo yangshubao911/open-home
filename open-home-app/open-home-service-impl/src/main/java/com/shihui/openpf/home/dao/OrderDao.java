@@ -54,7 +54,7 @@ public class OrderDao extends AbstractDao<Order> {
                 sql.append("and create_time <= ? ");
                 valus.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
             }
-
+            sql.append("order by create_time desc ");
             sql.append("limit ").append((page-1)*size).append(",").append(size);
             return super.queryForList(sql.toString(), valus.toArray());
         } catch (Exception e) {
