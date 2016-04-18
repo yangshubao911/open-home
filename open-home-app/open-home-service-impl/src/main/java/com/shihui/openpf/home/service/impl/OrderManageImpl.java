@@ -222,6 +222,8 @@ public class OrderManageImpl implements OrderManage {
 					result.put("amount", db_category.getAmount());
 				}
 
+				result.put("goodsName", goods.getGoodsName());
+
 			}
 			/*
 			 * PaymentTypeEnum paymentTypeEnum = null; if
