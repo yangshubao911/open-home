@@ -139,7 +139,11 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 						orderBad.setOrderId(orderId);
 						orderBad.setOrderStatus(order.getOrderStatus());
 						orderBad.setBadComment("调用第三方取消订单成功，但调用订单系统取消订单失败，msg=" + sr.getMsg());
-						orderBadService.save(orderBad);
+						try {
+							orderBadService.save(orderBad);
+						} catch (Exception e) {
+							log.error("保存异常订单失败",e);
+						}
 						
 						response.setCode(1);
 						response.setMsg("调用订单系统接口失败，msg=" + sr.getMsg());
@@ -150,7 +154,11 @@ public class OpenHomeApiImpl implements OpenHomeApi {
 					orderBad.setOrderId(orderId);
 					orderBad.setOrderStatus(order.getOrderStatus());
 					orderBad.setBadComment("调用第三方取消订单成功，但调用订单系统取消订单发生异常，msg=" + e.getMessage());
-					orderBadService.save(orderBad);
+					try {
+						orderBadService.save(orderBad);
+					} catch (Exception e1) {
+						log.error("保存异常订单失败",e1);
+					}
 
                     log.error("调用第三方取消订单成功，但调用订单系统取消订单发生异常，orderId={}", orderId, e);
                     
