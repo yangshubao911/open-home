@@ -133,7 +133,9 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			int size = handlers.size();
 			for(int i = size -1; i >= 0; i-- ){
 				OpenHomeHttpCallbackHandler<String> handler= handlers.get(i);
-				if(handler.isSuccess()){
+				boolean suc = handler.isSuccess();
+                log.info("suc--"+suc);
+				if(suc){
 					//处理请求结果
 					String content = handler.get();
 					HomeResponse responseTmp = handler.getResultParser().getServiceAvailableTimeResult(handler.getMerchant(), content);
