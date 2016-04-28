@@ -612,8 +612,8 @@ public class OrderManageImpl implements OrderManage {
 			if (homeResponse.getCode() == 0) {
 				OrderStatusEnum status = OrderStatusEnum.parse(order.getOrderStatus());
 				switch(status){
-				case OrderUnStockOut:
-				case OrderDistribute:
+				    case OrderUnStockOut:
+				    case OrderDistribute:
 					case OrderHadReceived:
 					if(this.orderSystemService.updateOrderStatus(orderId, status, OrderStatusEnum.BackClose, OperatorTypeEnum.Admin, userId, email)){
 						//后台关闭订单，不审核
