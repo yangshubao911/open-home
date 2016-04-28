@@ -133,9 +133,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			int size = handlers.size();
 			for(int i = size -1; i >= 0; i-- ){
 				OpenHomeHttpCallbackHandler<String> handler= handlers.get(i);
-				boolean suc = handler.isSuccess();
-                log.info("suc--"+suc);
-				if(suc){
+				if(handler.isSuccess()){
 					//处理请求结果
 					String content = handler.get();
 					HomeResponse responseTmp = handler.getResultParser().getServiceAvailableTimeResult(handler.getMerchant(), content);
@@ -374,7 +372,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 					url.deleteCharAt(url.length() - 1);
 				}
 				HttpGet httpGet = new HttpGet(url.toString());
-			
+
 				FastHttpUtils.executeHttpGetReturnString(httpClient, httpGet, DEFAULT_ENCODING, handler, false);
 			} catch (Exception e) {
 				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
