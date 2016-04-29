@@ -134,13 +134,14 @@ public class OrderResource {
 	@Path("/cancel")
 	@BaseInfo(desc = "取消订单接口", status = ApiStatus.INTERNAL, needAuth = AuthType.OPTION)
 	public String cancel(@Context RequestContext rc,
-			@ParamDesc(isRequired = true, desc = "操作人ID") @QueryParam("userId") long userId,
-			@ParamDesc(isRequired = true, desc = "操作人Email") @QueryParam("email") String email,
-			@ParamDesc(isRequired = true, desc = "订单ID") @QueryParam("orderId") long orderId,
-			@ParamDesc(isRequired = true, desc = "退款金额") @QueryParam("price") String price,
-			@ParamDesc(isRequired = true, desc = "退款备注") @QueryParam("reason") String reason,
-			@ParamDesc(isRequired = true, desc = "是否退实惠现金，1-是，2-否") @QueryParam("refund_sh_coin") Integer refundSHCoin) {
-		return orderManage.cancelLocalOrder(userId, email, orderId, price, reason, refundSHCoin);
+						 @ParamDesc(isRequired = true, desc = "操作人ID") @QueryParam("userId") long userId,
+						 @ParamDesc(isRequired = true, desc = "操作人Email") @QueryParam("email") String email,
+						 @ParamDesc(isRequired = true, desc = "订单ID") @QueryParam("orderId") long orderId,
+						 @ParamDesc(isRequired = true, desc = "退款金额") @QueryParam("price") String price,
+						 @ParamDesc(isRequired = true, desc = "退款备注") @QueryParam("reason") String reason,
+						 @ParamDesc(isRequired = true, desc = "当前状态") @QueryParam("status") int status,
+						 @ParamDesc(isRequired = true, desc = "是否退实惠现金，1-是，2-否") @QueryParam("refund_sh_coin") Integer refundSHCoin) {
+		return orderManage.cancelLocalOrder(userId, email, orderId, price, reason, refundSHCoin, status);
 	}
 
 	@GET

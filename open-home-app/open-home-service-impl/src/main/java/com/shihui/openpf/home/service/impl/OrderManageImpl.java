@@ -586,12 +586,16 @@ public class OrderManageImpl implements OrderManage {
 	 * @return 返回取消订单结果
 	 */
 	@Override
-	public String cancelLocalOrder(long userId, String email, long orderId , String price, String reason, int refundSHCoin) {
+	public String cancelLocalOrder(long userId, String email, long orderId , String price, String reason, int refundSHCoin, int nowStatus) {
 		try {
 			Order order = orderService.queryOrder(orderId);
 			if (order == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
 			}
+			if(nowStatus!=order.getOrderStatus()){
+				return HomeCodeEnum.OTHER_NA.toJSONString();
+			}
+
 			Contact contact = contactService.queryByOrderId(orderId);
 			if (contact == null) {
 				return HomeCodeEnum.OTHER_NA.toJSONString("订单附加信息不存在");

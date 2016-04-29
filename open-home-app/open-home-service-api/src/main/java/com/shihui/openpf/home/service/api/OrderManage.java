@@ -58,7 +58,7 @@ public interface OrderManage {
      * @param refundSHCoin 是否退实惠现金，1-是，2-否
      * @return 返回取消订单结果
      */
-    public String cancelLocalOrder(long userId, String email, long orderId , String price, String reason, int refundSHCoin);
+    public String cancelLocalOrder(long userId, String email, long orderId , String price, String reason, int refundSHCoin, int status);
 
 
     /**
