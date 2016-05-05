@@ -20,7 +20,7 @@ import com.shihui.openpf.home.model.Order;
 public class OrderDao extends AbstractDao<Order> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public List<Order> queryOrder(Order order , String startTime, String endTime, int page , int size) {
+    public List<Order> queryOrder(Order order , String startTime, String endTime, Integer page , Integer size) {
         StringBuilder sql = new StringBuilder("select * from `order` where 1 = 1 ");
 
         Field[] fields = Order.class.getDeclaredFields();
@@ -55,7 +55,9 @@ public class OrderDao extends AbstractDao<Order> {
                 valus.add(new SimpleDateFormat("yyyyMMddHHmmss").parse(endTime));
             }
             sql.append("order by create_time desc ");
-            sql.append("limit ").append((page-1)*size).append(",").append(size);
+            if(page!=null && size!=null) {
+                sql.append("limit ").append((page - 1) * size).append(",").append(size);
+            }
             return super.queryForList(sql.toString(), valus.toArray());
         } catch (Exception e) {
             log.error("OrderDao error!!",e);

@@ -17,6 +17,14 @@ public interface OrderManage {
     public String queryOrderList(Order order, String startTime, String endTime ,int page, int size);
 
     /**
+     * 导出订单
+     * @param order 查询订单请求数据
+     *
+     * @return 返回结果
+     */
+    public String exportOrderList(Order order, String startTime, String endTime);
+
+    /**
      * 查询订单详情
      * @param orderId 订单ID
      *

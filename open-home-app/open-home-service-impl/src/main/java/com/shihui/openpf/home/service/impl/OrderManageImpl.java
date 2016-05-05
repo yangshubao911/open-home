@@ -1,5 +1,6 @@
 package com.shihui.openpf.home.service.impl;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
@@ -15,9 +17,18 @@ import com.shihui.api.order.common.enums.PayTypeEnum;
 import com.shihui.api.order.common.enums.PaymentTypeEnum;
 import com.shihui.openpf.home.model.*;
 import com.shihui.openpf.home.service.api.*;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
@@ -87,8 +98,24 @@ public class OrderManageImpl implements OrderManage {
 	OrderSystemService orderSystemService;
 	@Resource
 	CategoryService categoryService;
+	private CloseableHttpClient httpClient;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+
+	@Value("${file_upload_url}")
+	private String fileUploadUrl;
+
+	@PostConstruct
+	public void init() {
+		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectionRequestTimeout(2000)
+				.setContentCompressionEnabled(false)
+				.setSocketTimeout(3000)
+				.build();
+		httpClientBuilder.setDefaultRequestConfig(requestConfig);
+		this.httpClient = httpClientBuilder.build();
+	}
 
 	/**
 	 * OPS查询订单
@@ -128,6 +155,133 @@ public class OrderManageImpl implements OrderManage {
 			log.error("OrderManageImpl queryOrderList error!!", e);
 		}
 		return "";
+	}
+
+	/**
+	 * 导出订单
+	 * @param queryOrder 查询订单请求数据
+	 *
+	 * @return 返回结果
+	 */
+	@Override
+	public String exportOrderList(Order queryOrder, String startTime, String endTime) {
+		JSONObject result = new JSONObject();
+		List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime , null , null);
+		List<String> title = new ArrayList<>();
+		title.add("实惠订单号");
+		title.add("实惠ID");
+		title.add("下单时间");
+		title.add("完成时间");
+		title.add("购买服务");
+		title.add("姓名");
+		title.add("手机号");
+		title.add("城市");
+		title.add("地址");
+		title.add("实惠价");
+		title.add("现金补贴");
+		title.add("用户支付金额");
+		title.add("是否首次订单");
+		title.add("支付类型");
+		title.add("服务提供商");
+		List<List<Object>> data = new ArrayList<>();
+		for(Order order : orderList){
+			List<Object> list = new ArrayList<>();
+			list.add(order.getOrderId());
+			list.add(order.getUserId());
+			list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
+			if(order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
+				list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getUpdateTime()));
+			}else {
+				list.add("");
+			}
+			Goods goods = goodsService.findById(order.getGoodsId());
+			if(goods==null){
+				list.add("");
+			}else {
+				list.add(goods.getGoodsName());
+			}
+			Contact contact = contactService.queryByOrderId(order.getOrderId());
+			if(contact==null){
+				list.add("");
+			}else {
+				list.add(contact.getContactName());
+			}
+			list.add(order.getPhone());
+			list.add(goods.getCityName());
+			list.add(contact.getServiceAddress()+contact.getDetailAddress());
+			list.add(goods.getPrice());
+			list.add(order.getShOffSet());
+			list.add(order.getPay());
+			if(order.getCampaignId()==2) {
+				list.add("是");
+			}else{
+				list.add("否");
+			}
+			String payTypeName = "未知";
+			SimpleResult simpleResult = orderSystemService.backendOrderDetail(order.getOrderId());
+			if(simpleResult.getStatus()==1) {
+				com.shihui.api.order.po.Order order_vo = (com.shihui.api.order.po.Order) simpleResult.getData();
+				PayTypeEnum payType = order_vo.getPayType();
+				if(payType!=null){
+					payTypeName = payType.getName();
+				}
+			}
+			list.add(payTypeName);
+			Merchant merchant = merchantManage.getById(order.getMerchantId());
+			if(merchant==null)
+				list.add("");
+			else
+				list.add(merchant.getMerchantName());
+
+			data.add(list);
+		}
+		String fileName = null;
+		try {
+			fileName = DataExportUtils.genExcel(String.valueOf(System.currentTimeMillis()), "unusualOrder", title, data,
+					"utf-8");
+		} catch (Exception e) {
+			log.error("export order list error!!!",e);
+		}
+		String fileId = uploadFile(fileName);
+		result.put("code",1);
+		result.put("fileId", fileId);
+		return result.toJSONString();
+	}
+
+	/**
+	 * 上传文件流至TFS服务器
+	 *
+	 * @return
+	 */
+	public String uploadFile(String filePath) {
+		JSONObject result = null;
+		log.info("开始上传文件：{}", filePath);
+		File file = new File(filePath);
+		try {
+			HttpPost post = new HttpPost(fileUploadUrl);
+			FileBody bin = new FileBody(file);
+			MultipartEntityBuilder reqEntityBuilder = MultipartEntityBuilder.create()
+					.addPart("file", bin);
+			post.setEntity(reqEntityBuilder.build());
+			try(CloseableHttpResponse response = httpClient.execute(post)) {
+				String executeAsyncString = EntityUtils.toString(response.getEntity(), "utf8");
+
+				result = JSON.parseObject(executeAsyncString);
+
+				if (null == result.get("fileid")) {
+					log.info("保存订单明细表至TFS失败！返回信息：{}", executeAsyncString);
+					return null;
+				}
+				log.info("完成文件上传：{}，返回信息:{} ",filePath, result.toJSONString());
+
+				return result.getString("fileid");
+			}
+		} catch (Exception e) {
+			log.error("上传文件至TFS出错!".concat(JSON.toJSONString(result)));
+			return null;
+		} finally {
+			file.delete();
+		}
 	}
 
 	public JSONObject buildOrderVo(Order order) {

@@ -45,7 +45,7 @@ public interface OrderService {
 	 * @param order
 	 * @return 订单列表
 	 */
-	List<Order> queryOrderList(Order order, String startTime , String endTime, int page, int size);
+	List<Order> queryOrderList(Order order, String startTime , String endTime, Integer page, Integer size);
 
 	/**
 	 * 查询订单总数

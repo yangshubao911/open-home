@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 订单列表
      */
     @Override
-    public List<Order> queryOrderList(Order order , String startTime , String endTime, int page , int size) {
+    public List<Order> queryOrderList(Order order , String startTime , String endTime, Integer page , Integer size) {
         return orderDao.queryOrder(order , startTime , endTime , page , size);
     }
 

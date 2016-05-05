@@ -738,6 +738,7 @@ public class ClientServiceImpl implements ClientService {
 
 
 
+        boolean firstOrder = false;
         Date now = new Date();
         Campaign campaign = new Campaign();
         Campaign db_campaign = null;
@@ -749,6 +750,7 @@ public class ClientServiceImpl implements ClientService {
                     now.getTime() >= db_campaign.getStartTime().getTime()&&
                     db_campaign.getStatus() == 1){
                 if(orderService.countOrders(orderForm.getUserId())==0){
+                    firstOrder = true;
                     real_offset = offsetMoney(goods,balance,orderForm.getCostSh(),orderForm.getUserId());
                 }
             }
@@ -872,7 +874,10 @@ public class ClientServiceImpl implements ClientService {
         order.setOrderId(orderId);
         order.setPhone(orderForm.getServicePhone());
         order.setCreateTime(now);
-        order.setCampaignId(1);
+        if(firstOrder)
+            order.setCampaignId(2);
+        else
+            order.setCampaignId(1);
         order.setExtend("");
         order.setGid(orderForm.getGroupId());
         order.setGoodsId(orderForm.getGoodsId());
