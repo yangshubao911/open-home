@@ -184,9 +184,10 @@ public class OrderManageImpl implements OrderManage {
 		title.add("支付类型");
 		title.add("服务提供商");
 		List<List<Object>> data = new ArrayList<>();
+		if(orderList!=null && orderList.size()>0)
 		for(Order order : orderList){
 			List<Object> list = new ArrayList<>();
-			list.add(order.getOrderId());
+			list.add(String.valueOf(order.getOrderId()));
 			list.add(order.getUserId());
 			list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
 			if(order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
