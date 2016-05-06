@@ -238,12 +238,22 @@ public class OrderManageImpl implements OrderManage {
 		}
 		String fileName = null;
 		try {
-			fileName = DataExportUtils.genExcel(String.valueOf(System.currentTimeMillis()), "unusualOrder", title, data,
+			fileName = DataExportUtils.genExcel("open_home_" + System.currentTimeMillis()+".xlsx", "订单", title, data,
 					"utf-8");
 		} catch (Exception e) {
 			log.error("export order list error!!!",e);
+			result.put("code", 2);
+			return result.toJSONString();
 		}
-		String fileId = uploadFile(fileName);
+		String fileId = "";
+		try {
+			fileId = uploadFile(fileName);
+		}catch (Exception e){
+			log.error("upload file error!!!",e);
+			result.put("code",2);
+			return result.toJSONString();
+		}
+
 		result.put("code",1);
 		result.put("fileId", fileId);
 		return result.toJSONString();
