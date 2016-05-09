@@ -64,7 +64,7 @@ public class ClientResource {
 
     @Path("/goods/h5/detail")
     @GET
-    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.OPTION, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String h5Detail(@Context RequestContext rc,
                          @Context HttpServletRequest request,
