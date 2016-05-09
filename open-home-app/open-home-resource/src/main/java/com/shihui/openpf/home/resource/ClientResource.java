@@ -59,7 +59,17 @@ public class ClientResource {
                          @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
                          @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid,
                          @ParamDesc(desc = "城市Id", isRequired = false) @QueryParam("cityId") int cityId) {
-        return clientService.detail(serviceId, userId, groupId, categoryId, goodsId, mid , rc, request, cityId);
+        return clientService.detail(serviceId, userId, groupId, categoryId, goodsId, mid, rc, request, cityId);
+    }
+
+    @Path("/goods/h5/detail")
+    @GET
+    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+    public String h5Detail(@Context RequestContext rc,
+                         @Context HttpServletRequest request,
+                         @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId) {
+        return clientService.detail(goodsId);
     }
 
     @Path("/order/confirm")
