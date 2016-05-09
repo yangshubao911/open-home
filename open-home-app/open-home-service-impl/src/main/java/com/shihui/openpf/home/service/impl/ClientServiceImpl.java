@@ -856,6 +856,7 @@ public class ClientServiceImpl implements ClientService {
         orderInfo.setLongitude(orderForm.getLongitude());
         orderInfo.setPhone(orderForm.getServicePhone());
         orderInfo.setPrice(mgMap.get(merchantId));
+        orderInfo.setOffSet(orderForm.getActOffset());
         if(StringUtil.isEmpty(orderForm.getRemark()))
             orderInfo.setRemark("");
         else

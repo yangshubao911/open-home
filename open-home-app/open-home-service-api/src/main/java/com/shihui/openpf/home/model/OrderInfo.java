@@ -18,6 +18,7 @@ public class OrderInfo {
 	private String latitude;
 	private String phone;
 	private String price;
+	private String offSet;
 	private String serviceStartTime;
 	private String contactName;
 	private Integer amount;
@@ -80,6 +81,14 @@ public class OrderInfo {
 
 	public void setPrice(String price) {
 		this.price = price;
+	}
+
+	public String getOffSet() {
+		return offSet;
+	}
+
+	public void setOffSet(String offSet) {
+		this.offSet = offSet;
 	}
 
 	public String getServiceStartTime() {
