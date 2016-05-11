@@ -311,7 +311,7 @@ public class OrderManageImpl implements OrderManage {
 
 			Goods goods = goodsService.findById(order.getGoodsId());
 			order_json.put("price", goods.getPrice());
-			order_json.put("shOffset", goods.getShOffSet());
+			order_json.put("shOffset", order.getShOffSet());
 			order_json.put("due", new BigDecimal(goods.getPrice()).subtract(new BigDecimal(goods.getShOffSet()))
 					.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 
