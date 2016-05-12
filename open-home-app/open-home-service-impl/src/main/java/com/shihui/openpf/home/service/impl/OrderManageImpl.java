@@ -169,6 +169,7 @@ public class OrderManageImpl implements OrderManage {
 		List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime , null , null);
 		List<String> title = new ArrayList<>();
 		title.add("实惠订单号");
+		title.add("交易ID");
 		title.add("实惠ID");
 		title.add("下单时间");
 		title.add("完成时间");
@@ -188,6 +189,19 @@ public class OrderManageImpl implements OrderManage {
 		for(Order order : orderList){
 			List<Object> list = new ArrayList<>();
 			list.add(String.valueOf(order.getOrderId()));
+
+			String payTypeName = "未知";
+			String transId = "";
+			SimpleResult simpleResult = orderSystemService.backendOrderDetail(order.getOrderId());
+			if(simpleResult.getStatus()==1) {
+				com.shihui.api.order.po.Order order_vo = (com.shihui.api.order.po.Order) simpleResult.getData();
+				PayTypeEnum payType = order_vo.getPayType();
+				transId = String.valueOf(order_vo.getTransId());
+				if(payType!=null){
+					payTypeName = payType.getName();
+				}
+			}
+			list.add(transId);
 			list.add(order.getUserId());
 			list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
 			if(order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
@@ -218,15 +232,7 @@ public class OrderManageImpl implements OrderManage {
 			}else{
 				list.add("否");
 			}
-			String payTypeName = "未知";
-			SimpleResult simpleResult = orderSystemService.backendOrderDetail(order.getOrderId());
-			if(simpleResult.getStatus()==1) {
-				com.shihui.api.order.po.Order order_vo = (com.shihui.api.order.po.Order) simpleResult.getData();
-				PayTypeEnum payType = order_vo.getPayType();
-				if(payType!=null){
-					payTypeName = payType.getName();
-				}
-			}
+
 			list.add(payTypeName);
 			Merchant merchant = merchantManage.getById(order.getMerchantId());
 			if(merchant==null)
@@ -305,7 +311,7 @@ public class OrderManageImpl implements OrderManage {
 
 			Goods goods = goodsService.findById(order.getGoodsId());
 			order_json.put("price", goods.getPrice());
-			order_json.put("shOffset", goods.getShOffSet());
+			order_json.put("shOffset", order.getShOffSet());
 			order_json.put("due", new BigDecimal(goods.getPrice()).subtract(new BigDecimal(goods.getShOffSet()))
 					.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 

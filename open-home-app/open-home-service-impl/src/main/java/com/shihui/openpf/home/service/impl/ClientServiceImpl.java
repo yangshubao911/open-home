@@ -292,6 +292,88 @@ public class ClientServiceImpl implements ClientService {
     }
 
     /**
+     * H5分享页面商品详情接口
+     *
+     * @return 返回商品详情接口
+     */
+    @Override
+    public String detail(Integer goodsId) {
+        JSONObject result = new JSONObject();
+        Goods goods = goodsService.findById(goodsId);
+        if (goods == null) {
+            throw new AppException(HomeExcepFactor.Goods_Unfound);
+        }
+        int serviceId = goods.getServiceId();
+
+        com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
+        if (service.getServiceStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Service_Close);
+        }
+        if (goods.getGoodsStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Goods_Close);
+        }
+        Category category_search = new Category();
+        category_search.setId(goods.getCategoryId());
+        Category category = categoryService.findById(category_search);
+        if (category == null) {
+            throw new AppException(HomeExcepFactor.Category_Unfound);
+        }
+        if (category.getStatus() != 1) {
+            throw new AppException(HomeExcepFactor.Category_Close);
+        }
+
+        JSONObject goods_json = new JSONObject();
+        goods_json.put("serviceId", goods.getServiceId());
+        goods_json.put("goodsId", goods.getGoodsId());
+        goods_json.put("categoryId", goods.getCategoryId());
+        goods_json.put("goodsImage", goods.getImageId());
+        goods_json.put("detailImage", goods.getDetailImage());
+        goods_json.put("goodsVersion", goods.getGoodsVersion());
+        goods_json.put("goodsName", goods.getGoodsName());
+        goods_json.put("goodsSubtitle", goods.getGoodsSubtitle());
+        goods_json.put("goodsdesc", goods.getGoodsDesc());
+        goods_json.put("attention", goods.getAttention());
+        //活动计算价格
+        //
+        //活动计算价格
+        goods_json.put("originalPrice", goods.getPrice());
+        String pay = StringUtil.decimalSub(goods.getPrice(), new String[]{goods.getShOffSet()});
+        goods_json.put("pay", pay);
+        goods_json.put("shOffset", goods.getShOffSet());
+        goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
+        result.put("goods", goods_json);
+
+        MerchantBusiness search = new MerchantBusiness();
+        search.setServiceId(serviceId);
+        search.setStatus(1);
+        List<MerchantBusiness> merchantBusinesses = merchantBusinessManage.queryList(search);
+        List<Integer> searchlist = new ArrayList<>();
+        if (merchantBusinesses != null && merchantBusinesses.size() > 0) {
+            for (MerchantBusiness merchantBusiness : merchantBusinesses) {
+                searchlist.add(merchantBusiness.getMerchantId());
+            }
+            if (searchlist != null && searchlist.size() > 0) {
+                List<Merchant> merchantList = merchantManage.batchQuery(searchlist);
+                JSONArray merchants = new JSONArray();
+                if (merchantList != null && merchantList.size() > 0) {
+                    for (Merchant merchant : merchantList) {
+                        JSONObject merchant_json = new JSONObject();
+                        merchant_json.put("merchantId", merchant.getMerchantCode());
+                        merchant_json.put("merchantImage", merchant.getMerchantImage());
+                        merchant_json.put("merchantName", merchant.getMerchantName());
+                        merchant_json.put("merchantDesc", merchant.getMerchantDesc());
+                        merchant_json.put("merchantUrl", merchant.getMerchantLink());
+                        merchants.add(merchant_json);
+                    }
+                    result.put("merchants", merchants);
+                }
+
+            }
+        }
+        return result.toJSONString();
+    }
+
+    /**
      * 客户端订单确认接口
      *
      * @return 返回订单详情

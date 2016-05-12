@@ -26,6 +26,14 @@ public interface ClientService {
     public String detail(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId , Long mid , RequestContext rc, HttpServletRequest request, int cityId);
 
     /**
+     * H5分享页面商品详情接口
+     *
+     * @return 返回商品详情接口
+     */
+    public String detail(Integer goodsId);
+
+
+    /**
      * 客户端订单确认接口
      *
      * @return 返回订单详情
