@@ -246,6 +246,19 @@ public class ClientServiceImpl implements ClientService {
         goods_json.put("pay", pay);
         goods_json.put("shOffset", goods.getShOffSet());
         goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
+        //查询首单优惠活动
+        Campaign campaign = new Campaign();
+        campaign.setServiceId(goods.getServiceId());
+        List<Campaign> campaigns = campaignService.findByCondition(campaign);
+        if(campaigns != null && campaigns.size() > 0){
+        	//默认活动就一个首单优惠
+        	campaign = campaigns.get(0);
+        	Date now = new Date();
+        	if(campaign.getStatus() == 1 && campaign.getStartTime().before(now)
+        			&& campaign.getEndTime().after(now)){
+        		goods_json.put("firstShOffSet", goods.getFirstShOffSet());
+        	}
+        }
         result.put("goods", goods_json);
 
         MerchantBusiness search = new MerchantBusiness();
