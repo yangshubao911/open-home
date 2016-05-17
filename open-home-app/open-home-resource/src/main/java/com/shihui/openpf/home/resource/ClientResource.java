@@ -106,7 +106,7 @@ public class ClientResource {
 
     @Path("/order/create")
     @POST
-    @BaseInfo(desc = "查询时间接口", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
+    @BaseInfo(desc = "创建订单接口", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String orderCreate(@Context RequestContext rc,
                               @ParamDesc(desc = "业务Id", isRequired = true) @QueryParam("serviceId") int serviceId,
@@ -149,6 +149,9 @@ public class ClientResource {
         orderForm.setRemark(remark);
         orderForm.setGoodsVersion(goodsVersion);
         orderForm.setServicePhone(servicePhone);
+        int appId = rc.getOriginRequest().getIntHeader("X-APP-ID");
+        //实惠默认appid为5
+        orderForm.setAppId(appId <= 0 ? 5 : appId);
         return clientService.orderCreate(orderForm,rc.getIp());
     }
 

@@ -24,6 +24,7 @@ public class OrderForm {
     private int payType;
     private String merchants;
     private String remark;
+    private int appId;
 
     public OrderForm() {
     }
@@ -179,4 +180,12 @@ public class OrderForm {
     public void setGoodsVersion(int goodsVersion) {
         this.goodsVersion = goodsVersion;
     }
+
+	public int getAppId() {
+		return appId;
+	}
+
+	public void setAppId(int appId) {
+		this.appId = appId;
+	}
 }

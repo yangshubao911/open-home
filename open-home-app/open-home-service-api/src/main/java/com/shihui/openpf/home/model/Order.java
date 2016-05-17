@@ -89,6 +89,9 @@ public class Order implements Serializable {
 	@JSONField(name = "refund_price")
 	@Column(name = "refund_price")
 	private String refundPrice;
+	
+	@JSONField(name = "app_id")
+	private Integer appId;
 
 	public Order() {
 	}
@@ -275,5 +278,13 @@ public class Order implements Serializable {
 
 	public void setRefundPrice(String refundPrice) {
 		this.refundPrice = refundPrice;
+	}
+
+	public Integer getAppId() {
+		return appId;
+	}
+
+	public void setAppId(Integer appId) {
+		this.appId = appId;
 	}
 }

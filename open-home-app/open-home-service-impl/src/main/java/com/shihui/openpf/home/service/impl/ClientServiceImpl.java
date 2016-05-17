@@ -990,6 +990,7 @@ public class ClientServiceImpl implements ClientService {
         order.setUpdateTime(now);
         order.setShOffSet(orderForm.getActOffset());
         order.setUserId(orderForm.getUserId());
+        order.setAppId(orderForm.getAppId());
         boolean create_order = orderService.createOrder(order);
         log.info("CreateOrder -- orderId：{} save order result：{}", orderId, create_order);
         return JSON.toJSONString(result);
