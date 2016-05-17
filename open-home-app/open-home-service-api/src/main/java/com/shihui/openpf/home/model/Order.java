@@ -90,7 +90,7 @@ public class Order implements Serializable {
 	@Column(name = "refund_price")
 	private String refundPrice;
 	
-	@JSONField(name = "app_id")
+	@Column(name = "app_id")
 	private Integer appId;
 
 	public Order() {
