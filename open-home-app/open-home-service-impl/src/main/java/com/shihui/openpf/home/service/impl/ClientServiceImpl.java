@@ -335,6 +335,20 @@ public class ClientServiceImpl implements ClientService {
         goods_json.put("attention", goods.getAttention());
         //活动计算价格
         //
+
+        Campaign campaign = new Campaign();
+        campaign.setServiceId(goods.getServiceId());
+        List<Campaign> campaigns = campaignService.findByCondition(campaign);
+        if(campaigns != null && campaigns.size() > 0){
+            //默认活动就一个首单优惠
+            campaign = campaigns.get(0);
+            Date now = new Date();
+            if(campaign.getStatus() == 1 && campaign.getStartTime().before(now)
+                    && campaign.getEndTime().after(now)){
+                goods_json.put("firstShOffSet", goods.getFirstShOffSet());
+            }
+        }
+
         //活动计算价格
         goods_json.put("originalPrice", goods.getPrice());
         String pay = StringUtil.decimalSub(goods.getPrice(), new String[]{goods.getShOffSet()});
