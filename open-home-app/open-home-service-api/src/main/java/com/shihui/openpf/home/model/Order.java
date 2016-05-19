@@ -93,6 +93,9 @@ public class Order implements Serializable {
 	@Column(name = "app_id")
 	private Integer appId;
 
+	@Column(name = "request_id")
+	private String requestId;
+
 	public Order() {
 	}
 
@@ -286,5 +289,13 @@ public class Order implements Serializable {
 
 	public void setAppId(Integer appId) {
 		this.appId = appId;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
 	}
 }
