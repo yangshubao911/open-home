@@ -147,6 +147,6 @@ public class OrderDao extends AbstractDao<Order> {
      */
     public int countOrders(long userId, int serviceId){
         String sql = "select count(*) from `order` where user_id = ? and service_id = ?";
-        return super.queryCount(sql, new Object[]{userId});
+        return super.queryCount(sql, new Object[]{userId,serviceId});
     }
 }
