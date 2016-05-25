@@ -91,6 +91,6 @@ public interface OrderService {
 	 * 判断用户下单次数
 	 * @return 订单数
 	 */
-	int countOrders(long userId);
+	int countOrders(long userId,int serviceId);
 
 }

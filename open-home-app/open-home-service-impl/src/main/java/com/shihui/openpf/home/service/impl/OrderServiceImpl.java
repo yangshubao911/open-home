@@ -145,7 +145,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
     @Override
-    public int countOrders(long userId) {
-        return orderDao.countOrders(userId);
+    public int countOrders(long userId,int serviceId) {
+        return orderDao.countOrders(userId,serviceId);
     }
 }

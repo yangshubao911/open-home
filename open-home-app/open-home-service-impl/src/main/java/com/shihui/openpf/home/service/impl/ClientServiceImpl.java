@@ -499,9 +499,9 @@ public class ClientServiceImpl implements ClientService {
             if(now.getTime() <= db_campaign.getEndTime().getTime()&&
                     now.getTime() >= db_campaign.getStartTime().getTime()&&
                     db_campaign.getStatus() == 1){
-                if(orderService.countOrders(userId)==0){
-                    real_offset = offsetMoney(goods,balance,costSh,userId);
-                    shoffset = new BigDecimal(goods.getFirstShOffSet());
+                if(orderService.countOrders(userId,serviceId)==0){
+                    real_offset = offsetMoney(goods, balance, costSh, userId);
+                    shoffset = new BigDecimal(goods.getFirstShOffSet()).compareTo(new BigDecimal(goods.getShOffSet()))>=0?new BigDecimal(goods.getFirstShOffSet()):new BigDecimal(goods.getShOffSet());
                 }
             }
 
@@ -858,7 +858,7 @@ public class ClientServiceImpl implements ClientService {
             if(now.getTime() <= db_campaign.getEndTime().getTime()&&
                     now.getTime() >= db_campaign.getStartTime().getTime()&&
                     db_campaign.getStatus() == 1){
-                if(orderService.countOrders(orderForm.getUserId())==0){
+                if(orderService.countOrders(orderForm.getUserId(),goods.getServiceId())==0){
                     firstOrder = true;
                     real_offset = offsetMoney(goods,balance,orderForm.getCostSh(),orderForm.getUserId());
                 }
