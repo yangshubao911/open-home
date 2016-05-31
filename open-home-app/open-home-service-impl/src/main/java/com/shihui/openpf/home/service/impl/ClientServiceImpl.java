@@ -501,7 +501,7 @@ public class ClientServiceImpl implements ClientService {
                     db_campaign.getStatus() == 1){
                 if(orderService.countOrders(userId,serviceId)==0){
                     real_offset = offsetMoney(goods, balance, costSh, userId);
-                    shoffset = new BigDecimal(goods.getFirstShOffSet()).compareTo(new BigDecimal(goods.getShOffSet()))>=0?new BigDecimal(goods.getFirstShOffSet()):new BigDecimal(goods.getShOffSet());
+                    shoffset = real_offset.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal(goods.getFirstShOffSet()) : real_offset;
                 }
             }
 
@@ -1009,7 +1009,6 @@ public class ClientServiceImpl implements ClientService {
         log.info("CreateOrder -- orderId：{} save order result：{}", orderId, create_order);
         return JSON.toJSONString(result);
     }
-
 
     public BigDecimal offsetMoney(Goods goods, long userBalance , int costSh , long userId) {
 
