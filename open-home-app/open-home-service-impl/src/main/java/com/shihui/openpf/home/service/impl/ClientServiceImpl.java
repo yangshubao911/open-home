@@ -334,6 +334,19 @@ public class ClientServiceImpl implements ClientService {
 		goods_json.put("attention", goods.getAttention());
 		// 活动计算价格
 		//
+
+		Campaign campaign = new Campaign();
+		campaign.setServiceId(goods.getServiceId());
+		List<Campaign> campaigns = campaignService.findByCondition(campaign);
+		if (campaigns != null && campaigns.size() > 0) {
+			// 默认活动就一个首单优惠
+			campaign = campaigns.get(0);
+			Date now = new Date();
+			if (campaign.getStatus() == 1 && campaign.getStartTime().before(now) && campaign.getEndTime().after(now)) {
+				goods_json.put("firstShOffSet", goods.getFirstShOffSet());
+			}
+		}
+
 		// 活动计算价格
 		goods_json.put("originalPrice", goods.getPrice());
 		String pay = StringUtil.decimalSub(goods.getPrice(), new String[] { goods.getShOffSet() });
@@ -480,9 +493,10 @@ public class ClientServiceImpl implements ClientService {
 			db_campaign = campaigns.get(0);
 			if (now.getTime() <= db_campaign.getEndTime().getTime()
 					&& now.getTime() >= db_campaign.getStartTime().getTime() && db_campaign.getStatus() == 1) {
-				if (orderService.countOrders(userId) == 0) {
+				if (orderService.countOrders(userId, serviceId) == 0) {
 					real_offset = offsetMoney(goods, balance, costSh, userId);
-					shoffset = new BigDecimal(goods.getFirstShOffSet());
+					shoffset = real_offset.compareTo(new BigDecimal("0")) == 0
+							? new BigDecimal(goods.getFirstShOffSet()) : real_offset;
 				}
 			}
 
@@ -490,7 +504,7 @@ public class ClientServiceImpl implements ClientService {
 		actPrice = new BigDecimal(goods.getPrice()).subtract(real_offset);
 		// showButton 0不使用实惠现金或者实惠现金不够抵用 1使用实惠现金并且实惠现金够抵用
 		int showButton = 1;
-		int balanceEnough = 1;//实惠现金余额是否充足，0-不足，1-充足
+		int balanceEnough = 1;// 实惠现金余额是否充足，0-不足，1-充足
 		if (balance == 0)
 			showButton = 0;
 		if (shoffset.compareTo(new BigDecimal("0")) == 0)
@@ -499,7 +513,6 @@ public class ClientServiceImpl implements ClientService {
 			showButton = 0;
 			balanceEnough = 0;
 		}
-			
 		if (costSh == 0)
 			showButton = 0;
 
@@ -848,7 +861,7 @@ public class ClientServiceImpl implements ClientService {
 			db_campaign = campaigns.get(0);
 			if (now.getTime() <= db_campaign.getEndTime().getTime()
 					&& now.getTime() >= db_campaign.getStartTime().getTime() && db_campaign.getStatus() == 1) {
-				if (orderService.countOrders(orderForm.getUserId()) == 0) {
+				if (orderService.countOrders(orderForm.getUserId(), goods.getServiceId()) == 0) {
 					firstOrder = true;
 					real_offset = offsetMoney(goods, balance, orderForm.getCostSh(), orderForm.getUserId());
 				}

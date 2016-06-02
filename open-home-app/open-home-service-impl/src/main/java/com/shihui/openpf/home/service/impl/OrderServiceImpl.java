@@ -94,6 +94,8 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.queryOrder(order , startTime , endTime , page , size);
     }
 
+
+
     /**
      * 查询订单总数
      * @param order
@@ -143,7 +145,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
     @Override
-    public int countOrders(long userId) {
-        return orderDao.countOrders(userId);
+    public int countOrders(long userId,int serviceId) {
+        return orderDao.countOrders(userId,serviceId);
     }
 }

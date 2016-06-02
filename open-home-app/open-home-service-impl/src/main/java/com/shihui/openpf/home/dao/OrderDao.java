@@ -21,7 +21,7 @@ public class OrderDao extends AbstractDao<Order> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public List<Order> queryOrder(Order order , String startTime, String endTime, Integer page , Integer size) {
-        StringBuilder sql = new StringBuilder("select * from `order` where 1 = 1 ");
+        StringBuilder sql = new StringBuilder("select * from `order`a left join `request` b on a.order_id = b.order_id where 1 = 1 ");
 
         Field[] fields = Order.class.getDeclaredFields();
         try {
@@ -41,20 +41,20 @@ public class OrderDao extends AbstractDao<Order> {
                 }
                 Object value = field.get(order);
                 if(value!=null) {
-                    sql.append("and ").append(fieldName).append(" = ? ");
+                    sql.append("and a.").append(fieldName).append(" = ? ");
                     valus.add(value);
                 }
 
             }
             if(startTime!=null&&!startTime.equals("")) {
-                sql.append("and create_time >= ? ");
+                sql.append("and a.create_time >= ? ");
                 valus.add(new SimpleDateFormat("yyyyMMddHHmmss").parse(startTime));
             }
             if(endTime!=null&&!endTime.equals("")) {
-                sql.append("and create_time <= ? ");
+                sql.append("and a.create_time <= ? ");
                 valus.add(new SimpleDateFormat("yyyyMMddHHmmss").parse(endTime));
             }
-            sql.append("order by create_time desc ");
+            sql.append("order by a.create_time desc ");
             if(page!=null && size!=null) {
                 sql.append("limit ").append((page - 1) * size).append(",").append(size);
             }
@@ -145,8 +145,8 @@ public class OrderDao extends AbstractDao<Order> {
      *
      * @return 订单数量
      */
-    public int countOrders(long userId){
-        String sql = "select count(*) from `order` where user_id = ?";
-        return super.queryCount(sql, new Object[]{userId});
+    public int countOrders(long userId, int serviceId){
+        String sql = "select count(*) from `order` where user_id = ? and service_id = ?";
+        return super.queryCount(sql, new Object[]{userId,serviceId});
     }
 }

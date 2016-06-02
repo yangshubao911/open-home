@@ -47,6 +47,7 @@ public interface OrderService {
 	 */
 	List<Order> queryOrderList(Order order, String startTime , String endTime, Integer page, Integer size);
 
+
 	/**
 	 * 查询订单总数
 	 * @param order
@@ -90,6 +91,6 @@ public interface OrderService {
 	 * 判断用户下单次数
 	 * @return 订单数
 	 */
-	int countOrders(long userId);
+	int countOrders(long userId,int serviceId);
 
 }

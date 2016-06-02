@@ -169,6 +169,7 @@ public class OrderManageImpl implements OrderManage {
 		List<Order> orderList = orderService.queryOrderList(queryOrder, startTime, endTime , null , null);
 		List<String> title = new ArrayList<>();
 		title.add("实惠订单号");
+		title.add("第三方订单号");
 		title.add("交易ID");
 		title.add("实惠ID");
 		title.add("下单时间");
@@ -189,7 +190,7 @@ public class OrderManageImpl implements OrderManage {
 		for(Order order : orderList){
 			List<Object> list = new ArrayList<>();
 			list.add(String.valueOf(order.getOrderId()));
-
+			list.add(String.valueOf(order.getRequestId()));
 			String payTypeName = "未知";
 			String transId = "";
 			SimpleResult simpleResult = orderSystemService.backendOrderDetail(order.getOrderId());
