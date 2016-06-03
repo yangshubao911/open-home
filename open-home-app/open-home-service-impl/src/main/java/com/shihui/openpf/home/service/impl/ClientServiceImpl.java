@@ -495,7 +495,7 @@ public class ClientServiceImpl implements ClientService {
 					&& now.getTime() >= db_campaign.getStartTime().getTime() && db_campaign.getStatus() == 1) {
 				if (orderService.countOrders(userId, serviceId) == 0) {
 					real_offset = offsetMoney(goods, balance, costSh, userId);
-					shoffset = real_offset.compareTo(new BigDecimal("0")) == 0 || real_offset.compareTo(new BigDecimal(goods.getShOffSet())) == 0
+					shoffset = real_offset.compareTo(new BigDecimal("0")) == 0 || real_offset.compareTo(new BigDecimal(goods.getFirstShOffSet())) == 0
 							? new BigDecimal(goods.getFirstShOffSet()) : real_offset;
 				}
 			}
