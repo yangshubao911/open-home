@@ -349,7 +349,7 @@ public class ClientServiceImpl implements ClientService {
 
 		// 活动计算价格
 		goods_json.put("originalPrice", goods.getPrice());
-		String pay = StringUtil.decimalSub(goods.getPrice(), new String[] { goods.getShOffSet() });
+		String pay = StringUtil.decimalSub(goods.getPrice(), new String[]{goods.getShOffSet()});
 		goods_json.put("pay", pay);
 		goods_json.put("shOffset", goods.getShOffSet());
 		goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
@@ -495,7 +495,7 @@ public class ClientServiceImpl implements ClientService {
 					&& now.getTime() >= db_campaign.getStartTime().getTime() && db_campaign.getStatus() == 1) {
 				if (orderService.countOrders(userId, serviceId) == 0) {
 					real_offset = offsetMoney(goods, balance, costSh, userId);
-					shoffset = real_offset.compareTo(new BigDecimal("0")) == 0
+					shoffset = real_offset.compareTo(new BigDecimal("0")) == 0 || real_offset.compareTo(new BigDecimal(goods.getShOffSet())) == 0
 							? new BigDecimal(goods.getFirstShOffSet()) : real_offset;
 				}
 			}
