@@ -1060,7 +1060,7 @@ public class ClientServiceImpl implements ClientService {
 		}else {
 			shoffset = actOffset;
 		}
-		return shOffset;
+		return shoffset;
 	}
 	@Override
 	public boolean testOrder(long orderId, int status) {
