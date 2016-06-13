@@ -12,11 +12,6 @@ import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSON;
-import com.shihui.api.order.common.enums.PayTypeEnum;
-import com.shihui.api.order.common.enums.PaymentTypeEnum;
-import com.shihui.openpf.home.model.*;
-import com.shihui.openpf.home.service.api.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -31,10 +26,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.common.enums.OrderTypeEnum;
+import com.shihui.api.order.common.enums.PayTypeEnum;
 import com.shihui.api.order.emodel.OperatorTypeEnum;
 import com.shihui.api.order.emodel.RefundModeEnum;
 import com.shihui.api.order.vo.SimpleResult;
@@ -49,6 +46,7 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
+import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.model.Contact;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.model.HomeCodeEnum;
@@ -59,6 +57,7 @@ import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.model.YjzOrderStatusEnum;
 import com.shihui.openpf.home.model.YjzUpdateResult;
+import com.shihui.openpf.home.service.api.CategoryService;
 import com.shihui.openpf.home.service.api.ContactService;
 import com.shihui.openpf.home.service.api.GoodsService;
 import com.shihui.openpf.home.service.api.HomeServProviderService;
@@ -172,6 +171,7 @@ public class OrderManageImpl implements OrderManage {
 		title.add("第三方订单号");
 		title.add("交易ID");
 		title.add("实惠ID");
+		title.add("订单状态");
 		title.add("下单时间");
 		title.add("完成时间");
 		title.add("购买服务");
@@ -185,6 +185,7 @@ public class OrderManageImpl implements OrderManage {
 		title.add("是否首次订单");
 		title.add("支付类型");
 		title.add("服务提供商");
+		title.add("要求服务时间");
 		List<List<Object>> data = new ArrayList<>();
 		if(orderList!=null && orderList.size()>0)
 		for(Order order : orderList){
@@ -204,6 +205,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 			list.add(transId);
 			list.add(order.getUserId());
+			list.add(OrderStatusEnum.parse(order.getOrderStatus()).getName());
 			list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
 			if(order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
 				list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getUpdateTime()));
@@ -241,6 +243,7 @@ public class OrderManageImpl implements OrderManage {
 			else
 				list.add(merchant.getMerchantName());
 
+			list.add(order.getServiceStartTime());
 			data.add(list);
 		}
 		String fileName = null;

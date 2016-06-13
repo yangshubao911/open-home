@@ -5,6 +5,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -92,9 +94,12 @@ public class Order implements Serializable {
 	
 	@Column(name = "app_id")
 	private Integer appId;
-
+    @Transient
 	@Column(name = "request_id")
 	private String requestId;
+    @Transient
+	@Column(name = "service_start_time")
+    private String serviceStartTime;
 
 	public Order() {
 	}
@@ -297,5 +302,13 @@ public class Order implements Serializable {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getServiceStartTime() {
+		return serviceStartTime;
+	}
+
+	public void setServiceStartTime(String serviceStartTime) {
+		this.serviceStartTime = serviceStartTime;
 	}
 }

@@ -21,7 +21,7 @@ public class OrderDao extends AbstractDao<Order> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public List<Order> queryOrder(Order order , String startTime, String endTime, Integer page , Integer size) {
-        StringBuilder sql = new StringBuilder("select * from `order`a left join `request` b on a.order_id = b.order_id where 1 = 1 ");
+        StringBuilder sql = new StringBuilder("select a.*,b.request_id,c.service_start_time from (`order`a left join `request` b on a.order_id = b.order_id) left join `contact` as c on a.order_id = c.order_id where 1 = 1 ");
 
         Field[] fields = Order.class.getDeclaredFields();
         try {
