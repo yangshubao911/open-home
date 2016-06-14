@@ -316,18 +316,10 @@ public class OrderManageImpl implements OrderManage {
 			Goods goods = goodsService.findById(order.getGoodsId());
 			order_json.put("price", goods.getPrice());
 			order_json.put("shOffset", order.getShOffSet());
-			order_json.put("due", new BigDecimal(goods.getPrice()).subtract(new BigDecimal(goods.getShOffSet()))
-					.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-
 			order_json.put("merchantId", order.getMerchantId());
 			Merchant merchant = merchantManage.getById(order.getMerchantId());
 			order_json.put("merchantName", merchant.getMerchantName());
-
-			MerchantGoods merchantGoods = new MerchantGoods();
-			merchantGoods.setGoodsId(order.getGoodsId());
-			merchantGoods.setMerchantId(order.getMerchantId());
-			MerchantGoods db_merchantGoods = merchantGoodsService.queryMerchantGoods(merchantGoods);
-			order_json.put("settlement", db_merchantGoods.getSettlement());
+			order_json.put("settlement", order.getSettlement());
 			DateTime dateTime = new DateTime(order.getCreateTime());
 			order_json.put("createTime", dateTime.toString("yyyy-MM-dd HH:mm:ss"));
 			order_json.put("pay", order.getPay());
