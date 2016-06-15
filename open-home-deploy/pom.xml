@@ -31,7 +31,7 @@
          <dependency>
             <groupId>com.shihui.openpf</groupId>
             <artifactId>open-home-impl</artifactId>
-            <version>${project.version}</version>
+            <version>${open-home.version}</version>
         </dependency>
     </dependencies>
 

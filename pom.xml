@@ -6,7 +6,7 @@
 	<groupId>com.shihui.openpf</groupId>
 	<artifactId>open-home</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.1-SNAPSHOT</version>
 	<modules>
 		<module>open-home-app</module>
 		<module>open-home-deploy</module>
@@ -19,6 +19,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
+		<open-home.version>1.1-SNAPSHOT</open-home.version>
+		<open-common.version>1.0-SNAPSHOT</open-common.version>
 	</properties>
 
 	<dependencyManagement>

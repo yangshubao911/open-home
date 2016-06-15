@@ -4,12 +4,11 @@
 	<parent>
 		<artifactId>open-home-app</artifactId>
 		<groupId>com.shihui.openpf</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>open-home-service-impl</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.shihui.commons</groupId>
@@ -19,12 +18,12 @@
 		<dependency>
 			<groupId>com.shihui.openpf</groupId>
 			<artifactId>open-home-service-api</artifactId>
-			<version>${project.version}</version>
+			<version>${open-home.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.shihui.openpf</groupId>
 			<artifactId>open-common-tools</artifactId>
-			<version>${project.version}</version>
+			<version>${open-common.version}</version>
 		</dependency>
 
 		<dependency>
