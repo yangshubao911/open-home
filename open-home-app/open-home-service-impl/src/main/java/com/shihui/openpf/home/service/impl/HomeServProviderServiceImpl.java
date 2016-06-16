@@ -385,7 +385,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
 			}
 		}
-		log.info("请求第三方接口, url={}, param={}, method={}", api.getApiUrl(), param, httpMethod == HTTP_GET ? "get" : "post");
+		log.info("请求第三方接口, url={}, param={}, method={},result={}", api.getApiUrl(), param, httpMethod == HTTP_GET ? "get" : "post", handler.get());
 	}
 
 }
