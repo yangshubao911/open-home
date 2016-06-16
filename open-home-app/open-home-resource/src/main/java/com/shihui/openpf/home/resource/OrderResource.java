@@ -216,7 +216,7 @@ public class OrderResource {
 	public String updateOrderStatus(@Context RequestContext rc,
 			@ParamDesc(desc = "第三方订单Id", isRequired = true) @QueryParam("orderId") String orderId,
 			@ParamDesc(desc = "第三方订单状态", isRequired = true) @QueryParam("status") int status,
-			@ParamDesc(desc = "pid", isRequired = true) @QueryParam("pId") String pId,
+			@ParamDesc(desc = "pid", isRequired = false) @QueryParam("pId") String pId,
 			@ParamDesc(desc = "接口版本", isRequired = false) @QueryParam("version") String version,
 			@ParamDesc(desc = "请求方法", isRequired = false) @QueryParam("methodName") String methodName,
 			@ParamDesc(desc = "签名", isRequired = true) @QueryParam("sign") String sign

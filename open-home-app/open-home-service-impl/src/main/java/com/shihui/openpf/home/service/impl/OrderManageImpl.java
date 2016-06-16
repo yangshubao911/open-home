@@ -915,12 +915,6 @@ public class OrderManageImpl implements OrderManage {
 
 	@Override
 	public String yjzConverter(String orderId, int status, String pId, String version, String methodName, String sign) {
-
-		Merchant merchant = merchantManage.getByKey(pId);
-		if (merchant == null) {
-			log.error("yjzConverter -- can't find merchant by key:{} requestId:{}", pId, orderId);
-			return JSONObject.toJSONString(new YjzUpdateResult(5, "pid错误", new String[0]));
-		}
 		TreeMap<String, String> map = new TreeMap<>();
 		map.put("orderId", orderId);
 		map.put("status", String.valueOf(status));
@@ -934,8 +928,13 @@ public class OrderManageImpl implements OrderManage {
 
 		Request request = new Request();
 		request.setRequestId(orderId);
-		request.setMerchantId(merchant.getMerchantId());
 		Request db_request = requestService.queryById(request);
+		if(db_request == null){
+			log.error("云家政订单更新状态异常，订单不唯一，orderId={}", orderId);
+			return JSONObject.toJSONString(new YjzUpdateResult(5, "订单信息错误", new String[0]));
+		}
+		
+		Merchant merchant = merchantManage.getById(db_request.getMerchantId());
 
 		Order order = orderService.queryOrder(db_request.getOrderId());
 
