@@ -391,7 +391,7 @@ public class ClientServiceImpl implements ClientService {
 	 * @return 返回订单详情
 	 */
 	@Override
-	public String orderConfirm(Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId,
+	public String orderConfirm(RequestContext rc, Integer serviceId, Long userId, Long groupId, Integer categoryId, Integer goodsId,
 			Integer costSh) {
 		JSONObject result = new JSONObject();
 		com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceId);
@@ -485,6 +485,7 @@ public class ClientServiceImpl implements ClientService {
 		shoffset = new BigDecimal(goods.getShOffSet());
 
 		Date now = new Date();
+		String deviceId = rc.getOriginRequest().getHeader("ndeviceid");
 		Campaign campaign = new Campaign();
 		Campaign db_campaign = null;
 		campaign.setServiceId(goods.getServiceId());
@@ -493,7 +494,7 @@ public class ClientServiceImpl implements ClientService {
 			db_campaign = campaigns.get(0);
 			if (now.getTime() <= db_campaign.getEndTime().getTime()
 					&& now.getTime() >= db_campaign.getStartTime().getTime() && db_campaign.getStatus() == 1) {
-				if (orderService.countOrders(userId, serviceId) == 0) {
+				if (orderService.countOrders(userId, serviceId, deviceId) == 0) {
 					real_offset = offsetMoney(goods, balance, costSh, userId);
 					shoffset = offset( goods,  balance,  costSh,  real_offset);
 
@@ -707,7 +708,7 @@ public class ClientServiceImpl implements ClientService {
 	 * @return 返回时间接口
 	 */
 	@Override
-	public String orderCreate(OrderForm orderForm, String ip) {
+	public String orderCreate(OrderForm orderForm, RequestContext rc) {
 		com.shihui.openpf.common.model.Service service = serviceManage.findById(orderForm.getServiceId());
 		if (service.getServiceStatus() != 1) {
 			throw new AppException(HomeExcepFactor.Service_Close);
@@ -853,6 +854,7 @@ public class ClientServiceImpl implements ClientService {
 
 		boolean firstOrder = false;
 		Date now = new Date();
+		String deviceId = rc.getOriginRequest().getHeader("ndeviceid");
 		Campaign campaign = new Campaign();
 		Campaign db_campaign = null;
 		campaign.setServiceId(goods.getServiceId());
@@ -861,7 +863,7 @@ public class ClientServiceImpl implements ClientService {
 			db_campaign = campaigns.get(0);
 			if (now.getTime() <= db_campaign.getEndTime().getTime()
 					&& now.getTime() >= db_campaign.getStartTime().getTime() && db_campaign.getStatus() == 1) {
-				if (orderService.countOrders(orderForm.getUserId(), goods.getServiceId()) == 0) {
+				if (orderService.countOrders(orderForm.getUserId(), goods.getServiceId(), deviceId) == 0) {
 					firstOrder = true;
 					real_offset = offsetMoney(goods, balance, orderForm.getCostSh(), orderForm.getUserId());
 				}
@@ -921,7 +923,7 @@ public class ClientServiceImpl implements ClientService {
 		singleGoodsCreateOrderParam.setExt(jo.toJSONString());
 
 		singleGoodsCreateOrderParam.setOriginPrice(StringUtil.yuan2hao(goods.getPrice()));
-		singleGoodsCreateOrderParam.setIp(ip);
+		singleGoodsCreateOrderParam.setIp(rc.getIp());
 		singleGoodsCreateOrderParam.setGoodsVersion(goods.getGoodsVersion());
 		singleGoodsCreateOrderParam.setGoodsId(goods.getGoodsId());
 		singleGoodsCreateOrderParam.setGoodsName(goods.getGoodsName());
@@ -1008,6 +1010,8 @@ public class ClientServiceImpl implements ClientService {
 		order.setShOffSet(orderForm.getActOffset());
 		order.setUserId(orderForm.getUserId());
 		order.setAppId(orderForm.getAppId());
+		order.setMid(orderForm.getMid());//福利社id
+		order.setDeviceId(deviceId);//设备号
 		boolean create_order = orderService.createOrder(order);
 		log.info("CreateOrder -- orderId：{} save order result：{}", orderId, create_order);
 		return JSON.toJSONString(result);

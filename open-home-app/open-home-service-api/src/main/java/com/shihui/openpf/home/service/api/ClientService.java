@@ -38,7 +38,7 @@ public interface ClientService {
      *
      * @return 返回订单详情
      */
-    public String orderConfirm(Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, Integer costSh);
+    public String orderConfirm(RequestContext rc, Integer serviceId, Long userId, Long groupId , Integer categoryId , Integer goodsId, Integer costSh);
 
       /**
      * 客户端查询时间接口
@@ -52,7 +52,7 @@ public interface ClientService {
      *
      * @return 返回时间接口
      */
-    public String orderCreate(OrderForm orderForm, String ip);
+    public String orderCreate(OrderForm orderForm, RequestContext rc);
 
 
     /**

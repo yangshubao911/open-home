@@ -2,6 +2,7 @@ package com.shihui.openpf.home.mq;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.shihui.api.order.common.enums.OrderStatusEnum;
 import com.shihui.api.order.common.enums.OrderTypeEnum;
+import com.shihui.api.order.common.enums.PayTypeEnum;
+import com.shihui.api.order.service.OpenService;
+import com.shihui.api.order.vo.SimpleResult;
 import com.shihui.commons.mq.RocketProducer;
 import com.shihui.commons.mq.annotation.ConsumerConfig;
 import com.shihui.commons.mq.api.Consumer;
@@ -67,6 +71,8 @@ public class PaymentSuccessConsumer implements Consumer {
 	private MerchantManage merchantManage;
 	@Resource
 	private GoodsCache goodsCache;
+	@Resource
+	private OpenService openService;
 	
 	private CloseableHttpAsyncClient httpClient;
 	
@@ -101,9 +107,34 @@ public class PaymentSuccessConsumer implements Consumer {
 				return true;
 			} else {
 				log.info("消费订单状态变更消息 topic:"+ topic +",key:"+ key + ",msg:"+ msg);
+				
+				if(status == OrderStatusEnum.OrderUnStockOut){
+					SimpleResult simpleResult = openService.backendOrderDetail(orderId);
+					if(simpleResult.getStatus()==1) {
+						com.shihui.api.order.po.Order order_vo_detail = (com.shihui.api.order.po.Order) simpleResult.getData();
+						PayTypeEnum payType = order_vo_detail.getPayType();
+						String transId = String.valueOf(order_vo_detail.getTransId());
+						
+						//更新订单支付信息
+					    Order orderUpdate = new Order();
+					    orderUpdate.setOrderId(orderId);
+					    orderUpdate.setPaymentType(payType.getValue());
+					    orderUpdate.setPayTime(new Date(order_vo_detail.getPaymentTime()));
+					    orderUpdate.setTransId(transId);
+					    orderUpdate.setUpdateTime(new Date());
+					    orderService.update(orderUpdate);
+					}
+
+				} else if(status == OrderStatusEnum.OrderHadReceived){
+					//更新订单消费时间
+				    Order orderUpdate = new Order();
+				    orderUpdate.setOrderId(orderId);
+				    orderUpdate.setConsumeTime(new Date(order_vo.getLastStatusTime()));
+				    orderUpdate.setUpdateTime(new Date());
+				    orderService.update(orderUpdate);
+				}
+				
 				Request request = requestService.queryOrderRequest(orderId);
-
-
 				// 更新订单状态
 				orderService.updateOrder(orderId, status);
 

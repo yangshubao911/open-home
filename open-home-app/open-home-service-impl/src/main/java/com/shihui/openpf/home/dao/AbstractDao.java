@@ -5,6 +5,7 @@ package com.shihui.openpf.home.dao;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -20,10 +21,13 @@ import javax.annotation.Resource;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -33,10 +37,11 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import me.weimi.api.commons.db.jdbc.JdbcTemplate;
 
-
 /**
- * 基于jpa注解简单实现几个常用方法，没有集成orm，被迫如此
- * 依赖JdbcTemplate（框架实现的那个）
+ * 基于jpa注解简单实现几个常用方法
+ * 支持的注解: Id Entity(定义表名，可选) Table(定义表名，可选) Column(定义字段名，可选) Transient
+ * 不加注解默认将驼峰转为下划线作为表名或者字段名
+ * 依赖spring JdbcTemplate
  * @author zhouqisheng
  *
  * @version 1.0 Created at: 2015年12月14日 上午11:13:05
@@ -53,6 +58,8 @@ public abstract class AbstractDao<T> {
 	protected Map<String, String> fieldNameMap;
 
 	protected Map<String, String> idsFieldNameMap;
+	
+	protected Map<String, Method> readMethodMap;
 
 	protected RowMapper<T> rowMapper;
 	
@@ -67,10 +74,23 @@ public abstract class AbstractDao<T> {
 		entityClass = (Class<T>) type.getActualTypeArguments()[0];
 
 		Entity entity = entityClass.getAnnotation(Entity.class);
-		if (entity == null) {
-			throw new RuntimeException("unsurpport entity, please check class:" + entityClass);
+		if (entity != null) {
+			tableName = entity.name();
+		} else {
+			Table table = entityClass.getAnnotation(Table.class);
+			if(table != null){
+				tableName = table.name();
+			}else{
+				//把类名转为下划线分割作为表名
+				String[] temp = StringUtils.splitByCharacterTypeCamelCase(entityClass.getSimpleName());
+				StringBuilder nameBuilder = new StringBuilder();
+				for(String s : temp){
+					nameBuilder.append(s.toLowerCase()).append("_");
+				}
+				tableName = nameBuilder.deleteCharAt(nameBuilder.length() - 1).toString();
+			}
 		}
-		tableName = entity.name();
+		
 		try {
 			this.initialize();
 		}  catch (Exception e) {
@@ -88,12 +108,13 @@ public abstract class AbstractDao<T> {
 	protected void initialize() throws NoSuchFieldException, SecurityException {
 		fieldNameMap = new HashMap<>();
 		idsFieldNameMap = new HashMap<>();
+		readMethodMap = new HashMap<>();
 		PropertyDescriptor[] pds = BeanUtils.getPropertyDescriptors(entityClass);
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
-				Field field = entityClass.getDeclaredField(pd.getName());
+				Field field = null;
+				field = entityClass.getDeclaredField(pd.getName());
 				if(field != null){
-					field.setAccessible(true);
 					Transient transientAno = field.getAnnotation(Transient.class);
 					if (transientAno != null) {
 						continue;
@@ -101,10 +122,18 @@ public abstract class AbstractDao<T> {
 					//获得字段名称
 					Column columnAno = field.getAnnotation(Column.class);
 					String fieldName;
-					if (columnAno != null)
+					if (columnAno != null){
 						fieldName = columnAno.name();
-					else
-						fieldName = field.getName();
+					} else{
+						//驼峰转下划线
+						String[] temp = StringUtils.splitByCharacterTypeCamelCase(field.getName());
+						StringBuilder nameBuilder = new StringBuilder();
+						for(String s : temp){
+							nameBuilder.append(s.toLowerCase()).append("_");
+						}
+						fieldName = nameBuilder.deleteCharAt(nameBuilder.length() - 1).toString();
+					}
+						
 
 					//查找id
 					Id idAno = field.getAnnotation(Id.class);
@@ -113,6 +142,8 @@ public abstract class AbstractDao<T> {
 					} else {
 						fieldNameMap.put(pd.getName(), fieldName);
 					}
+					
+					readMethodMap.put(fieldName, pd.getReadMethod());
 				}
 			}
 		}
@@ -143,14 +174,13 @@ public abstract class AbstractDao<T> {
 				if (fieldName == null) {
 					continue;
 				}
-
-				field.setAccessible(true);
-
-				Object value = field.get(t);
+				
+				Method method = readMethodMap.get(fieldName);
+				Object value = method.invoke(t);
 				if (value != null) {
 					sql.append("`").append(fieldName).append("`,");
 					valueStr.append("?,");
-						valus.add(value);
+					valus.add(value);
 				}
 			}
 
@@ -187,10 +217,9 @@ public abstract class AbstractDao<T> {
 				if (fieldName == null) {
 					continue;
 				}
-				field.setAccessible(true);
 
-				//绕过getter取值有风险
-				Object value = field.get(t);
+				Method method = readMethodMap.get(fieldName);
+				Object value = method.invoke(t);
 				if (value != null) {
 					sql.append("`").append(fieldName).append("`,");
 					valueStr.append("?,");
@@ -216,7 +245,7 @@ public abstract class AbstractDao<T> {
 					return ps;
 				}
 			}, keyHolder);
-			return keyHolder.getKey().intValue();
+			return keyHolder.getKey().longValue();
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
@@ -248,9 +277,9 @@ public abstract class AbstractDao<T> {
 				if (fieldName == null) {
 					continue;
 				}
-				field.setAccessible(true);
-				//绕过getter取值有风险
-				Object value = field.get(t);
+				
+				Method method = readMethodMap.get(fieldName);
+				Object value = method.invoke(t);
 				if (value != null) {
 					if(isId){
 						idStr.append("`").append(fieldName).append("`=? and ");
@@ -273,7 +302,7 @@ public abstract class AbstractDao<T> {
 	}
 
 	/**
-	 * 更具bean里设置Id注解删除数据
+	 * 根据bean里设置Id注解删除数据
 	 * @param t
 	 * @return
 	 */
@@ -288,8 +317,9 @@ public abstract class AbstractDao<T> {
 				if (fieldName == null) {
 					continue;
 				}
-				field.setAccessible(true);
-				Object value = field.get(t);
+				
+				Method method = readMethodMap.get(fieldName);
+				Object value = method.invoke(t);
 				if (value != null) {
 					sql.append("`").append(fieldName).append("`=? and ");
 					valus.add(value);
@@ -309,17 +339,15 @@ public abstract class AbstractDao<T> {
 	 * 查询所有记录
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<T> findAll(){
 		return this.jdbcTemplate.query("select * from " + tableName, rowMapper);
 	}
 	
 	/**
-	 * 更具bean中Id注解字段查询
+	 * 根据bean中Id注解字段查询
 	 * @param t
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public T findById(T t){
 		StringBuilder sql = new StringBuilder("select * from `");
 		sql.append(this.tableName).append("` where 1=1");
@@ -333,8 +361,9 @@ public abstract class AbstractDao<T> {
 				if (fieldName == null) {
 					continue;
 				}
-				field.setAccessible(true);
-				Object value = field.get(t);
+				
+				Method method = readMethodMap.get(fieldName);
+				Object value = method.invoke(t);
 				if (value != null) {
 					sql.append(" and `").append(fieldName).append("`=?");
 					valus.add(value);
@@ -358,11 +387,9 @@ public abstract class AbstractDao<T> {
 	
 	/**
 	 * 将bean实例非空字段转为查询条件查询
-	 * 结果有多条时会抛异常
 	 * @param t
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<T> findByCondition(T t){
 		StringBuilder sql = new StringBuilder("select * from `");
 		sql.append(this.tableName).append("` where 1=1");
@@ -379,8 +406,9 @@ public abstract class AbstractDao<T> {
 				if (fieldName == null) {
 					continue;
 				}
-				field.setAccessible(true);
-				Object value = field.get(t);
+				
+				Method method = readMethodMap.get(fieldName);
+				Object value = method.invoke(t);
 				if (value != null) {
 					sql.append(" and `").append(fieldName).append("`=?");
 					valus.add(value);
@@ -401,7 +429,6 @@ public abstract class AbstractDao<T> {
 	 * @param args
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<T> queryForList(String sql, Object... args){
 		return this.jdbcTemplate.query(sql, args, rowMapper);
 	}
@@ -412,12 +439,14 @@ public abstract class AbstractDao<T> {
 	 * @param args
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public T queryForObject(String sql, Object... args){
-		List<T> list =  this.jdbcTemplate.query(sql, args, rowMapper);
-		if(list.size() > 0)
-			return list.get(0);
-		return null;
+		T result;
+		try {
+			result = (T) this.jdbcTemplate.queryForObject(sql, args, rowMapper);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+		return result;
 	}
 	
 	/**

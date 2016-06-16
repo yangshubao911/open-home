@@ -84,7 +84,7 @@ public class ClientResource {
                                @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
                                @ParamDesc(desc = "是否使用实惠现金", isRequired = true) @QueryParam("costSh") int costSh,
                                @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid) {
-        return clientService.orderConfirm(serviceId, userId, groupId, categoryId, goodsId, costSh);
+        return clientService.orderConfirm(rc,  serviceId, userId, groupId, categoryId, goodsId, costSh);
     }
 
     @Path("/area/time")
@@ -127,7 +127,7 @@ public class ClientResource {
                               @ParamDesc(desc = "可选商户", isRequired = true) @QueryParam("merchants") String merchants,
                               @ParamDesc(desc = "下单商品版本", isRequired = true) @QueryParam("goodsVersion") int goodsVersion,
                               @ParamDesc(desc = "备注信息", isRequired = false) @QueryParam("remark") String remark,
-                              @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid) {
+                              @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Integer mid) {
 
         String merchantArray = merchants.replace("[","").replace("]","");
         OrderForm orderForm = new OrderForm();
@@ -152,7 +152,7 @@ public class ClientResource {
         int appId = rc.getOriginRequest().getIntHeader("X-APP-ID");
         //实惠默认appid为5
         orderForm.setAppId(appId <= 0 ? 5 : appId);
-        return clientService.orderCreate(orderForm,rc.getIp());
+        return clientService.orderCreate(orderForm,rc);
     }
 
     @Path("/order/test")

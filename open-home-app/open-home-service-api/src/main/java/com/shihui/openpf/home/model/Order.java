@@ -100,6 +100,12 @@ public class Order implements Serializable {
     @Transient
 	@Column(name = "service_start_time")
     private String serviceStartTime;
+    
+    private Integer mid;
+    private Date payTime;
+    private Date consumeTime;
+    private String transId;
+    private String deviceId;
 
 	public Order() {
 	}
@@ -310,5 +316,45 @@ public class Order implements Serializable {
 
 	public void setServiceStartTime(String serviceStartTime) {
 		this.serviceStartTime = serviceStartTime;
+	}
+
+	public Integer getMid() {
+		return mid;
+	}
+
+	public void setMid(Integer mid) {
+		this.mid = mid;
+	}
+
+	public Date getPayTime() {
+		return payTime;
+	}
+
+	public void setPayTime(Date payTime) {
+		this.payTime = payTime;
+	}
+
+	public Date getConsumeTime() {
+		return consumeTime;
+	}
+
+	public void setConsumeTime(Date consumeTime) {
+		this.consumeTime = consumeTime;
+	}
+
+	public String getTransId() {
+		return transId;
+	}
+
+	public void setTransId(String transId) {
+		this.transId = transId;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 }

@@ -88,9 +88,12 @@ public interface OrderService {
 	boolean update(Order order);
 
 	/**
-	 * 判断用户下单次数
-	 * @return 订单数
+	 * 查询同一用户或者同一设备有效订单数量
+	 * @param userId
+	 * @param serviceId
+	 * @param deviceId
+	 * @return
 	 */
-	int countOrders(long userId,int serviceId);
+	int countOrders(long userId,int serviceId, String deviceId);
 
 }
