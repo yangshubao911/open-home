@@ -4,6 +4,7 @@
 package com.shihui.openpf.home.service.impl;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,7 +49,7 @@ import com.shihui.openpf.home.service.api.HomeServProviderService;
 public class HomeServProviderServiceImpl implements HomeServProviderService{
 	public static final String DEFAULT_ADAPTER = "defaultAdapter";
 	public static final String DEFAULT_ENCODING = "utf8";
-	public static final long WAIT_TIME_OUT = 3000;//请求等待时间，单位毫秒
+	public static final int WAIT_TIME_OUT = 5000;//请求等待时间，单位毫秒
 	
 	private static final int HTTP_GET = 1;
 	private static final int HTTP_POST = 2;
@@ -66,7 +67,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 	@PostConstruct
 	public void init(){
 		//初始化httpclient超时值为2s
-		this.httpClient = FastHttpUtils.getClient(3000);
+		this.httpClient = FastHttpUtils.getClient(WAIT_TIME_OUT);
 		//加载已实现的参数包装类
 		ServiceLoader<ParamAssembler> paramAssemblers = ServiceLoader.load(ParamAssembler.class);
 		Iterator<ParamAssembler> pa_it = paramAssemblers.iterator();
@@ -152,6 +153,13 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			if(handlers.size() == 0)
 				break;
 		}
+		if(handlers.size() != 0){
+			List<Integer> merchantIdList = new ArrayList<>(handlers.size());
+			for(OpenHomeHttpCallbackHandler<String> handler : handlers){
+				merchantIdList.add(handler.getMerchant().getMerchantId());
+			}
+			log.warn("接口请求超时供应商={}", merchantIdList);
+		}
 		response.setResult(resultArray.toJSONString());
 		return response;
 	}
@@ -192,6 +200,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 				serviceStartTime, api.getVersion(), categoryId , amount, productId);
 		this.executeHttpRequst(api, param, handler, HTTP_GET);
 		String content = handler.get();
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, content);
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
@@ -199,7 +208,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().isServiceAvailableResult(merchant, content);
-		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
+		
 		return response;
 	}
 
@@ -228,6 +237,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		Map<String, String> param = paramParser.createOrderParam(merchant, serviceType, orderInfo, api.getVersion());
 		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, content);
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
@@ -235,7 +245,6 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().createOrderResult(merchant, content);
-		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -264,6 +273,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		Map<String, String> param = paramParser.cancelOrderParam(merchant, serviceType, orderId, api.getVersion());
 		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, content);
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
@@ -271,7 +281,6 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().cancelOrderResult(merchant, content);
-		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -300,6 +309,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		Map<String, String> param = paramParser.payNoticeParam(merchant, serviceType, orderId, settlePrice, api.getVersion());
 		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, content);
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
@@ -307,7 +317,6 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().payNoticeResult(merchant, content);
-		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 
@@ -336,6 +345,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		Map<String, String> param = paramParser.evaluateOrderParam(merchant, serviceType, orderId, score, comments, api.getVersion());
 		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
+		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, content);
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
@@ -343,7 +353,6 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 			return response;
 		}
 		HomeResponse response = handler.getResultParser().evaluateOrderResult(merchant, content);
-		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, response);
 		return response;
 	}
 	
@@ -385,7 +394,7 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 				log.error("请求供应商接口异常，url={}", api.getApiUrl(), e);
 			}
 		}
-		log.info("请求第三方接口, url={}, param={}, method={},result={}", api.getApiUrl(), param, httpMethod == HTTP_GET ? "get" : "post", handler.get());
+		log.info("请求第三方接口, url={}, param={}, method={}", api.getApiUrl(), param, httpMethod == HTTP_GET ? "get" : "post");
 	}
 
 }
