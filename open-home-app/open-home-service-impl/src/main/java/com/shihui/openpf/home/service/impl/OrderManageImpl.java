@@ -918,7 +918,8 @@ public class OrderManageImpl implements OrderManage {
 
 		Merchant merchant = merchantManage.getByKey(pId);
 		if (merchant == null) {
-			log.info("yjzConverter -- can't find merchant by key:{} requestId:{}", pId, orderId);
+			log.error("yjzConverter -- can't find merchant by key:{} requestId:{}", pId, orderId);
+			return JSONObject.toJSONString(new YjzUpdateResult(5, "pid错误", new String[0]));
 		}
 		TreeMap<String, String> map = new TreeMap<>();
 		map.put("orderId", orderId);
