@@ -149,6 +149,7 @@ public class ClientResource {
         orderForm.setRemark(remark);
         orderForm.setGoodsVersion(goodsVersion);
         orderForm.setServicePhone(servicePhone);
+        orderForm.setMid(mid);
         int appId = rc.getOriginRequest().getIntHeader("X-APP-ID");
         //实惠默认appid为5
         orderForm.setAppId(appId <= 0 ? 5 : appId);

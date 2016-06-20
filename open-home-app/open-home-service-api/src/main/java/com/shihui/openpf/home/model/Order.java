@@ -94,6 +94,10 @@ public class Order implements Serializable {
 	
 	@Column(name = "app_id")
 	private Integer appId;
+
+	@Column(name = "mid")
+	private Long mId;
+
     @Transient
 	@Column(name = "request_id")
 	private String requestId;
@@ -310,5 +314,13 @@ public class Order implements Serializable {
 
 	public void setServiceStartTime(String serviceStartTime) {
 		this.serviceStartTime = serviceStartTime;
+	}
+
+	public Long getmId() {
+		return mId;
+	}
+
+	public void setmId(Long mId) {
+		this.mId = mId;
 	}
 }
