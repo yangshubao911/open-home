@@ -127,7 +127,7 @@ public class ClientResource {
                               @ParamDesc(desc = "可选商户", isRequired = true) @QueryParam("merchants") String merchants,
                               @ParamDesc(desc = "下单商品版本", isRequired = true) @QueryParam("goodsVersion") int goodsVersion,
                               @ParamDesc(desc = "备注信息", isRequired = false) @QueryParam("remark") String remark,
-                              @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Integer mid) {
+                              @ParamDesc(desc = "服务社Id", isRequired = false) @QueryParam("mid") Long mid) {
 
         String merchantArray = merchants.replace("[","").replace("]","");
         OrderForm orderForm = new OrderForm();
@@ -149,6 +149,7 @@ public class ClientResource {
         orderForm.setRemark(remark);
         orderForm.setGoodsVersion(goodsVersion);
         orderForm.setServicePhone(servicePhone);
+        orderForm.setMid(mid);
         int appId = rc.getOriginRequest().getIntHeader("X-APP-ID");
         //实惠默认appid为5
         orderForm.setAppId(appId <= 0 ? 5 : appId);

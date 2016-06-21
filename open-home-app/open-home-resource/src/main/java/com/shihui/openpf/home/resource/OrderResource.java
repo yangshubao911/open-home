@@ -49,16 +49,17 @@ public class OrderResource {
 	@BaseInfo(desc = "根据条件查询订单列表", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
 	@Produces({ MediaType.APPLICATION_JSON })
 	public String listById(@Context RequestContext rc,
-			@ParamDesc(desc = "实惠用户id", isRequired = false) @QueryParam("userId") String userId,
-			@ParamDesc(desc = "业务id", isRequired = false) @QueryParam("serviceId") String serviceId,
-			@ParamDesc(desc = "充值手机号码", isRequired = false) @QueryParam("phoneNum") String phoneNum,
-			@ParamDesc(desc = "商户id", isRequired = false) @QueryParam("merchantId") String merchantId,
-			@ParamDesc(desc = "订单id", isRequired = false) @QueryParam("orderId") String orderId,
-			@ParamDesc(desc = "订单状态", isRequired = false) @QueryParam("status") String status,
-			@ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") String startTime,
-			@ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") String endTime,
-			@ParamDesc(desc = "页标", isRequired = false) @QueryParam("page") @DefaultValue("1") int page,
-			@ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("size") @DefaultValue("10") int size) {
+						   @ParamDesc(desc = "实惠用户id", isRequired = false) @QueryParam("userId") String userId,
+						   @ParamDesc(desc = "业务id", isRequired = false) @QueryParam("serviceId") String serviceId,
+						   @ParamDesc(desc = "充值手机号码", isRequired = false) @QueryParam("phoneNum") String phoneNum,
+						   @ParamDesc(desc = "商户id", isRequired = false) @QueryParam("merchantId") String merchantId,
+						   @ParamDesc(desc = "订单id", isRequired = false) @QueryParam("orderId") String orderId,
+						   @ParamDesc(desc = "订单状态", isRequired = false) @QueryParam("status") String status,
+						   @ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") String startTime,
+						   @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") String endTime,
+						   @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("mid") String mid,
+						   @ParamDesc(desc = "页标", isRequired = false) @QueryParam("page") @DefaultValue("1") int page,
+						   @ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("size") @DefaultValue("10") int size) {
 
 		Order queryOrder = new Order();
 		try {
@@ -75,6 +76,8 @@ public class OrderResource {
 				queryOrder.setMerchantId(Integer.parseInt(merchantId));
 			if (!StringUtil.isEmpty(serviceId))
 				queryOrder.setService_id(Integer.parseInt(serviceId));
+			if (!StringUtil.isEmpty(mid))
+				queryOrder.setMid(Long.parseLong(mid));
 			return orderManage.queryOrderList(queryOrder, startTime, endTime, page, size);
 		} catch (Exception e) {
 			log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);
@@ -95,6 +98,7 @@ public class OrderResource {
 						   @ParamDesc(desc = "订单id", isRequired = false) @QueryParam("orderId") String orderId,
 						   @ParamDesc(desc = "订单状态", isRequired = false) @QueryParam("status") String status,
 						   @ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") String startTime,
+						 @ParamDesc(desc = "服务社id", isRequired = false) @QueryParam("mid") String mid,
 						 @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") String endTime) {
 
 		Order queryOrder = new Order();
@@ -112,6 +116,8 @@ public class OrderResource {
 				queryOrder.setMerchantId(Integer.parseInt(merchantId));
 			if (!StringUtil.isEmpty(serviceId))
 				queryOrder.setService_id(Integer.parseInt(serviceId));
+			if (!StringUtil.isEmpty(mid))
+				queryOrder.setMid(Long.parseLong(mid));
 			return orderManage.exportOrderList(queryOrder, startTime, endTime);
 		} catch (Exception e) {
 			log.error("查询订单列表异常，param={}", JSON.toJSONString(queryOrder), e);

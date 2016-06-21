@@ -94,6 +94,8 @@ public class Order implements Serializable {
 	
 	@Column(name = "app_id")
 	private Integer appId;
+
+
     @Transient
 	@Column(name = "request_id")
 	private String requestId;
@@ -101,7 +103,7 @@ public class Order implements Serializable {
 	@Column(name = "service_start_time")
     private String serviceStartTime;
     
-    private Integer mid;
+    private Long mid;
     private Date payTime;
     private Date consumeTime;
     private String transId;
@@ -318,11 +320,11 @@ public class Order implements Serializable {
 		this.serviceStartTime = serviceStartTime;
 	}
 
-	public Integer getMid() {
+	public Long getMid() {
 		return mid;
 	}
 
-	public void setMid(Integer mid) {
+	public void setMid(Long mid) {
 		this.mid = mid;
 	}
 

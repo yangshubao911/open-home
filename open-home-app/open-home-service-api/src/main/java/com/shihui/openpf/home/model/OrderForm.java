@@ -25,7 +25,7 @@ public class OrderForm {
     private String merchants;
     private String remark;
     private int appId;
-    private Integer mid;
+    private Long mid;
 
     public OrderForm() {
     }
@@ -190,11 +190,11 @@ public class OrderForm {
 		this.appId = appId;
 	}
 
-	public Integer getMid() {
-		return mid;
-	}
+    public Long getMid() {
+        return mid;
+    }
 
-	public void setMid(Integer mid) {
-		this.mid = mid;
-	}
+    public void setMid(Long mid) {
+        this.mid = mid;
+    }
 }
