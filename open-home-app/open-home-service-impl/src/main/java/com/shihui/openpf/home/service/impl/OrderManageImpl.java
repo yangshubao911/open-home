@@ -46,6 +46,8 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
+import com.shihui.openpf.home.dao.RequestDao;
+import com.shihui.openpf.home.dao.RequestHistoryDao;
 import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.model.Contact;
 import com.shihui.openpf.home.model.Goods;
@@ -55,6 +57,7 @@ import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.Request;
+import com.shihui.openpf.home.model.RequestHistory;
 import com.shihui.openpf.home.model.YjzOrderStatusEnum;
 import com.shihui.openpf.home.model.YjzUpdateResult;
 import com.shihui.openpf.home.service.api.CategoryService;
@@ -66,6 +69,8 @@ import com.shihui.openpf.home.service.api.OrderManage;
 import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.service.api.RequestService;
+
+import me.weimi.api.commons.util.StringUtils;
 
 /**
  * Created by zhoutc on 2016/1/21.
@@ -97,6 +102,10 @@ public class OrderManageImpl implements OrderManage {
 	OrderSystemService orderSystemService;
 	@Resource
 	CategoryService categoryService;
+    @Resource
+    RequestDao requestDao;
+    @Resource
+    RequestHistoryDao requestHistoryDao;
 	private CloseableHttpClient httpClient;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -392,31 +401,15 @@ public class OrderManageImpl implements OrderManage {
 				result.put("goodsName", goods.getGoodsName());
 
 			}
-			/*
-			 * PaymentTypeEnum paymentTypeEnum = null; if
-			 * (order.getPaymentType() == PaymentTypeEnum.Alipay.getValue())
-			 * paymentTypeEnum = PaymentTypeEnum.Alipay; if
-			 * (order.getPaymentType() == PaymentTypeEnum.Wxpay.getValue())
-			 * paymentTypeEnum = PaymentTypeEnum.Wxpay;
-			 */
-
-			/*
-			 * OrderPaymentMapping orderPaymentMapping =
-			 * orderDubboService.queryPaymentMapping(orderId, paymentTypeEnum);
-			 * result.put("payType", order.getPaymentType()); if
-			 * (orderPaymentMapping != null) { result.put("transId",
-			 * orderPaymentMapping.getTransId()); Payment payment =
-			 * orderDubboService.queryPayMentInfo(orderPaymentMapping.getTransId
-			 * ()); if (payment != null) { if (payment.getPaymentTime() != null
-			 * && !"".equals(payment.getPaymentTime())) { DateTime date = new
-			 * DateTime(payment.getPaymentTime().getTime());
-			 * result.put("payTime", date.toString("yyyy-MM-dd HH:mm:ss")); } }
-			 * 
-			 * }
-			 */
 			result.put("createTime", new DateTime(order.getCreateTime()).toString("yyyy-MM-dd HH:mm:ss"));
 			result.put("userId", order.getUserId());
 			result.put("phone", order.getPhone());
+			
+			Request request = requestService.queryOrderRequest(order.getOrderId());
+			if(request != null){
+				result.put("serverName", request.getServerName());
+				result.put("serverPhone", request.getServerPhone());
+			}
 
 
 			result.put("price", goods.getPrice());
@@ -459,7 +452,7 @@ public class OrderManageImpl implements OrderManage {
 		try {
 			Merchant merchant = merchantManage.getByKey(key);
 			if (merchant == null) {
-				return HomeCodeEnum.PARAM_ERR.toJSONString();
+				return HomeCodeEnum.PARAM_ERR.toJSONString("key 不存在");
 			}
 			com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
 			if (service == null) {
@@ -488,6 +481,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 			Request request = new Request();
 			request.setRequestId(orderId);
+			request.setMerchantId(merchant.getMerchantId());
 			Request db_request = requestService.queryById(request);
 			if (db_request == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
@@ -546,7 +540,7 @@ public class OrderManageImpl implements OrderManage {
 		try {
 			Merchant merchant = merchantManage.getByKey(key);
 			if (merchant == null) {
-				return HomeCodeEnum.PARAM_ERR.toJSONString();
+				return HomeCodeEnum.PARAM_ERR.toJSONString("key 不存在");
 			}
 			com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
 			if (service == null) {
@@ -575,6 +569,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 			Request request = new Request();
 			request.setRequestId(orderId);
+			request.setMerchantId(merchant.getMerchantId());
 			Request db_request = requestService.queryById(request);
 			if (db_request == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
@@ -643,7 +638,7 @@ public class OrderManageImpl implements OrderManage {
 		try {
 			Merchant merchant = merchantManage.getByKey(key);
 			if (merchant == null) {
-				return HomeCodeEnum.PARAM_ERR.toJSONString();
+				return HomeCodeEnum.PARAM_ERR.toJSONString("key 不存在");
 			}
 			com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
 			if (service == null) {
@@ -673,6 +668,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 			Request request = new Request();
 			request.setRequestId(orderId);
+			request.setMerchantId(merchant.getMerchantId());
 			Request db_request = requestService.queryById(request);
 			if (db_request == null) {
 				return HomeCodeEnum.ORDER_NA.toJSONString();
@@ -996,12 +992,6 @@ public class OrderManageImpl implements OrderManage {
 				}
 
 			case OrderCancel:
-				Request request1 = new Request();
-				request1.setRequestId(orderId);
-				Request db_request1 = requestService.queryById(request1);
-				if (db_request1 == null) {
-					return HomeCodeEnum.ORDER_NA.toJSONString();
-				}
 				OrderStatusEnum db_status = OrderStatusEnum.parse(order.getOrderStatus());
 				switch (db_status) {
 					case OrderUnpaid:
@@ -1081,6 +1071,153 @@ public class OrderManageImpl implements OrderManage {
 		temp.append(md5Key);
 		String sign = AlgorithmUtil.MD5(temp.toString());
 		return sign;
+	}
+
+	@Override
+	public String updateThirdOrderServiceStatus(String key, int serviceType, String orderId, String version,
+			String sign, Integer status, String statusName, String serverName, String serverPhone, String comment) {
+        try{
+    		Merchant merchant = merchantManage.getByKey(key);
+    		if (merchant == null) {
+    			return HomeCodeEnum.PARAM_ERR.toJSONString("key 不存在");
+    		}
+    		com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
+    		if (service == null) {
+    			return HomeCodeEnum.SERVICE_NA.toJSONString();
+    		}
+    		MerchantBusiness search = new MerchantBusiness();
+    		search.setMerchantId(merchant.getMerchantId());
+    		search.setServiceId(service.getServiceId());
+    		MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
+    		if (merchantBusiness == null) {
+    			return HomeCodeEnum.SERVICE_NA.toJSONString();
+    		}
+    		if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1
+    				|| merchantBusiness.getStatus() != 1) {
+    			return HomeCodeEnum.SERVICE_NA.toJSONString();
+    		}
+
+    		TreeMap<String, String> param = new TreeMap<>();
+    		param.put("key", key);
+    		param.put("serviceType", String.valueOf(serviceType));
+    		param.put("orderId", orderId);
+    		param.put("version", version);
+    		if(status != null){
+    			param.put("status", String.valueOf(status));
+    		}
+    		param.put("statusName", statusName);
+    		if(serverName != null){
+    			param.put("serverName", serverName);
+    		}
+    		if(serverPhone != null){
+    			param.put("serverPhone", serverPhone);
+    		}
+    		if(comment != null){
+    			param.put("comment", comment);
+    		}
+    		
+    		String server_sign = SignUtil.genSign(param, merchant.getMd5Key());
+    		if (server_sign.compareTo(sign) != 0) {
+    			return HomeCodeEnum.SIGN_ERR.toJSONString();
+    		}
+    		Date now = new Date();
+    		RequestHistory requestHistory = new RequestHistory();
+    		requestHistory.setChangeTime(now);
+    		requestHistory.setComment(comment);
+    		requestHistory.setRequestId(orderId);
+    		requestHistory.setRequestStatus(status);
+    		requestHistory.setServerName(serverName);
+    		requestHistory.setServerPhone(serverPhone);
+    		requestHistory.setStatusName(statusName);
+    		requestHistoryDao.save(requestHistory);
+    		
+    		if(StringUtils.isNotBlank(serverName) || StringUtils.isNotBlank(serverPhone)){
+    			Request request = new Request();
+    			request.setRequestId(orderId);
+    			request.setUpdateTime(now);
+    			request.setServerName(serverName);
+    			request.setServerPhone(serverPhone);
+    			
+    			requestDao.update(request);
+    		}
+        }catch (Exception e){
+        	log.error("更新第三方订单服务状态异常，第三方订单号:"+orderId, e);
+        	return HomeCodeEnum.SYSTEM_ERR.toJSONString();
+        }
+        return HomeCodeEnum.SUCCESS.toJSONString();
+	}
+
+	@Override
+	public String updateThirdOrderServiceStartTime(String key, int serviceType, String orderId, String version,
+			String sign, String serviceStartTime, String comment) {
+		   try{
+			   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			   try{
+				   sdf.parse(serviceStartTime);
+			   }catch (Exception e){
+				   return HomeCodeEnum.PARAM_ERR.toJSONString("时间格式错误"); 
+			   }
+			   
+	    		Merchant merchant = merchantManage.getByKey(key);
+	    		if (merchant == null) {
+	    			return HomeCodeEnum.PARAM_ERR.toJSONString("key 不存在");
+	    		}
+	    		com.shihui.openpf.common.model.Service service = serviceManage.findById(serviceType);
+	    		if (service == null) {
+	    		}
+	    		MerchantBusiness search = new MerchantBusiness();
+	    		search.setMerchantId(merchant.getMerchantId());
+	    		search.setServiceId(service.getServiceId());
+	    		MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
+	    		if (merchantBusiness == null) {
+	    			return HomeCodeEnum.SERVICE_NA.toJSONString();
+	    		}
+	    		if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1
+	    				|| merchantBusiness.getStatus() != 1) {
+	    			return HomeCodeEnum.SERVICE_NA.toJSONString();
+	    		}
+
+	    		TreeMap<String, String> param = new TreeMap<>();
+	    		param.put("key", key);
+	    		param.put("serviceType", String.valueOf(serviceType));
+	    		param.put("orderId", orderId);
+	    		param.put("version", version);
+	    		param.put("serviceStartTime", serviceStartTime);
+	    		if(comment != null){
+	    			param.put("comment", comment);
+	    		}
+	    		
+	    		String server_sign = SignUtil.genSign(param, merchant.getMd5Key());
+	    		if (server_sign.compareTo(sign) != 0) {
+	    			return HomeCodeEnum.SIGN_ERR.toJSONString();
+	    		}
+	    		
+	    		Request request = new Request();
+				request.setRequestId(orderId);
+				request.setMerchantId(merchant.getMerchantId());
+				Request db_request = requestService.queryById(request);
+				if (db_request == null) {
+					return HomeCodeEnum.ORDER_NA.toJSONString();
+				}
+				
+	    		Date now = new Date();
+	    		RequestHistory requestHistory = new RequestHistory();
+	    		requestHistory.setChangeTime(now);
+	    		requestHistory.setComment(comment);
+	    		requestHistory.setRequestId(orderId);
+	    		requestHistory.setServiceStartTime(serviceStartTime);
+	    		requestHistoryDao.save(requestHistory);
+	    		
+	    		Contact contact = new Contact();
+	    		contact.setOrderId(db_request.getOrderId());
+	    		contact.setServiceStartTime(serviceStartTime);
+	    		
+	    		contactService.update(contact);
+	        }catch (Exception e){
+	        	log.error("更新第三方订单服务开始时间异常，第三方订单号:"+orderId, e);
+	        	return HomeCodeEnum.SYSTEM_ERR.toJSONString();
+	        }
+	        return HomeCodeEnum.SUCCESS.toJSONString();
 	}
 
 }

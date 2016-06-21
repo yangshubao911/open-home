@@ -166,6 +166,39 @@ public class OrderResource {
 			@ParamDesc(isRequired = true, desc = "订单状态") @QueryParam("status") int status) {
 		return orderManage.updateThirdOrder(key, serviceType, orderId, version, sign, status);
 	}
+	
+	@POST
+	@Path("/thirdOrder/updateServiceStatus")
+	@Produces({ MediaType.TEXT_HTML })
+	@BaseInfo(desc = "第三方更新服务状态接口", status = ApiStatus.PUBLIC, needAuth = AuthType.OPTION)
+	public String thirdOrderUpdateServiceStatus(@Context RequestContext rc,
+			@ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
+			@ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
+			@ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
+			@ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
+			@ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign,
+			@ParamDesc(isRequired = false, desc = "订单状态") @QueryParam("status") Integer status,
+			@ParamDesc(isRequired = true, desc = "订单状态描述") @QueryParam("statusName") String statusName,
+			@ParamDesc(isRequired = false, desc = "服务人员姓名") @QueryParam("serverName") String serverName,
+			@ParamDesc(isRequired = false, desc = "服务人员联系方式") @QueryParam("serverPhone") String serverPhone,
+			@ParamDesc(isRequired = false, desc = "备注") @QueryParam("comment") String comment) {
+		return orderManage.updateThirdOrderServiceStatus(key, serviceType, orderId, version, sign, status, statusName, serverName, serverPhone, comment);
+	}
+	
+	@POST
+	@Path("/thirdOrder/updateServiceStartTime")
+	@Produces({ MediaType.TEXT_HTML })
+	@BaseInfo(desc = "第三方更新服务开始时间接口", status = ApiStatus.PUBLIC, needAuth = AuthType.OPTION)
+	public String thirdOrderUpdateServiceStartTime(@Context RequestContext rc,
+			@ParamDesc(isRequired = true, desc = "商户key") @QueryParam("key") String key,
+			@ParamDesc(isRequired = true, desc = "业务类型") @QueryParam("serviceType") int serviceType,
+			@ParamDesc(isRequired = true, desc = "第三方订单ID") @QueryParam("orderId") String orderId,
+			@ParamDesc(isRequired = true, desc = "接口版本") @QueryParam("version") String version,
+			@ParamDesc(isRequired = true, desc = "签名") @QueryParam("sign") String sign,
+			@ParamDesc(isRequired = true, desc = "服务开始时间") @QueryParam("serviceStartTime") String serviceStartTime,
+			@ParamDesc(isRequired = false, desc = "备注") @QueryParam("comment") String comment) {
+		return orderManage.updateThirdOrderServiceStartTime(key, serviceType, orderId, version, sign, serviceStartTime, comment);
+	}
 
 	@GET
 	@Path("/cancel")

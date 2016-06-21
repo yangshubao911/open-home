@@ -1,10 +1,10 @@
 package com.shihui.openpf.home.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Created by zhoutc on 2016/1/26.
@@ -14,26 +14,23 @@ public class Request implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name="request_id")
     private String requestId;
 
-    @Column(name="order_id")
     private Long orderId;
-
-    @Column(name="merchant_id")
+    @Id
     private Integer merchantId;
 
-    @Column(name="create_time")
     private Date createTime;
 
-    @Column(name="update_time")
     private Date updateTime;
 
-    @Column(name="request_status")
     private Integer requestStatus;
 
-    @Column(name="service_id")
     private Integer serviceId;
+    
+    private String serverName;
+    
+    private String serverPhone;
 
     public String getRequestId() {
         return requestId;
@@ -90,4 +87,20 @@ public class Request implements Serializable {
     public void setServiceId(Integer serviceId) {
         this.serviceId = serviceId;
     }
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public String getServerPhone() {
+		return serverPhone;
+	}
+
+	public void setServerPhone(String serverPhone) {
+		this.serverPhone = serverPhone;
+	}
 }
