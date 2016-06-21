@@ -34,6 +34,15 @@
             </list>
         </property>
     </bean>
+    
+      <!-- enable the configuration of transactional behavior based on annotations -->  
+	  <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>  
+	  
+	  <!-- a PlatformTransactionManager is still required -->  
+	  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+	    <!-- (this dependency is defined somewhere else) -->  
+	    <property name="dataSource" ref="mysql_open_home_master"/>  
+	  </bean>
 
 
 </beans>

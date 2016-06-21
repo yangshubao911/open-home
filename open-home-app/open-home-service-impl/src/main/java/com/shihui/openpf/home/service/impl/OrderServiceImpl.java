@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.OrderCancelType;
@@ -35,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 创建成功返回订单号
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean createOrder(Order order) {
         if(orderDao.save(order)>0) {
             Date date = new Date();
@@ -67,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 插入结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateOrder(long orderId, OrderStatusEnum orderStatus) {
         Order order = new Order();
         order.setOrderId(orderId);

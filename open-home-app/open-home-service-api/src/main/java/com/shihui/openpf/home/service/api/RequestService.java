@@ -34,4 +34,16 @@ public interface RequestService {
      * @return 更新结果
      */
     public Request queryOrderRequest(long orderId);
+    
+    /**
+     * 更新服务状态
+     * @param orderId
+     * @param status
+     * @param statusName
+     * @param serverName
+     * @param serverPhone
+     * @param comment
+     */
+    public void updateServiceStatus(String orderId, Integer status, String statusName, String serverName,
+			String serverPhone, String comment);
 }

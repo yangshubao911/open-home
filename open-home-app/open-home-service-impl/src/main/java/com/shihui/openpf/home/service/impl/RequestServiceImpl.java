@@ -5,7 +5,11 @@ import com.shihui.openpf.home.dao.RequestHistoryDao;
 import com.shihui.openpf.home.model.Request;
 import com.shihui.openpf.home.model.RequestHistory;
 import com.shihui.openpf.home.service.api.RequestService;
+
+import me.weimi.api.commons.util.StringUtils;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -28,6 +32,7 @@ public class RequestServiceImpl implements RequestService {
      * @return 创建结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean create(Request request) {
         RequestHistory requestHistory = new RequestHistory();
         Date now = new Date();
@@ -48,6 +53,7 @@ public class RequestServiceImpl implements RequestService {
      * @return 更新结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateStatus(Request request) {
         RequestHistory requestHistory = new RequestHistory();
         Date now = new Date();
@@ -76,4 +82,30 @@ public class RequestServiceImpl implements RequestService {
         String sql = "select * from request where order_id = ? and request_status != -1";
         return requestDao.queryForObject(sql,new Object[]{orderId});
     }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateServiceStatus(String orderId, Integer status, String statusName, String serverName,
+			String serverPhone, String comment) {
+		Date now = new Date();
+		RequestHistory requestHistory = new RequestHistory();
+		requestHistory.setChangeTime(now);
+		requestHistory.setComment(comment);
+		requestHistory.setRequestId(orderId);
+		requestHistory.setRequestStatus(status);
+		requestHistory.setServerName(serverName);
+		requestHistory.setServerPhone(serverPhone);
+		requestHistory.setStatusName(statusName);
+		requestHistoryDao.save(requestHistory);
+		
+		if(StringUtils.isNotBlank(serverName) || StringUtils.isNotBlank(serverPhone)){
+			Request request = new Request();
+			request.setRequestId(orderId);
+			request.setUpdateTime(now);
+			request.setServerName(serverName);
+			request.setServerPhone(serverPhone);
+			
+			requestDao.update(request);
+		}
+	}
 }

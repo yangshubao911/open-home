@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -46,8 +47,6 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
-import com.shihui.openpf.home.dao.RequestDao;
-import com.shihui.openpf.home.dao.RequestHistoryDao;
 import com.shihui.openpf.home.model.Category;
 import com.shihui.openpf.home.model.Contact;
 import com.shihui.openpf.home.model.Goods;
@@ -57,7 +56,6 @@ import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.MerchantGoods;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.model.Request;
-import com.shihui.openpf.home.model.RequestHistory;
 import com.shihui.openpf.home.model.YjzOrderStatusEnum;
 import com.shihui.openpf.home.model.YjzUpdateResult;
 import com.shihui.openpf.home.service.api.CategoryService;
@@ -70,7 +68,6 @@ import com.shihui.openpf.home.service.api.OrderService;
 import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.service.api.RequestService;
 
-import me.weimi.api.commons.util.StringUtils;
 
 /**
  * Created by zhoutc on 2016/1/21.
@@ -102,10 +99,6 @@ public class OrderManageImpl implements OrderManage {
 	OrderSystemService orderSystemService;
 	@Resource
 	CategoryService categoryService;
-    @Resource
-    RequestDao requestDao;
-    @Resource
-    RequestHistoryDao requestHistoryDao;
 	private CloseableHttpClient httpClient;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -1120,26 +1113,7 @@ public class OrderManageImpl implements OrderManage {
     		if (server_sign.compareTo(sign) != 0) {
     			return HomeCodeEnum.SIGN_ERR.toJSONString();
     		}
-    		Date now = new Date();
-    		RequestHistory requestHistory = new RequestHistory();
-    		requestHistory.setChangeTime(now);
-    		requestHistory.setComment(comment);
-    		requestHistory.setRequestId(orderId);
-    		requestHistory.setRequestStatus(status);
-    		requestHistory.setServerName(serverName);
-    		requestHistory.setServerPhone(serverPhone);
-    		requestHistory.setStatusName(statusName);
-    		requestHistoryDao.save(requestHistory);
-    		
-    		if(StringUtils.isNotBlank(serverName) || StringUtils.isNotBlank(serverPhone)){
-    			Request request = new Request();
-    			request.setRequestId(orderId);
-    			request.setUpdateTime(now);
-    			request.setServerName(serverName);
-    			request.setServerPhone(serverPhone);
-    			
-    			requestDao.update(request);
-    		}
+    		requestService.updateServiceStatus(orderId, status, statusName, serverName, serverPhone, comment);
         }catch (Exception e){
         	log.error("更新第三方订单服务状态异常，第三方订单号:"+orderId, e);
         	return HomeCodeEnum.SYSTEM_ERR.toJSONString();
@@ -1147,7 +1121,10 @@ public class OrderManageImpl implements OrderManage {
         return HomeCodeEnum.SUCCESS.toJSONString();
 	}
 
+	
+
 	@Override
+	@Transactional()
 	public String updateThirdOrderServiceStartTime(String key, int serviceType, String orderId, String version,
 			String sign, String serviceStartTime, String comment) {
 		   try{
@@ -1199,25 +1176,14 @@ public class OrderManageImpl implements OrderManage {
 				if (db_request == null) {
 					return HomeCodeEnum.ORDER_NA.toJSONString();
 				}
-				
-	    		Date now = new Date();
-	    		RequestHistory requestHistory = new RequestHistory();
-	    		requestHistory.setChangeTime(now);
-	    		requestHistory.setComment(comment);
-	    		requestHistory.setRequestId(orderId);
-	    		requestHistory.setServiceStartTime(serviceStartTime);
-	    		requestHistoryDao.save(requestHistory);
-	    		
-	    		Contact contact = new Contact();
-	    		contact.setOrderId(db_request.getOrderId());
-	    		contact.setServiceStartTime(serviceStartTime);
-	    		
-	    		contactService.update(contact);
+	    		contactService.updateServiceStartTime(orderId, serviceStartTime, comment, db_request);
 	        }catch (Exception e){
 	        	log.error("更新第三方订单服务开始时间异常，第三方订单号:"+orderId, e);
 	        	return HomeCodeEnum.SYSTEM_ERR.toJSONString();
 	        }
 	        return HomeCodeEnum.SUCCESS.toJSONString();
 	}
+
+
 
 }
