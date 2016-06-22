@@ -930,7 +930,7 @@ public class OrderManageImpl implements OrderManage {
 		request.setRequestId(orderId);
 		Request db_request = requestService.queryById(request);
 		if(db_request == null){
-			log.error("云家政订单更新状态异常，订单不唯一，orderId={}", orderId);
+			log.error("云家政订单更新状态异常，订单不存在，orderId={}", orderId);
 			return JSONObject.toJSONString(new YjzUpdateResult(5, "订单信息错误", new String[0]));
 		}
 		
