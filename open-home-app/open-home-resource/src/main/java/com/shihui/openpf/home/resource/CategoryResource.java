@@ -96,6 +96,29 @@ public class CategoryResource {
 			){
 		return JSON.toJSONString(CategoryService.list(service_id));
     }
+    
+    @Path("/rank/list")
+    @GET
+    @BaseInfo(desc = "查询商品分类排序", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+	public String rankList(
+			@Context RequestContext rc,
+			@ParamDesc(desc = "服务类型", isRequired = true) @QueryParam("service_id") int serviceId
+			){
+		return JSON.toJSONString(CategoryService.rankList(serviceId));
+    }
+    
+    @Path("/rank/update")
+    @GET
+    @BaseInfo(desc = "更新商品分类排序", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
+    @Produces({MediaType.APPLICATION_JSON})
+	public String rankUpdate(
+			@Context RequestContext rc,
+			@ParamDesc(desc = "服务类型", isRequired = true) @QueryParam("service_id") int serviceId,
+			@ParamDesc(desc = "商品类型id数组", isRequired = true) @QueryParam("category_ids") String categoryIds
+			){
+		return CategoryService.rankUpdate(serviceId, categoryIds);
+    }
 
 
 }

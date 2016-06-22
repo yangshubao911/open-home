@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,8 +19,6 @@ import java.util.TreeSet;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.shihui.openpf.home.util.OperationLogger;
-import me.weimi.api.commons.context.RequestContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +66,10 @@ import com.shihui.openpf.home.service.api.OrderSystemService;
 import com.shihui.openpf.home.service.api.RequestService;
 import com.shihui.openpf.home.util.ChoiceMerhantUtil;
 import com.shihui.openpf.home.util.HomeExcepFactor;
+import com.shihui.openpf.home.util.OperationLogger;
 
 import me.weimi.api.app.AppException;
+import me.weimi.api.commons.context.RequestContext;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -142,18 +144,15 @@ public class ClientServiceImpl implements ClientService {
 		if (goodsList == null || goodsList.size() == 0) {
 			throw new AppException(HomeExcepFactor.Goods_Unfound);
 		}
-		Category category_search = new Category();
-		category_search.setServiceId(serviceId);
-		category_search.setStatus(1);
-		List<Category> categories = categoryService.listByCondition(category_search);
+		List<Category> categories = categoryService.rankList(serviceId);
 		if (categories == null || categories.size() == 0) {
 			throw new AppException(HomeExcepFactor.Category_Unfound);
 		}
-		Map<Integer, Category> categoryMap = new HashMap<>();
+		final Map<Integer, Category> categoryMap = new HashMap<>();
 		for (Category category : categories) {
 			categoryMap.put(category.getId(), category);
 		}
-		JSONArray goods_jsonArray = new JSONArray();
+		List<JSONObject> goodsShowList = new ArrayList<>();
 		for (Goods goods : goodsList) {
 			JSONObject goods_json = new JSONObject();
 			if (goods.getGoodsStatus() == 1 && categoryMap.get(goods.getCategoryId()) != null) {
@@ -165,20 +164,29 @@ public class ClientServiceImpl implements ClientService {
 				goods_json.put("goodsVersion", goods.getGoodsVersion());
 				goods_json.put("goodsName", goods.getGoodsName());
 				goods_json.put("goodsSubtitle", goods.getGoodsSubtitle());
-				// 活动计算价格
-				//
-				// 活动计算价格
 				goods_json.put("originalPrice", goods.getPrice());
 				String pay = StringUtil.decimalSub(goods.getPrice(), new String[] { goods.getShOffSet() });
 				goods_json.put("pay", pay);
 				goods_json.put("shOffset", goods.getShOffSet());
 
 				goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
-				goods_jsonArray.add(goods_json);
+				goodsShowList.add(goods_json);
 			}
 
 		}
-		result.put("list", goods_jsonArray);
+		
+		Collections.sort(goodsShowList, new Comparator<JSONObject>(){
+
+			@Override
+			public int compare(JSONObject o1, JSONObject o2) {
+				Category category1 = categoryMap.get(o1.getInteger("categoryId"));
+				Category category2 = categoryMap.get(o2.getInteger("categoryId"));
+				return category1.compareTo(category2);
+			}
+			
+		});
+		
+		result.put("list", goodsShowList);
 		return result.toJSONString();
 	}
 

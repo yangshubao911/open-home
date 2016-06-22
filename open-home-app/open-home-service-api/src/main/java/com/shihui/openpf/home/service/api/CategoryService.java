@@ -23,4 +23,20 @@ public interface CategoryService {
 	public List<Category> listByCondition(Category category);
 
 	public Category findById(Category category);
+			
+    /**
+     * 查询商品类型，按照商品类型排序输出
+     * @param serviceId
+     * @return
+     */
+    public List<Category> rankList(int serviceId);
+    
+    /**
+     * 保存商品类型排序
+     * @param serviceId
+     * @param categoryIds 
+     *    商品类型id数组，按id顺序保存商品类型排序
+     * @return
+     */
+    public String rankUpdate(int serviceId, String categoryIds);
 }

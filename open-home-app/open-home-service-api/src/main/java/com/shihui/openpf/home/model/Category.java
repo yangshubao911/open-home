@@ -1,19 +1,21 @@
 package com.shihui.openpf.home.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.io.Serializable;
-import java.util.Date;
+import javax.persistence.Transient;
+
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * The persistent class for the category database table.
  * 
  */
 @Entity(name="category")
-public class Category implements Serializable {
+public class Category implements Serializable, Comparable<Category> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -52,6 +54,8 @@ public class Category implements Serializable {
 	@Column(name = "update_time")
 	private Date updateTime;
 
+	@Transient
+	private Integer rank;
 
 	public Category() {
 	}
@@ -136,4 +140,24 @@ public class Category implements Serializable {
 		this.amount = amount;
 	}
 
+	public Integer getRank() {
+		return rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
+
+	@Override
+	public int compareTo(Category o) {
+		Integer a = this.rank;
+		Integer b = o.getRank();
+		if(a == null){
+			a = Integer.MAX_VALUE - this.id;
+		}
+		if(b == null){
+			b = Integer.MAX_VALUE - o.getRank();
+		}
+		return a.compareTo(b);
+	}
 }
