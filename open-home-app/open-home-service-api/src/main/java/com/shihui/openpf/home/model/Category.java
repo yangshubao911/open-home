@@ -151,12 +151,12 @@ public class Category implements Serializable, Comparable<Category> {
 	@Override
 	public int compareTo(Category o) {
 		Integer a = this.rank;
-		Integer b = o.getRank();
+		Integer b = o.rank;
 		if(a == null){
 			a = Integer.MAX_VALUE - this.id;
 		}
 		if(b == null){
-			b = Integer.MAX_VALUE - o.getRank();
+			b = Integer.MAX_VALUE - o.id;
 		}
 		return a.compareTo(b);
 	}
