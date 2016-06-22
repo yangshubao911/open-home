@@ -109,7 +109,7 @@ public class CategoryResource {
     }
     
     @Path("/rank/update")
-    @GET
+    @POST
     @BaseInfo(desc = "更新商品分类排序", needAuth = AuthType.REQUIRED, status = ApiStatus.INTERNAL, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
 	public String rankUpdate(
