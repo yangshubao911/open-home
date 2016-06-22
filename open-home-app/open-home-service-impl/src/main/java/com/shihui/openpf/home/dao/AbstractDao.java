@@ -155,11 +155,6 @@ public abstract class AbstractDao<T> {
 	 * @return 返回插入条数
 	 */
 	public int save(T t) {
-		Entity entity = t.getClass().getAnnotation(Entity.class);
-		if (entity == null) {
-			throw new RuntimeException("unsurpport entity, please check class:" + t.getClass());
-		}
-		String tableName = entity.name();
 		StringBuilder sql = new StringBuilder("insert into `");
 		StringBuilder valueStr = new StringBuilder();
 		sql.append(tableName).append("`(");
