@@ -29,7 +29,7 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 	@SuppressWarnings("unchecked")
 	public YunjiazhengParamAssembler(){
 		//初始化城市对应信息
-		String text = "{1:1,2:2,5:187,6:350,7:188,8:310,9:44,10:147,11:289,23:164,25:355,27:189,29:19}";
+		String text = "{1:1,2:2,29:19,21:27,3:43,9:44,47:46,26:47,17:116,10:147,23:164,5:187,7:188,27:189,49:190,18:250,13:278,11:289,8:310,6:350,25:355}";
 		cityMap = JSON.parseObject(text, HashMap.class);
 	}
 
