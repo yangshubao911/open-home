@@ -209,6 +209,9 @@ public class ClientServiceImpl implements ClientService {
 			throw new AppException(HomeExcepFactor.Group_Unfound);
 		}
 		int cityId = group.getCityId();
+		int districtId = group.getDistrictId();
+		int plateId = group.getPlateId();
+		
 		Map<String, String> expand = new HashMap<>();
 		expand.put("cityId", cityId + "");
 		expand.put("gid", groupId + "");
@@ -247,8 +250,6 @@ public class ClientServiceImpl implements ClientService {
 		goods_json.put("goodsdesc", goods.getGoodsDesc());
 		goods_json.put("attention", goods.getAttention());
 		// 活动计算价格
-		//
-		// 活动计算价格
 		goods_json.put("originalPrice", goods.getPrice());
 		String pay = StringUtil.decimalSub(goods.getPrice(), new String[] { goods.getShOffSet() });
 		goods_json.put("pay", pay);
@@ -268,32 +269,32 @@ public class ClientServiceImpl implements ClientService {
 		}
 		result.put("goods", goods_json);
 
-		MerchantBusiness search = new MerchantBusiness();
-		search.setServiceId(serviceId);
-		search.setStatus(1);
-		List<MerchantBusiness> merchantBusinesses = merchantBusinessManage.queryList(search);
-		List<Integer> searchlist = new ArrayList<>();
-		if (merchantBusinesses != null && merchantBusinesses.size() > 0) {
-			for (MerchantBusiness merchantBusiness : merchantBusinesses) {
-				searchlist.add(merchantBusiness.getMerchantId());
-			}
-			if (searchlist != null && searchlist.size() > 0) {
-				List<Merchant> merchantList = merchantManage.batchQuery(searchlist);
-				JSONArray merchants = new JSONArray();
-				if (merchantList != null && merchantList.size() > 0) {
-					for (Merchant merchant : merchantList) {
-						JSONObject merchant_json = new JSONObject();
-						merchant_json.put("merchantId", merchant.getMerchantCode());
-						merchant_json.put("merchantImage", merchant.getMerchantImage());
-						merchant_json.put("merchantName", merchant.getMerchantName());
-						merchant_json.put("merchantDesc", merchant.getMerchantDesc());
-						merchant_json.put("merchantUrl", merchant.getMerchantLink());
-						merchants.add(merchant_json);
-					}
-					result.put("merchants", merchants);
+		//查询提供服务的商户
+		//查询绑定业务的商户
+		List<Integer> m_s_merchantIds = merchantBusinessManage.queryAvailableMerchant(goods.getServiceId());
+		//查询服务区域的商户
+		Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(serviceId, cityId, districtId, plateId);
+		@SuppressWarnings("unchecked")
+		Collection<Integer> collection_1 = CollectionUtils.intersection(m_s_merchantIds, area_merchantIds);
+		
+		if (collection_1 != null && collection_1.size() > 0) {
+			List<Integer> searchlist = new ArrayList<>();
+			searchlist.addAll(collection_1);
+			List<Merchant> merchantList = merchantManage.batchQuery(searchlist);
+			JSONArray merchants = new JSONArray();
+			if (merchantList != null && merchantList.size() > 0) {
+				for (Merchant merchant : merchantList) {
+					JSONObject merchant_json = new JSONObject();
+					merchant_json.put("merchantId", merchant.getMerchantCode());
+					merchant_json.put("merchantImage", merchant.getMerchantImage());
+					merchant_json.put("merchantName", merchant.getMerchantName());
+					merchant_json.put("merchantDesc", merchant.getMerchantDesc());
+					merchant_json.put("merchantUrl", merchant.getMerchantLink());
+					merchants.add(merchant_json);
 				}
-
+				result.put("merchants", merchants);
 			}
+
 		}
 		return result.toJSONString();
 	}

@@ -48,7 +48,7 @@ public class ClientResource {
 
     @Path("/goods/detail")
     @GET
-    @BaseInfo(desc = "查询大类下所有商品", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
+    @BaseInfo(desc = "查询商品详情", needAuth = AuthType.REQUIRED, status = ApiStatus.PUBLIC, crossDomain = true)
     @Produces({MediaType.APPLICATION_JSON})
     public String detail(@Context RequestContext rc,
                          @Context HttpServletRequest request,
