@@ -72,6 +72,7 @@ public class SnapShotUtil {
 			Map<String, Object> content = new HashMap<String, Object>();
 			content.put("goods_info", goods_info);
 			content.put("action_info", action_info);
+			content.put("businessLine", goods.getBusinessLine());
 
 			long timestamp = System.currentTimeMillis() / 1000;
 			String value = md5String(String.valueOf(timestamp)) + SALT + md5String(APPSN);

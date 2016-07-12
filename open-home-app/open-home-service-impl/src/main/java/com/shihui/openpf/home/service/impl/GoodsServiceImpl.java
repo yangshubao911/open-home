@@ -68,6 +68,7 @@ public class GoodsServiceImpl implements GoodsService {
 			}
 			
 			goods.setServiceMerchantCode(service.getServiceMerchantId());
+			goods.setBusinessLine(service.getOrderType());
 			
 			String result = SnapShotUtil.sendSnapShot(goods);
 			if(result == null || result.isEmpty()){
@@ -119,6 +120,7 @@ public class GoodsServiceImpl implements GoodsService {
 			return JSON.toJSONString(new SimpleResponse(1,"查询服务类型信息异常"));
 		}
 		oldGoods.setServiceMerchantCode(service.getServiceMerchantId());
+		oldGoods.setBusinessLine(service.getOrderType());
 		String result = SnapShotUtil.sendSnapShot(oldGoods);
 		if(result == null || result.isEmpty()){
 			log.warn("【更新】调用创建商品快照接口失败，商品id={}", goods.getGoodsId());
