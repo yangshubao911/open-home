@@ -229,7 +229,7 @@ public class OrderManageImpl implements OrderManage {
 			list.add(order.getPhone());
 			list.add(goods.getCityName());
 			list.add(contact.getServiceAddress()+contact.getDetailAddress());
-			list.add(goods.getPrice());
+			list.add(order.getPrice());
 			list.add(order.getShOffSet());
 			list.add(order.getPay());
 			if(order.getCampaignId()==2) {
@@ -315,8 +315,7 @@ public class OrderManageImpl implements OrderManage {
 			order_json.put("phone", order.getPhone());
 			order_json.put("serviceId", order.getService_id());
 
-			Goods goods = goodsService.findById(order.getGoodsId());
-			order_json.put("price", goods.getPrice());
+			order_json.put("price", order.getPrice());
 			order_json.put("shOffset", order.getShOffSet());
 			order_json.put("merchantId", order.getMerchantId());
 			Merchant merchant = merchantManage.getById(order.getMerchantId());
