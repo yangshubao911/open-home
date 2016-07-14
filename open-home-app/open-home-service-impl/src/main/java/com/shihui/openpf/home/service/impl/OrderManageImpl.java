@@ -404,7 +404,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 
 
-			result.put("price", goods.getPrice());
+			result.put("price", order.getPrice());
 
 			Merchant merchant = merchantManage.getById(order.getMerchantId());
 			result.put("merchantId", order.getMerchantId());
