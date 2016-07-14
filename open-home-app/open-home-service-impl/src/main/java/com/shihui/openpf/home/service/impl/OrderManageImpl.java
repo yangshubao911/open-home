@@ -998,7 +998,7 @@ public class OrderManageImpl implements OrderManage {
 						}
 					case OrderUnStockOut:
 						if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
-								OrderStatusEnum.parse(order.getOrderStatus()), OrderStatusEnum.OrderCloseByOutTime,
+								OrderStatusEnum.parse(order.getOrderStatus()), OrderStatusEnum.PayedCancel,
 								OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
 							request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 							this.requestService.updateStatus(request);
