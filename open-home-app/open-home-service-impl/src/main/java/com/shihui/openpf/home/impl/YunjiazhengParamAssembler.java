@@ -104,7 +104,7 @@ public class YunjiazhengParamAssembler implements ParamAssembler {
 		param.put("longitude", String.valueOf(co.getLongitude()));
 		param.put("latitude", String.valueOf(co.getLatitude()));
 		param.put("serviceTime", orderInfo.getServiceStartTime());
-		param.put("serviceAddress", orderInfo.getServiceAddress());
+		param.put("serviceAddress", orderInfo.getServiceAddress()+ " " + orderInfo.getDetailAddress());
 		param.put("houseNumber", "");
 		param.put("mobile", orderInfo.getPhone());
 		param.put("username", orderInfo.getContactName());
