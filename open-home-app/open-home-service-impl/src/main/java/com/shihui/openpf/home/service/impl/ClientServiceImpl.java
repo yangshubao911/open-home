@@ -144,7 +144,7 @@ public class ClientServiceImpl implements ClientService {
 		if (goodsList == null || goodsList.size() == 0) {
 			throw new AppException(HomeExcepFactor.Goods_Unfound);
 		}
-		List<Category> categories = categoryService.rankList(serviceId);
+		List<Category> categories = categoryService.rankList(serviceId, true);
 		if (categories == null || categories.size() == 0) {
 			throw new AppException(HomeExcepFactor.Category_Unfound);
 		}
