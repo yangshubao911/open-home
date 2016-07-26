@@ -169,7 +169,7 @@ public class ClientServiceImpl implements ClientService {
 				goods_json.put("pay", pay);
 				goods_json.put("shOffset", goods.getShOffSet());
 
-				goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
+				goods_json.put("sellNum", goodsCache.querySell(goods.getCategoryId()));
 				goodsShowList.add(goods_json);
 			}
 
@@ -254,7 +254,7 @@ public class ClientServiceImpl implements ClientService {
 		String pay = StringUtil.decimalSub(goods.getPrice(), new String[] { goods.getShOffSet() });
 		goods_json.put("pay", pay);
 		goods_json.put("shOffset", goods.getShOffSet());
-		goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
+		goods_json.put("sellNum", goodsCache.querySell(goods.getCategoryId()));
 		// 查询首单优惠活动
 		Campaign campaign = new Campaign();
 		campaign.setServiceId(goods.getServiceId());
@@ -361,7 +361,7 @@ public class ClientServiceImpl implements ClientService {
 		String pay = StringUtil.decimalSub(goods.getPrice(), new String[]{goods.getShOffSet()});
 		goods_json.put("pay", pay);
 		goods_json.put("shOffset", goods.getShOffSet());
-		goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
+		goods_json.put("sellNum", goodsCache.querySell(goods.getCategoryId()));
 		result.put("goods", goods_json);
 
 		MerchantBusiness search = new MerchantBusiness();
@@ -483,7 +483,7 @@ public class ClientServiceImpl implements ClientService {
 		goods_json.put("goodsName", goods.getGoodsName());
 		goods_json.put("goodsDesc", goods.getGoodsDesc());
 		goods_json.put("originalPrice", goods.getPrice());
-		goods_json.put("sellNum", goodsCache.querySell(goods.getGoodsId()));
+		goods_json.put("sellNum", goodsCache.querySell(goods.getCategoryId()));
 
 		BigDecimal real_offset = null;
 		BigDecimal shoffset = null;

@@ -13,5 +13,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class CategoryDao extends AbstractDao<Category> {
-
+    public int querySold(long categoryId){
+        String sql="select sold from category where id=?";
+        return super.jdbcTemplate.queryForInt(sql,new Object[] {categoryId});
+    }
 }
