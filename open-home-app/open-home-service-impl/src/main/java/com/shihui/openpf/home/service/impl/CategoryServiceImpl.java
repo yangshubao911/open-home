@@ -106,8 +106,11 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public List<Category> rankList(int serviceId) {
-		String sql = "select * from category where service_id=? and status=1";
+	public List<Category> rankList(int serviceId, boolean effective) {
+		String sql = "select * from category where service_id=?";
+		if(effective){
+			sql += " and status=1";
+		}
 	    List<Category> categoryList = this.categoryDao.queryForList(sql, serviceId);
 	    CategoryRank cr_query = new CategoryRank();
 	    cr_query.setServiceId(serviceId);

@@ -92,6 +92,9 @@ public class Goods implements Serializable {
 	
 	@Transient
 	private Integer serviceMerchantCode;//业务对应商户ID
+	
+	@Transient
+	private Integer businessLine;
 
 	public Goods() {
 	}
@@ -246,5 +249,13 @@ public class Goods implements Serializable {
 
 	public void setFirstShOffSet(String firstShOffSet) {
 		this.firstShOffSet = firstShOffSet;
+	}
+
+	public Integer getBusinessLine() {
+		return businessLine;
+	}
+
+	public void setBusinessLine(Integer businessLine) {
+		this.businessLine = businessLine;
 	}
 }

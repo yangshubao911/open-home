@@ -105,7 +105,7 @@ public class CategoryResource {
 			@Context RequestContext rc,
 			@ParamDesc(desc = "服务类型", isRequired = true) @QueryParam("service_id") int serviceId
 			){
-		return JSON.toJSONString(CategoryService.rankList(serviceId));
+		return JSON.toJSONString(CategoryService.rankList(serviceId, false));
     }
     
     @Path("/rank/update")

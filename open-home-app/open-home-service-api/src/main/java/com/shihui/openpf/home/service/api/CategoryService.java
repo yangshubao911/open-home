@@ -29,7 +29,7 @@ public interface CategoryService {
      * @param serviceId
      * @return
      */
-    public List<Category> rankList(int serviceId);
+    public List<Category> rankList(int serviceId, boolean effective);
     
     /**
      * 保存商品类型排序
