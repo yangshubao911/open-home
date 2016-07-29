@@ -54,9 +54,6 @@ public class Category implements Serializable, Comparable<Category> {
 	@Column(name = "update_time")
 	private Date updateTime;
 
-	@JSONField(name = "sold")
-	@Column(name="sold")
-	private Integer sold;
 	@Transient
 	private Integer rank;
 
@@ -149,14 +146,6 @@ public class Category implements Serializable, Comparable<Category> {
 
 	public void setRank(Integer rank) {
 		this.rank = rank;
-	}
-
-	public Integer getSold() {
-		return sold;
-	}
-
-	public void setSold(Integer sold) {
-		this.sold = sold;
 	}
 
 	@Override

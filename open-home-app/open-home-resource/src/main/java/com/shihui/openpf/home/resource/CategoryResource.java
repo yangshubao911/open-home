@@ -75,8 +75,7 @@ public class CategoryResource {
 			@ParamDesc(desc = "商品类型id", isRequired = true) @FormParam("id") Integer id,
 			@ParamDesc(desc = "数量", isRequired = false) @FormParam("amount") Integer amount,
 			@ParamDesc(desc = "产品编号", isRequired = false) @FormParam("product_id") String productId,
-			@ParamDesc(desc = "服务类型状态", isRequired = false) @FormParam("status") Integer status,
-			@ParamDesc(desc = "销售数", isRequired = false) @FormParam("sold") Integer sold
+			@ParamDesc(desc = "服务类型状态", isRequired = false) @FormParam("status") Integer status
 			){
     	Category category = new Category();
     	category.setDesc(desc);
@@ -84,7 +83,6 @@ public class CategoryResource {
     	category.setName(name);
     	category.setId(id);
     	category.setStatus(status);
-		category.setSold(sold);
 		return CategoryService.update(category);
     }
     
