@@ -997,9 +997,6 @@ public class OrderManageImpl implements OrderManage {
 							return HomeCodeEnum.SYSTEM_ERR.toJSONString();
 						}
 					case OrderUnStockOut:
-						if (this.orderSystemService.updateOrderStatus(order.getOrderId(),
-								OrderStatusEnum.parse(order.getOrderStatus()), OrderStatusEnum.PayedCancel,
-								OperatorTypeEnum.User, merchant.getMerchantId(), "")) {
 							request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 							this.requestService.updateStatus(request);
 							// 商户取消订单，全额退款，无需审核，退回实惠现金
@@ -1017,9 +1014,6 @@ public class OrderManageImpl implements OrderManage {
 								log.error("商户取消订单并发起退款失败，订单号={}，原订单状态={}", order.getOrderId(), order.getOrderStatus());
 							}
 							return HomeCodeEnum.SUCCESS.toJSONString();
-						} else {
-							return HomeCodeEnum.SYSTEM_ERR.toJSONString();
-						}
 					case OrderCancelByCustom:
 					case OrderCloseByOutTime:
 					case BackClose:
