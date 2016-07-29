@@ -3,7 +3,6 @@ package com.shihui.openpf.home.cache;
 import javax.annotation.Resource;
 
 import com.shihui.openpf.common.tools.Constants;
-import com.shihui.openpf.home.dao.CategoryDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,21 +19,20 @@ public class GoodsCache {
 
     @Resource
     private ShardedJedisPool jedisPool;
-    @Resource
-    private CategoryDao categoryDao;
+
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * 增加商品分类销售数量
      *
-     * @param categoryId 商品Id
+     * @param goodsId 商品Id
      * @return
      */
-    public Long increaseSell(long categoryId) {
+    public Long increaseSell(long goodsId) {
         ShardedJedis jedis = null;
         try {
             String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
-                    Constants.REDIS_KEY_SEPARATOR + categoryId;
+                    Constants.REDIS_KEY_SEPARATOR + goodsId;
             jedis = jedisPool.getResource();
             return jedis.incr(key);
         } catch (Exception e) {
@@ -50,19 +48,18 @@ public class GoodsCache {
     /**
      * 查询商品分类销售数量
      *
-     * @param categoryId 商品Id
+     * @param goodsId 商品Id
      * @return
      */
-    public Long querySell(long categoryId) {
+    public Long querySell(long goodsId) {
         ShardedJedis jedis = null;
         try {
             String key = Constants.REDIS_KEY_PREFIX + Constants.REDIS_KEY_SEPARATOR + "sellNum" +
-                    Constants.REDIS_KEY_SEPARATOR + categoryId;
+                    Constants.REDIS_KEY_SEPARATOR + goodsId;
             jedis = jedisPool.getResource();
             String value = jedis.get(key);
-            int sold =categoryDao.querySold(categoryId);
-            if(value==null) return (long)sold;
-            return Long.parseLong(value)+sold;
+            if(value==null) return 0l;
+            return Long.parseLong(value);
         } catch (Exception e) {
             log.error("GoodsCache querySell error!!", e);
         } finally {
