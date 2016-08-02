@@ -1000,7 +1000,7 @@ public class OrderManageImpl implements OrderManage {
 							request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 							this.requestService.updateStatus(request);
 							// 商户取消订单，全额退款，无需审核，退回实惠现金
-							SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPrice()), order.getOrderStatus(), "商户取消订单");
+							SimpleResult sr = orderSystemService.merchantCancel(order.getOrderId(), merchant.getMerchantCode(), StringUtil.yuan2hao(order.getPay()), order.getOrderStatus(), "商户取消订单");
 							if (sr.getStatus() == 1) {
 								// 保存审核id
 								Order updateOrder = new Order();

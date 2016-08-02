@@ -198,7 +198,8 @@ public class PaymentSuccessConsumer implements Consumer {
 
 				} else if (status == OrderStatusEnum.OrderUnStockOut) {// 支付通知
 					//缓存售出数量
-					goodsCache.increaseSell(order.getGoodsId());
+					Goods goods=goodsService.findById(order.getGoodsId());
+					goodsCache.increaseSell(goods.getCategoryId());
 					
 					HomeMQMsg homeMsg = new HomeMQMsg();
 					homeMsg.setGoodsId(order.getGoodsId());
