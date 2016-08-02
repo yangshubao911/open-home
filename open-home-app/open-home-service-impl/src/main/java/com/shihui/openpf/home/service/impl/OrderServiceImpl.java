@@ -74,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setOrderStatus(orderStatus.getValue());
+        order.setUpdateTime(new Date());
         if(orderDao.update(order)>0) {
             Date date = new Date();
             OrderHistory orderHistory = new OrderHistory();
