@@ -997,6 +997,7 @@ public class OrderManageImpl implements OrderManage {
 							return HomeCodeEnum.SYSTEM_ERR.toJSONString();
 						}
 					case OrderUnStockOut:
+					case OrderDistribute://配送中
 							request.setRequestStatus(HomeOrderStatusEnum.OrderCancel.getValue());
 							this.requestService.updateStatus(request);
 							// 商户取消订单，全额退款，无需审核，退回实惠现金
