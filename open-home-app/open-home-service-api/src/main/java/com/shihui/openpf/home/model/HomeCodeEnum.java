@@ -20,6 +20,7 @@ public enum HomeCodeEnum {
 	TIME_NA(2002, "时间不可用"),
 	SERVICE_NA(2003, "服务类型不支持"),
 	OTHER_NA(2004, "其他不可用状态"),
+	MERCHANT_NA(2005, "供应商不可用"),
 	ORDER_NA(3001, "未查询到订单"),
 	CANCEL_FAIL(3101, "取消订单失败"),
 	CANCEL_TIME_OUT(3102, "取消订单超时");

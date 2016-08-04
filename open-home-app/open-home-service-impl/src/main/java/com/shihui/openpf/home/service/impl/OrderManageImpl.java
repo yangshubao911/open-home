@@ -455,11 +455,11 @@ public class OrderManageImpl implements OrderManage {
 			search.setServiceId(service.getServiceId());
 			MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
 			if (merchantBusiness == null) {
-				return HomeCodeEnum.SERVICE_NA.toJSONString();
+				return HomeCodeEnum.MERCHANT_NA.toJSONString();
 			}
 			if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1
 					|| merchantBusiness.getStatus() != 1) {
-				return HomeCodeEnum.SERVICE_NA.toJSONString();
+				return HomeCodeEnum.MERCHANT_NA.toJSONString();
 			}
 
 			TreeMap<String, String> param = new TreeMap<>();
@@ -543,11 +543,11 @@ public class OrderManageImpl implements OrderManage {
 			search.setServiceId(service.getServiceId());
 			MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
 			if (merchantBusiness == null) {
-				return HomeCodeEnum.SERVICE_NA.toJSONString();
+				return HomeCodeEnum.MERCHANT_NA.toJSONString();
 			}
 			if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1
 					|| merchantBusiness.getStatus() != 1) {
-				return HomeCodeEnum.SERVICE_NA.toJSONString();
+				return HomeCodeEnum.MERCHANT_NA.toJSONString();
 			}
 
 			TreeMap<String, String> param = new TreeMap<>();
@@ -641,11 +641,11 @@ public class OrderManageImpl implements OrderManage {
 			search.setServiceId(service.getServiceId());
 			MerchantBusiness merchantBusiness = merchantBusinessManage.queryById(search);
 			if (merchantBusiness == null) {
-				return HomeCodeEnum.SERVICE_NA.toJSONString();
+				return HomeCodeEnum.MERCHANT_NA.toJSONString();
 			}
 			if (merchant.getMerchantStatus() != 1 || service.getServiceStatus() != 1
 					|| merchantBusiness.getStatus() != 1) {
-				return HomeCodeEnum.SERVICE_NA.toJSONString();
+				return HomeCodeEnum.MERCHANT_NA.toJSONString();
 			}
 
 			TreeMap<String, String> param = new TreeMap<>();
