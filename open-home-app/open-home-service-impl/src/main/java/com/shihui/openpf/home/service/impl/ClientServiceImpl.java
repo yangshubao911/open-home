@@ -237,7 +237,6 @@ public class ClientServiceImpl implements ClientService {
 		if (category.getStatus() != 1) {
 			throw new AppException(HomeExcepFactor.Category_Close);
 		}
-
 		JSONObject goods_json = new JSONObject();
 		goods_json.put("serviceId", goods.getServiceId());
 		goods_json.put("goodsId", goods.getGoodsId());
@@ -657,7 +656,7 @@ public class ClientServiceImpl implements ClientService {
 					startCalendar.set(Calendar.MILLISECOND, 0);
 
 					for (int k = 0; k < 48; k++) {
-						startCalendar.add(Calendar.MINUTE, 30);
+
 						if (json_timeslot.charAt(k) == '1') {
 							String time_key = new SimpleDateFormat("yyyyMMddHHmmss").format(startCalendar.getTime())
 									.substring(8);
@@ -676,6 +675,7 @@ public class ClientServiceImpl implements ClientService {
 								times_map.put(time_key, value);
 							}
 						}
+						startCalendar.add(Calendar.MINUTE, 30);
 					}
 					Map<String, String> times_map = result_times_map.get(json_date);
 					if (times_map == null || times_map.size() == 0)
