@@ -1,32 +1,5 @@
 package com.shihui.openpf.home.service.impl;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -47,26 +20,29 @@ import com.shihui.openpf.common.tools.AlgorithmUtil;
 import com.shihui.openpf.common.tools.DataExportUtils;
 import com.shihui.openpf.common.tools.SignUtil;
 import com.shihui.openpf.common.tools.StringUtil;
-import com.shihui.openpf.home.model.Category;
-import com.shihui.openpf.home.model.Contact;
-import com.shihui.openpf.home.model.Goods;
-import com.shihui.openpf.home.model.HomeCodeEnum;
-import com.shihui.openpf.home.model.HomeOrderStatusEnum;
-import com.shihui.openpf.home.model.HomeResponse;
-import com.shihui.openpf.home.model.MerchantGoods;
-import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.Request;
-import com.shihui.openpf.home.model.YjzOrderStatusEnum;
-import com.shihui.openpf.home.model.YjzUpdateResult;
-import com.shihui.openpf.home.service.api.CategoryService;
-import com.shihui.openpf.home.service.api.ContactService;
-import com.shihui.openpf.home.service.api.GoodsService;
-import com.shihui.openpf.home.service.api.HomeServProviderService;
-import com.shihui.openpf.home.service.api.MerchantGoodsService;
-import com.shihui.openpf.home.service.api.OrderManage;
-import com.shihui.openpf.home.service.api.OrderService;
-import com.shihui.openpf.home.service.api.OrderSystemService;
-import com.shihui.openpf.home.service.api.RequestService;
+import com.shihui.openpf.home.model.*;
+import com.shihui.openpf.home.service.api.*;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.File;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -326,6 +302,7 @@ public class OrderManageImpl implements OrderManage {
 			order_json.put("pay", order.getPay());
 			order_json.put("status", order.getOrderStatus());
 			order_json.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
+			order_json.put("mid", order.getMid());
 			return order_json;
 		} catch (Exception e) {
 			log.error("OrderManageImpl buildOrderVo error!!", e);
@@ -424,6 +401,7 @@ public class OrderManageImpl implements OrderManage {
 			result.put("statusName", OrderStatusEnum.parse(order.getOrderStatus()).getName());
 			result.put("due", new BigDecimal(goods.getPrice()).subtract(new BigDecimal(goods.getShOffSet()))
 					.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+			result.put("mid",order.getMid());
 			return result.toJSONString();
 		} catch (Exception e) {
 			log.error("OrderManageImpl queryOrder error!!", e);
