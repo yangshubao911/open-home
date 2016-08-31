@@ -2,19 +2,7 @@ package com.shihui.openpf.home.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -270,7 +258,8 @@ public class ClientServiceImpl implements ClientService {
 
 		//查询提供服务的商户
 		//查询绑定业务的商户
-		List<Integer> m_s_merchantIds = merchantBusinessManage.queryAvailableMerchant(goods.getServiceId());
+//		List<Integer> m_s_merchantIds = merchantBusinessManage.queryAvailableMerchant(goods.getServiceId()); //按服务区域分
+		List<Integer> m_s_merchantIds = merchantGoodsService.getAvailableMerchant(goodsId); //按商品查服务商
 		//查询服务区域的商户
 		Set<Integer> area_merchantIds = merchantAreaManage.getAvailableMerchant(serviceId, cityId, districtId, plateId);
 		@SuppressWarnings("unchecked")
