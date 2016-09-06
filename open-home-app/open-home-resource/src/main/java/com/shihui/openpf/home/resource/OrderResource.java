@@ -3,33 +3,25 @@
  */
 package com.shihui.openpf.home.resource;
 
-import java.io.File;
-
-import javax.annotation.Resource;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.model.Order;
 import com.shihui.openpf.home.service.api.OrderManage;
-
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+
+import javax.annotation.Resource;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
 
 /**
  * @author zhouqisheng
@@ -57,7 +49,7 @@ public class OrderResource {
 						   @ParamDesc(desc = "订单状态", isRequired = false) @QueryParam("status") String status,
 						   @ParamDesc(desc = "开始时间", isRequired = false) @QueryParam("startTime") String startTime,
 						   @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("endTime") String endTime,
-						   @ParamDesc(desc = "结束时间", isRequired = false) @QueryParam("mid") String mid,
+						   @ParamDesc(desc = "服务社id", isRequired = false) @QueryParam("mid") String mid,
 						   @ParamDesc(desc = "页标", isRequired = false) @QueryParam("page") @DefaultValue("1") int page,
 						   @ParamDesc(desc = "每页显示数量", isRequired = false) @QueryParam("size") @DefaultValue("10") int size) {
 
