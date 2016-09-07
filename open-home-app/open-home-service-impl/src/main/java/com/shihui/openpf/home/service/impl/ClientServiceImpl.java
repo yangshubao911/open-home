@@ -1,17 +1,5 @@
 package com.shihui.openpf.home.service.impl;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -31,33 +19,23 @@ import com.shihui.openpf.common.service.api.CampaignService;
 import com.shihui.openpf.common.service.api.GroupManage;
 import com.shihui.openpf.common.tools.StringUtil;
 import com.shihui.openpf.home.cache.GoodsCache;
-import com.shihui.openpf.home.model.Category;
-import com.shihui.openpf.home.model.Contact;
-import com.shihui.openpf.home.model.Goods;
-import com.shihui.openpf.home.model.HomeOrderStatusEnum;
-import com.shihui.openpf.home.model.HomeResponse;
-import com.shihui.openpf.home.model.MerchantGoods;
-import com.shihui.openpf.home.model.Order;
-import com.shihui.openpf.home.model.OrderForm;
-import com.shihui.openpf.home.model.OrderInfo;
-import com.shihui.openpf.home.model.Request;
-import com.shihui.openpf.home.service.api.CategoryService;
-import com.shihui.openpf.home.service.api.ClientService;
-import com.shihui.openpf.home.service.api.ContactService;
-import com.shihui.openpf.home.service.api.CurrencyService;
-import com.shihui.openpf.home.service.api.GoodsService;
-import com.shihui.openpf.home.service.api.HomeServProviderService;
-import com.shihui.openpf.home.service.api.MerchantCategoryService;
-import com.shihui.openpf.home.service.api.MerchantGoodsService;
-import com.shihui.openpf.home.service.api.OrderService;
-import com.shihui.openpf.home.service.api.OrderSystemService;
-import com.shihui.openpf.home.service.api.RequestService;
+import com.shihui.openpf.home.model.*;
+import com.shihui.openpf.home.service.api.*;
 import com.shihui.openpf.home.util.ChoiceMerhantUtil;
 import com.shihui.openpf.home.util.HomeExcepFactor;
 import com.shihui.openpf.home.util.OperationLogger;
-
 import me.weimi.api.app.AppException;
 import me.weimi.api.commons.context.RequestContext;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -896,8 +874,7 @@ public class ClientServiceImpl implements ClientService {
 
 		Merchant selectedMer = merchantMap.get(merchantId);
 
-		HomeResponse create_third_part = homeServProviderService.createOrder(selectedMer, goods.getServiceId(),
-				orderInfo);
+		HomeResponse create_third_part = homeServProviderService.createOrder(selectedMer, goods.getServiceId(),	orderInfo);
 		if (create_third_part.getCode() != 0) {
 			throw new AppException(HomeExcepFactor.Third_Order_Fail);
 		}

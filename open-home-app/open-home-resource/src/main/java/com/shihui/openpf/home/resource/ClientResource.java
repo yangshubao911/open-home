@@ -1,26 +1,20 @@
 package com.shihui.openpf.home.resource;
 
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
-import org.springframework.stereotype.Controller;
-
 import com.shihui.openpf.home.model.OrderForm;
 import com.shihui.openpf.home.service.api.ClientService;
-
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
+import org.springframework.stereotype.Controller;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Created by zhoutc on 2016/2/20.
@@ -114,8 +108,8 @@ public class ClientResource {
                               @ParamDesc(desc = "用户Id", isRequired = true) @QueryParam("userId") long userId,
                               @ParamDesc(desc = "商品分类Id", isRequired = true) @QueryParam("categoryId") int categoryId,
                               @ParamDesc(desc = "商品Id", isRequired = true) @QueryParam("goodsId") int goodsId,
-                              @ParamDesc(desc = "谷歌经度", isRequired = true) @QueryParam("longitude") String longitude,
-                              @ParamDesc(desc = "谷歌纬度", isRequired = true) @QueryParam("latitude") String latitude,
+                              @ParamDesc(desc = "高德经度", isRequired = true) @QueryParam("longitude") String longitude,
+                              @ParamDesc(desc = "高德纬度", isRequired = true) @QueryParam("latitude") String latitude,
                               @ParamDesc(desc = "是否使用实惠现金", isRequired = true) @QueryParam("costSh") int costSh,
                               @ParamDesc(desc = "实际支付金额", isRequired = true) @QueryParam("actPay") String actPay,
                               @ParamDesc(desc = "实际实惠现金抵扣", isRequired = true) @QueryParam("actOffset") String actOffset,

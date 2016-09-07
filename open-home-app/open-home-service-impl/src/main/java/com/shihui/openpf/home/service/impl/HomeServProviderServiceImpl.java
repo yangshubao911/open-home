@@ -3,26 +3,6 @@
  */
 package com.shihui.openpf.home.service.impl;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ServiceLoader;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.shihui.openpf.common.dubbo.api.MerchantManage;
@@ -38,6 +18,21 @@ import com.shihui.openpf.home.http.OpenHomeHttpCallbackHandler;
 import com.shihui.openpf.home.model.HomeResponse;
 import com.shihui.openpf.home.model.OrderInfo;
 import com.shihui.openpf.home.service.api.HomeServProviderService;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
 
 
 /**
@@ -214,14 +209,64 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 
 	@Override
 	public HomeResponse createOrder(Merchant merchant, int serviceType, OrderInfo orderInfo) {
+		StringBuilder logs = new StringBuilder();
+		logs.append("\r\n merchantId:" + merchant.getMerchantId());
+		logs.append("\r\n merchantName:"+merchant.getMerchantName());
+		logs.append("\r\n merchantImage:"+merchant.getMerchantImage());
+		logs.append("\r\n merchantStatus:"+merchant.getMerchantStatus());
+		logs.append("\r\n merchantDesc:"+merchant.getMerchantDesc());
+		logs.append("\r\n merchantLink:"+merchant.getMerchantLink());
+		logs.append("\r\n merchantCode:"+merchant.getMerchantCode());
+		logs.append("\r\n merchantKey:"+merchant.getMerchantKey());
+		logs.append("\r\n md5Key:"+merchant.getMd5Key());
+
+		logs.append("\r\n serviceType:" + serviceType);
+
+		logs.append("\r\n cityId;" + orderInfo.getCityId());
+		logs.append("\r\n serviceAddress;" + orderInfo.getServiceAddress());
+		logs.append("\r\n detailAddress;" + orderInfo.getDetailAddress());
+		logs.append("\r\n longitude;" + orderInfo.getLongitude());
+		logs.append("\r\n latitude;" + orderInfo.getLatitude());
+		logs.append("\r\n phone;" + orderInfo.getPhone());
+		logs.append("\r\n price;" + orderInfo.getPrice());
+		logs.append("\r\n offSet;" + orderInfo.getOffSet());
+		logs.append("\r\n serviceStartTime;" + orderInfo.getServiceStartTime());
+		logs.append("\r\n contactName;" + orderInfo.getContactName());
+		logs.append("\r\n amount;" + orderInfo.getAmount());
+		logs.append("\r\n goodsId;" + orderInfo.getGoodsId());
+		logs.append("\r\n remark;" + orderInfo.getRemark());
+		logs.append("\r\n productId;" + orderInfo.getProductId());
+		logs.append("\r\n extend;" + orderInfo.getExtend());
+		try {
+			FileCopyUtils.copy(logs.toString().getBytes(), new File("/tmp/open-home1.txt"));
+		} catch (IOException e) {
+		}
+
 		MerchantApi api = this.merchantManage.getMerchantApi(serviceType, merchant.getMerchantId(), MerchantApiName.CREATE_ORDER);
 		if(api == null){
 			HomeResponse response = new HomeResponse();
 			response.setCode(0);
 			response.setMsg("接口不存在");
-			
+			try {
+				FileCopyUtils.copy("接口不存在".getBytes(), new File("/tmp/open-home2.txt"));
+			} catch (IOException e) {
+			}
 			return response;
 		}
+		logs.append("\r\n merchantId;" + api.getMerchantId());
+		logs.append("\r\n serviceId; " + api.getServiceId());
+		logs.append("\r\n apiType;" + api.getApiType());
+		logs.append("\r\n apiName;" + api.getApiName());
+		logs.append("\r\n apiUrl;" + api.getApiUrl());
+		logs.append("\r\n status;" + api.getStatus());
+		logs.append("\r\n adapterName;" + api.getAdapterName());
+		logs.append("\r\n version;" + api.getVersion());
+		logs.append("\r\n httpMethod;" + api.getHttpMethod());
+		try {
+			FileCopyUtils.copy(logs.toString().getBytes(), new File("/tmp/open-home3.txt"));
+		} catch (IOException e) {
+		}
+
 		ParamAssembler paramParser = null;
 		ResultParser resultParser = null;
 		//获得对应的参数组装器与结果解析器，如果未配置则用默认实现，即标准化实现
@@ -238,6 +283,14 @@ public class HomeServProviderServiceImpl implements HomeServProviderService{
 		this.executeHttpRequst(api, param, handler, HTTP_POST);
 		String content = handler.get();
 		log.info("请求第三方接口完成, url={}, param={}, response={}", api.getApiUrl(), param, content);
+
+		try {
+			logs.append("\r\nurl:" + api.getApiUrl() );
+			logs.append("\r\nparam:" + param);
+			logs.append("\r\ncontent:" + content);
+			FileCopyUtils.copy(logs.toString().getBytes(), new File("/tmp/open-home4.txt"));
+		} catch (IOException e) {
+		}
 		if(content == null || content.isEmpty()){
 			HomeResponse response = new HomeResponse();
 			response.setCode(1004);
