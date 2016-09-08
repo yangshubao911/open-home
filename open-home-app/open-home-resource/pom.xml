@@ -18,12 +18,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>4.2.4.RELEASE</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.shihui.openpf</groupId>
             <artifactId>open-home-service-impl</artifactId>
             <version>${open-home.version}</version>
