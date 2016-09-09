@@ -16,7 +16,6 @@
             <artifactId>open-home-service-api</artifactId>
             <version>${open-home.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.shihui.openpf</groupId>
             <artifactId>open-home-service-impl</artifactId>
