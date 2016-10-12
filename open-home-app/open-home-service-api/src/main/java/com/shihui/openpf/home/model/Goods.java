@@ -1,14 +1,13 @@
 package com.shihui.openpf.home.model;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.alibaba.fastjson.annotation.JSONField;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-import com.alibaba.fastjson.annotation.JSONField;
+import java.io.Serializable;
+import java.util.Date;
 
 
 /**
@@ -89,7 +88,11 @@ public class Goods implements Serializable {
 	@JSONField(name="first_sh_off_set")
 	@Column(name="first_sh_off_set")
 	private String firstShOffSet;
-	
+
+	@JSONField(name="h5url")
+	@Column(name="h5url")
+	private String h5url;
+
 	@Transient
 	private Integer serviceMerchantCode;//业务对应商户ID
 	
@@ -257,5 +260,13 @@ public class Goods implements Serializable {
 
 	public void setBusinessLine(Integer businessLine) {
 		this.businessLine = businessLine;
+	}
+
+	public String getH5url() {
+		return h5url;
+	}
+
+	public void setH5url(String h5url) {
+		this.h5url = h5url;
 	}
 }

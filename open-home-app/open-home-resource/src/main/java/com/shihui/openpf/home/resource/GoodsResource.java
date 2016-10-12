@@ -3,32 +3,24 @@
  */
 package com.shihui.openpf.home.resource;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-
 import com.alibaba.fastjson.JSON;
 import com.shihui.openpf.home.model.Goods;
 import com.shihui.openpf.home.service.api.GoodsService;
 import com.shihui.openpf.home.util.SimpleResponse;
-
 import me.weimi.api.auth.annotations.AuthType;
 import me.weimi.api.commons.context.RequestContext;
 import me.weimi.api.swarm.annotations.ApiStatus;
 import me.weimi.api.swarm.annotations.BaseInfo;
 import me.weimi.api.swarm.annotations.ParamDesc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+
+import javax.annotation.Resource;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author zhouqisheng
@@ -60,7 +52,8 @@ public class GoodsResource {
 	        @ParamDesc(desc = "首单优惠", isRequired = true) @FormParam("first_sh_off_set") String first_sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = true) @FormParam("price") String price,
 	        @ParamDesc(desc = "副标题", isRequired = true) @FormParam("goods_subtitle") String goods_subtitle,
-	        @ParamDesc(desc = "使用须知", isRequired = true) @FormParam("attention") String attention) {
+	        @ParamDesc(desc = "使用须知", isRequired = true) @FormParam("attention") String attention,
+			@ParamDesc(desc = "h5地址", isRequired = false) @FormParam("h5url") String h5url) {
 		Goods goods = new Goods();
 		goods.setCategoryId(category_id);
 		goods.setCityId(city_id);
@@ -76,6 +69,7 @@ public class GoodsResource {
 		goods.setPrice(price);
 		goods.setAttention(attention);
 		goods.setGoodsSubtitle(goods_subtitle);
+		goods.setH5url(h5url);
 		String ret = null;
 		try {
 			ret = goodsService.create(goods);
@@ -101,7 +95,8 @@ public class GoodsResource {
 	        @ParamDesc(desc = "首单优惠", isRequired = false) @FormParam("first_sh_off_set") String first_sh_off_set,
 	        @ParamDesc(desc = "商品价格", isRequired = false) @FormParam("price") String price,
 	        @ParamDesc(desc = "副标题", isRequired = false) @FormParam("goods_subtitle") String goods_subtitle,
-	        @ParamDesc(desc = "使用须知", isRequired = false) @FormParam("attention") String attention) {
+	        @ParamDesc(desc = "使用须知", isRequired = false) @FormParam("attention") String attention,
+			 @ParamDesc(desc = "h5地址", isRequired = false) @FormParam("h5url") String h5url) {
 		Goods goods = new Goods();
 		goods.setGoodsId(goods_id);
 		goods.setGoodsDesc(goods_desc);
@@ -114,6 +109,7 @@ public class GoodsResource {
 		goods.setGoodsStatus(goods_status);
 		goods.setAttention(attention);
 		goods.setGoodsSubtitle(goods_subtitle);
+		goods.setH5url(h5url);
 		String ret;
 		try {
 			ret = goodsService.update(goods);
