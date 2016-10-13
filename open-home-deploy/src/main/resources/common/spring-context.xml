@@ -58,8 +58,10 @@
             <list>
                 <ref bean="jedisShard_1"/>
                 <ref bean="jedisShard_2"/>
-                <!--<ref bean="jedisShard_3"/>
-                <ref bean="jedisShard_4"/>-->
+                <!--
+                <ref bean="jedisShard_3"/>
+                <ref bean="jedisShard_4"/>
+                -->
             </list>
         </constructor-arg>
     </bean>
