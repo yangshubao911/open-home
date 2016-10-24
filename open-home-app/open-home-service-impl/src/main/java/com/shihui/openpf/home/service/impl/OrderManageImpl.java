@@ -149,6 +149,7 @@ public class OrderManageImpl implements OrderManage {
 		title.add("第三方订单号");
 		title.add("交易ID");
 		title.add("实惠ID");
+		title.add("服务社id");
 		title.add("订单状态");
 		title.add("下单时间");
 		title.add("完成时间");
@@ -183,6 +184,7 @@ public class OrderManageImpl implements OrderManage {
 			}
 			list.add(transId);
 			list.add(order.getUserId());
+			list.add(order.getMid());
 			list.add(OrderStatusEnum.parse(order.getOrderStatus()).getName());
 			list.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
 			if(order.getOrderStatus()==OrderStatusEnum.OrderHadReceived.getValue()) {
@@ -226,8 +228,7 @@ public class OrderManageImpl implements OrderManage {
 		}
 		String fileName = null;
 		try {
-			fileName = DataExportUtils.genExcel("open_home_" + System.currentTimeMillis()+".xlsx", "订单", title, data,
-					"utf-8");
+			fileName = DataExportUtils.genExcel("open_home_" + System.currentTimeMillis()+".xlsx", "订单", title, data, "utf-8");
 		} catch (Exception e) {
 			log.error("export order list error!!!",e);
 			result.put("code", 2);
